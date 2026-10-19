@@ -1,0 +1,191 @@
+<!doctype html>
+<!-- 上面这一行叫文档类型声明，告诉浏览器：这是 HTML5 文档。每个页面第一行都必须有。 -->
+
+<!-- lang="zh-CN" 告诉浏览器和搜索引擎：这个页面是简体中文。语音朗读、翻译功能依赖它。 -->
+<html lang="zh-CN">
+  <head>
+    <!-- 这一段是"给浏览器看的"，不会显示在页面上 -->
+    <meta charset="UTF-8" />
+    <!-- charset 声明字符编码。没有这行，中文会变成乱码。 -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- 让手机上打开时按真实宽度渲染，而不是缩成一个缩小的桌面版。没有这行，W3 的响应式会全部失效。 -->
+
+    <title>熙熙 2026/10/19</title>
+    <!-- 浏览器标签页上显示的文字，也是搜索结果里的标题 -->
+
+    <meta name="description" content="熙熙的第一个网页页面" />
+    <!-- 介绍页面用的-->
+
+    <style>
+      /* 这几行 CSS 只是为了让你现在看得舒服一点。
+       它们的原理在 W2 会逐个讲清楚，现在不需要看懂。 */
+      body {
+        max-width: 720px;
+        margin: 40px auto;
+        padding: 0 20px;
+        font-family: system-ui, sans-serif;
+        line-height: 1.8;
+        color: #222;
+      }
+      header {
+        border-bottom: 2px solid #eee;
+        padding-bottom: 16px;
+      }
+      section {
+        margin: 32px 0;
+      }
+      footer {
+        border-top: 1px solid #eee;
+        padding-top: 16px;
+        color: #888;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- 从这里往下，才是页面上真正显示的内容 -->
+
+    <header>
+      <h1>熙熙 · 前端学习日志</h1>
+      <p>第 1 天 · 2026 年 10 月 19 日</p>
+
+      <nav>
+        <!-- nav 是"导航"的语义标签。用对了，屏幕阅读器会把它识别为导航区 -->
+        <a href="#about">关于我</a> | <a href="#goal">我的目标</a> |
+        <a href="#plan">本周计划</a> |
+        <a href="mailto:maijunxi6@gmail.com">联系我</a>
+      </nav>
+    </header>
+
+    <!-- main 表示页面的主要内容区。一个页面只应该有一个 main -->
+    <main>
+      <section id="about">
+        <h2>关于我</h2>
+
+        <p>
+          我是<strong>麦俊熙</strong>，软件工程专业大四学生。
+          现在从零开始学前端，目标是在
+          <em>2027 年春节后</em> 拿到前端开发的工作。
+        </p>
+
+        <p>
+          想学前端的原因有两个，一是我想要一个坐班的工作，
+          二是我觉得我拥有一定的审美能力，而且前端能很直观地看到自己的成果。
+        </p>
+        <!-- strong = 重要（语义上强调），em = 强调语气。它们不是"加粗"和"斜体"，
+           虽然浏览器默认会这样显示。语义标签对无障碍和 SEO 有意义。 -->
+        <p>目前已装好的工具：</p>
+        <ul>
+          <!-- ul = 无序列表，li = 列表项 -->
+          <li>Node.js v26.12.0</li>
+          <li>Git 2.53.0</li>
+          <li>VS Code</li>
+          <li>Chrome 浏览器</li>
+          <li>Edge 浏览器</li>
+        </ul>
+      </section>
+
+      <section id="goal">
+        <h2>我的目标</h2>
+        <ol>
+          <!-- ol = 有序列表，会有 1. 2. 3. 编号 -->
+          <li>110 天内掌握 HTML / CSS / JavaScript / Vue 3</li>
+          <li>完成一个能写进简历的 GitHub 项目</li>
+          <li>毕业设计用一个完整的全栈系统交付</li>
+          <li>2027 年 3 月前拿到广州或深圳的 offer，起薪 8000</li>
+        </ol>
+
+        <h3>时间进度</h3>
+        <table border="1" cellpadding="8">
+          <!-- table 用来展示二维数据。border 和 cellpadding 是过时的写法，
+             仅为现在能看清表格；W2 会用 CSS 重写它。 -->
+          <thead>
+            <tr>
+              <th>阶段</th>
+              <th>时间</th>
+              <th>内容</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>W1-W4</td>
+              <td>10/19 - 11/15</td>
+              <td>HTML + CSS + Git</td>
+            </tr>
+            <tr>
+              <td>W5-W9</td>
+              <td>11/16 - 12/20</td>
+              <td>JavaScript</td>
+            </tr>
+            <tr>
+              <td>W10-W13</td>
+              <td>12/21 - 01/17</td>
+              <td>Vue 3 + TypeScript</td>
+            </tr>
+            <tr>
+              <td>W14-W16</td>
+              <td>01/18 - 02/06</td>
+              <td>项目实战</td>
+            </tr>
+            <tr>
+              <td>W17-W34</td>
+              <td>02/07 - 06/06</td>
+              <td>将在六月毕业</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="plan">
+        <h2>本周计划（W1）</h2>
+        <dl>
+          <!-- dl = 定义列表：dt 是词条，dd 是解释。适合"术语 - 说明"这种结构 -->
+          <dt>周一</dt>
+          <dd>环境配置、HTML 文档结构、第一次 git 提交</dd>
+          <dt>周二</dt>
+          <dd>标题、段落、列表、链接、图片</dd>
+          <dt>周三</dt>
+          <dd>表格、表单、输入框</dd>
+          <dt>周四</dt>
+          <dd>语义化标签与页面骨架</dd>
+          <dt>周五</dt>
+          <dd>综合：做一个 3 页的静态网站</dd>
+        </dl>
+
+        <img
+          src="https://picsum.photos/600/200"
+          alt="一张随机风景图，用来练习 img 标签"
+          width="600"
+        />
+        <!-- alt 是图片加载失败或屏幕阅读器朗读时用的替代文字。
+           没有 alt 的图片对无障碍是不合格的，面试会被问。 -->
+      </section>
+    </main>
+
+    <footer>
+      <p>© 2026 熙熙 · 用 HTML 手写的第一个页面</p>
+      <p>
+        <a href="https://github.com/YuiLcake" target="_blank" rel="noopener"
+          >我的 GitHub</a
+        >
+        <!-- target="_blank" 在新标签页打开。
+           rel="noopener" 是安全措施，防止新页面通过 window.opener 操纵原页面。 -->
+      </p>
+    </footer>
+  </body>
+</html>
+
+<!-- ============================================================
+     今日练习（改动这个文件即可，改完刷新浏览器看效果）：
+
+     1. 把 <title> 改成你自己的名字 + 今天日期。
+     2. 在"关于我"下面加一段：写下你为什么想学前端（用 <p>）。
+     3. 在工具列表里加一项你电脑上装了的东西（用 <li>）。
+     4. 在 <head> 里加 <meta name="description" content="...">，
+        内容写一句话介绍这个页面。
+     5. 把表格里的日期改成你真实的毕业时间。
+
+     改完告诉我，我会检查，然后带你做第一次 git 提交。
+     ============================================================ -->
