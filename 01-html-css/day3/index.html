@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>W1 Day3 · 表格与表单</title>
+    <style>
+      body {
+        max-width: 820px;
+        margin: 40px auto;
+        padding: 0 20px;
+        font-family: system-ui, sans-serif;
+        line-height: 1.85;
+        color: #222;
+      }
+      header {
+        border-bottom: 2px solid #eee;
+        padding-bottom: 16px;
+      }
+      section {
+        margin: 40px 0;
+      }
+      .bad {
+        border-left: 3px solid #e05a5a;
+        padding-left: 14px;
+        background: #fdf6f6;
+      }
+      .good {
+        border-left: 3px solid #4a9d5f;
+        padding-left: 14px;
+        background: #f6fbf7;
+      }
+      table {
+        border-collapse: collapse;
+        margin: 12px 0;
+      }
+      td,
+      th {
+        border: 1px solid #ccc;
+        padding: 8px 14px;
+        text-align: left;
+      }
+      thead th {
+        background: #f5f5f5;
+      }
+      caption {
+        text-align: left;
+        font-weight: bold;
+        padding: 8px 0;
+      }
+      form {
+        border: 1px solid #ddd;
+        padding: 20px;
+        border-radius: 6px;
+      }
+      .field {
+        margin: 16px 0;
+      }
+      label {
+        display: inline-block;
+        margin-bottom: 4px;
+        font-weight: 600;
+      }
+      input,
+      select,
+      textarea {
+        padding: 6px 10px;
+        font-size: 15px;
+        border: 1px solid #bbb;
+        border-radius: 4px;
+      }
+      input[type="text"],
+      input[type="email"] {
+        width: 280px;
+      }
+      .hint {
+        color: #777;
+        font-size: 13px;
+      }
+      button {
+        padding: 8px 18px;
+        font-size: 15px;
+        border-radius: 4px;
+        border: 1px solid #bbb;
+        background: #fff;
+        cursor: pointer;
+      }
+      fieldset {
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 12px 16px;
+      }
+      legend {
+        font-weight: bold;
+        padding: 0 6px;
+      }
+      textarea {
+              padding: 6px 10px;
+              font-size: 15px;
+              border: 1px solid #bbb;
+              border-radius: 4px;
+              resize: vertical;
+              min-height: 80px;
+              max-height: 240px;
+              width: 100%;
+              box-sizing: border-box;   /* width 包含 padding 和 border */
+      }
+    </style>
+    <!--textarea那里我改了一下这个width的值，因为我发现会顶到form的边框-->
+  </head>
+  <body>
+    <header>
+      <h1>第 3 天：让页面能接收输入</h1>
+      <p>前两天的页面只能"给人看"。今天之后，页面可以"向人要东西"了。</p>
+    </header>
+
+    <main>
+      <section id="table">
+        <h2>一、表格：只用来表示数据</h2>
+
+        <p>
+          先说一条历史包袱：十年前大家用 table
+          来排版页面（把整个网页切成格子）。 现在的规则很明确——<b
+            >table 只用于二维数据</b
+          >，排版用 CSS。 面试时问"table
+          能用来布局吗"，正确答案是"技术上能，但不该"。
+        </p>
+
+        <p>
+          一个正确的表格长这样，注意四个伙伴：caption、thead、tbody、scope：
+        </p>
+
+        <table>
+          <caption>
+            本周学习安排（caption 是表格的标题，必须写在 table 里面第一行）
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">星期</th>
+              <th scope="col">内容</th>
+              <th scope="col">产出</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">周一</th>
+              <td>HTML 结构</td>
+              <td>学习日志首页</td>
+            </tr>
+            <tr>
+              <th scope="row">周二</th>
+              <td>标题、段落、链接、图片</td>
+              <td>语义化页面</td>
+            </tr>
+            <tr>
+              <th scope="row">周三</th>
+              <td>表格与表单</td>
+              <td>报名表</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>为什么要 scope</h3>
+        <p>
+          scope="col" 表示"这个表头管一整列"，scope="row" 表示"管一整行"。
+          屏幕阅读器读到某个单元格时，会先报出对应的表头，用户才知道 "这个 720
+          是星期几的"。 不写 scope
+          表格照样显示，但盲人用户听到的是一串没有上下文的数字。
+        </p>
+
+        <h3>合并单元格</h3>
+        <p>
+          colspan 横向合并（占几列），rowspan 纵向合并（占几行）。
+          能不合并就不合并——合并会让表格结构变复杂，也容易算错格子。
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">时间段</th>
+              <th scope="col">周一</th>
+              <th scope="col">周二</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">上午</th>
+              <td colspan="2">两天都被实验室占用（colspan="2" 合并了两列）</td>
+            </tr>
+            <tr>
+              <th scope="row">下午</th>
+              <td>前端</td>
+              <td>前端</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="form">
+        <h2>二、表单：包住所有输入控件的外壳</h2>
+
+        <p>
+          form 标签有两个作用：把控件圈成一组，以及决定这些数据往哪发、怎么发。
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">属性</th>
+              <th scope="col">作用</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>action</td>
+              <td>提交到哪个地址（后端接口）。不写就是提交给当前页面。</td>
+            </tr>
+            <tr>
+              <td>method</td>
+              <td>
+                GET 把数据拼在网址后面，POST 放在请求体里。涉及密码、文件必须
+                POST。
+              </td>
+            </tr>
+            <!--为什么这里没有用scope？-->
+          </tbody>
+        </table>
+
+        <p class="hint">
+          GET 和 POST 的差别现在不用记住细节，W5 学网络请求时会彻底讲清。
+          现在只要知道：默认是 GET，传密码必须改成 POST。
+        </p>
+      </section>
+
+      <section id="input">
+        <h2>三、input 的类型不是装饰，是行为</h2>
+
+        <p>
+          type
+          决定了三件事：浏览器给什么控件、手机弹出什么键盘、要不要自带校验。
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">type</th>
+              <th scope="col">长什么样</th>
+              <th scope="col">额外好处</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>text</td>
+              <td>普通输入框</td>
+              <td>无</td>
+            </tr>
+            <tr>
+              <td>email</td>
+              <td>输入框</td>
+              <td>提交时自动检查格式；手机键盘带 @</td>
+            </tr>
+            <tr>
+              <td>password</td>
+              <td>圆点遮盖</td>
+              <td>防止旁观者看到</td>
+            </tr>
+            <tr>
+              <td>number</td>
+              <td>带上下箭头的数字框</td>
+              <td>手机弹数字键盘</td>
+            </tr>
+            <tr>
+              <td>date</td>
+              <td>日期选择器</td>
+              <td>免去手输格式错误</td>
+            </tr>
+            <tr>
+              <td>checkbox</td>
+              <td>方框，可多选</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>radio</td>
+              <td>圆点，一组里只能选一个</td>
+              <td>靠 name 相同来分组</td>
+            </tr>
+            <tr>
+              <td>file</td>
+              <td>文件选择</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>range</td>
+              <td>滑块</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>hidden</td>
+              <td>看不见</td>
+              <td>偷偷带一个值给后端（如活动 id）</td>
+            </tr>
+            <!--为什么这里没有用scope？同问-->
+          </tbody>
+        </table>
+
+        <p class="hint">
+          用 type="text" 假装成邮箱输入框是最常见的偷懒。手机用户会遇到 没有 @
+          键的键盘，等于让他在错误的键盘上打正确的字。
+        </p>
+      </section>
+
+      <section id="label">
+        <h2>四、label：为什么它必须写</h2>
+
+        <p>label 有两个作用，第二个才是真正的原因：</p>
+
+        <ol>
+          <li>视觉上告诉用户这个框填什么</li>
+          <li>
+            和输入框绑定后，<b>点文字就能聚焦到输入框</b>。
+            复选框和单选框尤其明显——点"我同意"三个字就能选中，
+            不用精确地点中那个小方框。
+          </li>
+        </ol>
+
+        <p>绑定方式是 for 和 id 对上号：</p>
+
+        <pre><code>&lt;label for="nick"&gt;昵称&lt;/label&gt;
+&lt;input id="nick" type="text"&gt;</code></pre>
+        <!--这个pre是什么-->
+
+        <div class="bad">
+          <p><b>最常见的错误</b>：用 placeholder 代替 label。</p>
+          <p>
+            <input type="text" placeholder="请输入昵称" />
+          </p>
+          <p>
+            问题有三个：一开始输入，提示就消失了，用户忘了这格填什么；
+            屏幕阅读器对 placeholder 的支持不稳定；placeholder 的浅灰色
+            对比度往往不达标。
+            <b>placeholder 是补充说明，不是标签。</b>
+          </p>
+        </div>
+
+        <div class="good">
+          <p><b>正确做法</b>：label 常驻显示，placeholder 只放示例。</p>
+          <p>
+            <label for="nick-demo">昵称</label><br />
+            <input id="nick-demo" type="text" placeholder="例如：熙熙" />
+          </p>
+        </div>
+      </section>
+
+      <section id="button">
+        <h2>五、按钮的三种 type（这里最容易出事）</h2>
+
+        <p>
+          button 不写 type 时，默认是 <b>type="submit"</b>。 意思是：只要它在
+          form 里面，点它就会提交整个表单。
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">type</th>
+              <th scope="col">点了会怎样</th>
+              <th scope="col">什么时候用</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>submit</td>
+              <td>提交表单</td>
+              <td>表单的"确定/提交"按钮</td>
+            </tr>
+            <tr>
+              <td>button</td>
+              <td>什么都不做，等你用 JS 绑事件</td>
+              <td>"清空"、"获取验证码"这类</td>
+            </tr>
+            <tr>
+              <td>reset</td>
+              <td>把所有控件恢复成初始值</td>
+              <td>很少用，误触会让人白填一遍</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="bad">
+          <p>
+            典型事故：表单里放了一个"清空"按钮，忘了写 type="button"。
+            用户点了它，表单直接提交上去了——因为默认是 submit。 这种 bug
+            找起来很费时间，因为代码看起来毫无问题。
+          </p>
+        </div>
+
+        <p class="hint">
+          经验法则：form 里的每一个 button，都显式写 type，哪怕是 submit。
+          写出来是为了让读代码的人不用猜。
+        </p>
+      </section>
+
+      <section id="exercise">
+        <h2>六、今天的作业：社团活动报名表</h2>
+
+        <p>下面这个表单能显示，但有五个问题。全部在这个文件里改，不要重写。</p>
+
+        <form action="#" method="post">
+          <fieldset>
+            <legend>活动报名</legend>
+
+            <div class="field">
+              <label for="name">姓名</label><br />
+              <input
+                id="name"
+                type="text"
+                name="name"
+                placeholder="例如：张三"
+                required
+              />
+              <!-- 已加入label -->
+            </div>
+
+            <div class="field">
+              <label for="email">邮箱</label><br />
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="邮箱"
+                required
+              />
+              <!-- type已改 placeholder已添加 -->
+            </div>
+
+            <div class="field">
+              <label for="grade">年级</label><br />
+              <select id="grade" name="grade">
+                <option value="">请选择</option>
+                <option value="1">大一</option>
+                <option value="2">大二</option>
+                <option value="3">大三</option>
+                <option value="4">大四</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <span>想参加哪个时段</span><br />
+              <input
+                type="radio"
+                name="slot"
+                value="am"
+                id="slot-am"
+                required
+              />
+              <label for="slot-am">上午</label>
+
+              <input
+                type="radio"
+                name="slot"
+                value="pm"
+                id="slot-pm"
+                required
+              />
+              <label for="slot-pm">下午</label>
+              <!-- 题目 3 更正：这两个单选框本来就有相同的 name="slot"，
+                   已经是一组，可以正常单选。是出题时写错了，代码没问题。
+                   顺便记一条规则：同组的 radio 靠 name 相同来分组，
+                   id 必须各不相同（因为 for 要指到唯一一个）。 -->
+            </div>
+
+            <div class="field">
+              <label for="note">备注</label><br />
+              <!--我注意到，这个备注框是能拉大拉小的，我觉得应该限制这个框的大小，不然大小超出整个页面不好看，或者限制拉的范围-->
+              <textarea id="note" name="note" rows="3" cols="40"></textarea>
+            </div>
+
+            <div class="field">
+              <button type="submit">提交报名</button>
+              <button type="reset">清空</button>
+              <!-- 两个type都补上了，第二个是reset-->
+            </div>
+          </fieldset>
+        </form>
+
+        <p class="hint">
+          问题 5：上面这个表单没有给任何必填项加 required 属性。
+          想想报名表里哪个字段是"不填就没法处理"的，给它加上。
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <p>W1 Day3 · 2026-10-21</p>
+    </footer>
+  </body>
+</html>
+
+<!-- ============================================================
+     今日练习（5 项，前 4 项在文件里搜“问题 1~4”的注释，第 5 项在页面底部）
+
+     1. 姓名输入框：加 label，用 for/id 绑定，placeholder 只留示例。
+     2. 邮箱输入框：type 改成正确的类型。
+     3. 两个单选框：让它们成为"一组"（只能选一个）。
+     4. 两个按钮：写上各自的 type，让"清空"不再提交表单。
+     5. 给报名表加 required（至少一个字段），并想一想：为什么"备注"不该是必填。
+
+     我觉得备注在这里发挥的作用会有这两种，一是上面的正常填完但是有自己的另外的要求或者想法要在备注里说明，二是可能上面的条件如年纪或者时段有另外的要求？比如想知道晚上等情况，备注提供了一个提交额外信息的办法。当然，如果没有要求的话就没必要填，所以我觉得是不用强制要求的
+
+     改完告诉我。我会逐个看，然后：把今天的内容 + 你今天自己完成的 Git 提交
+     一起写进 W1 文档，包括你用的终端命令。
+     ============================================================ -->
