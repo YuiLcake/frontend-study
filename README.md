@@ -32,6 +32,7 @@ python -m http.server 8123
 ## 进度
 
 - [x] W1 第 1 天：环境配置、HTML 文档结构、Git 与 GitHub 首次推送，学习到Git和gitignore的作用和相关的细节
+- [x] W1 第 2 天：标题层级、段落、列表、链接、图片
 - [ ] TODO：之后每周更新这里
 
 ## TODO（待我补完）
