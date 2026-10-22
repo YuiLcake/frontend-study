@@ -224,6 +224,83 @@
 
     {"type": "page_break"},
 
+    {"type": "heading", "text": "第 4 天 · 2026-10-22", "level": 2},
+
+    {"type": "heading", "text": "一、今天犯的错误", "level": 3},
+    {"type": "table",
+     "header": ["错误", "发生了什么", "以后怎么办"],
+     "rows": [
+       ["在 h3 里放了 p",
+        "h3 只能装文字和行内元素。浏览器遇到 p 时会提前把 h3 闭合，结果标题变成空的，标题和日期也不再是一组。页面看起来还行，结构已经散了。",
+        "记住内容模型：h1~h6 / p / figcaption 只能装行内内容；header / section / article / div 才能装块级。"],
+       ["figcaption 写在 figure 外面",
+        "figcaption 必须是 figure 的子元素，写在外面就成了孤儿，不属于任何图。而且 figure 里面本来已经有一个了，等于一张图两个标题。",
+        "figure 里最多一个 figcaption，写在 </figure> 之前。"],
+       ["address 塞进 p 里",
+        "p 里不能放块级元素。浏览器会在 address 之前强行闭合 p，想要的一行变成三段。",
+        "块级不能套块级。要么并列写，要么让 address 包住 p。"],
+       ["article 用在了题头上",
+        "原本应该是 article 包住整篇文章（题头 + 正文），结果 article 只包了题头，正文留在外面。",
+        "判断标准是“整篇能不能单独拿走”，不是“标题能不能拿走”。"],
+       ["footer 的注释后面多打了一个 >",
+        "注释在 --> 处就结束了，多出来的 > 变成页面上的普通文字，会显示出来。",
+        "和前一天 CSS 里那个多余的 > 是同一类错误：多打一个字符，不报错，但会露出来。"],
+       ["把 day3 的整套 CSS 复制到站点首页",
+        "里面 form / fieldset / textarea / caption 这些规则在首页根本用不到。",
+        "只复制这页用得到的部分。复制整块样式，以后就要维护两份，改一处忘一处就是 bug。"]
+     ]},
+
+    {"type": "paragraph", "text": "另外记两笔出题方的失误：一是我在 TODO 里写“每篇文章的标题用 h2”，但父级“最新日志”已经是 h2，再写 h2 就同级了，学员用 h3 才是对的；二是“找出一个该用 aside 的 section”这道题本身没有正解，那一页里六个 section 全是正文，没有真正的旁注。两处都已在他的文件里改正并说明。"},
+
+    {"type": "heading", "text": "二、新词与生词", "level": 3},
+    {"type": "table",
+     "header": ["英文", "中文", "用大白话说"],
+     "rows": [
+       ["content model", "内容模型", "HTML 规定每个标签能装什么、不能装什么"],
+       ["block-level", "块级元素", "默认独占一整行的元素：div、p、section、article…"],
+       ["inline / phrasing", "行内内容", "文字和文字级元素：a、strong、span、time、img"],
+       ["document outline", "文档大纲", "浏览器把 h1~h6 提取成的树，相当于页面目录"],
+       ["main", "主内容区", "一个页面只能有一个，不能嵌套在 article 里"],
+       ["article", "独立内容块", "删下来单独发布仍然读得懂的东西：一篇日志、一条评论"],
+       ["section", "主题分组", "离开这一页就没意义的分块：某个小节"],
+       ["aside", "旁注", "删掉不影响主内容的补充信息"],
+       ["figure / figcaption", "插图 / 图注", "自带说明的独立内容块，figcaption 写在 figure 里面"],
+       ["address", "联系方式块", "专门用于文档作者的联系方式，是块级元素"],
+       ["time / datetime", "时间 / 机器可读时间", "显示 2026-10-22，属性里给机器 2026-10-22"],
+       ["entity", "实体", "HTML 里表示特殊字符的写法：&lt; 显示 <，&gt; 显示 >，&amp; 显示 &"],
+       ["landmark", "地标区域", "header/nav/main/footer 这类让屏幕阅读器快速跳转的区域"]
+     ]},
+
+    {"type": "heading", "text": "三、今天学到的新知识", "level": 3},
+    {"type": "bullet_list", "items": [
+      "HTML 有内容模型：块级容器可以装任何东西，但 h1~h6、p、figcaption 只能装文字和行内元素。违反时浏览器不报错，而是自己猜着补全标签。",
+      "这种“自动修复”是无声的：页面可能看起来正常，结构其实已经散了。判断办法是看 DevTools 的 Elements 面板里真实生成的树，而不是看源码。",
+      "article 和 section 的判据只有一句：把这块单独剪下来贴到别处，还读得懂吗？读得懂用 article，只在本页成立用 section。",
+      "div 只在“这块内容确实没有语义，只是需要一个挂样式的容器”时才用。能说出“这是导航 / 这是一篇文章”，就不该用 div。",
+      "aside 的定义是“删掉不影响主内容的完整性”，不是“放在侧边”的意思。位置和语义是两回事。",
+      "一个页面只能有一个 main，且 main 不能嵌在 article / section 里。",
+      "h1 只应该有一个；标题不能跳级（h1 直接跳到 h4 会让大纲断层）；父级是 h2 时，子标题用 h3。",
+      "HTML 里的尖括号要显示出来，必须写成实体：&lt; &gt; &amp;。否则浏览器会把它当成标签解析，你想要显示的代码就消失了。",
+      "块级元素默认独占一行。想让版权和邮箱排在同一行，需要 CSS（display: inline 或 flex），这在结构层面解决不了。",
+      "git 默认不读 Windows 的系统代理。直连被卡时需要显式配置 http.proxy，否则 push 会一直超时。"
+    ]},
+
+    {"type": "heading", "text": "四、今天的产出", "level": 3},
+    {"type": "bullet_list", "items": [
+      "文件：01-html-css/day4/index.html（语义化骨架教学页，含 nav、figure、aside 的正确与错误对照）",
+      "文件：01-html-css/site/index.html（第一个多页站点的首页：header + nav + 三篇 article + aside + footer）",
+      "修正：h3 内的 p 移出、figcaption 归位、address 移出 p、article 包住全文",
+      "环境：为 git 配置代理 http://127.0.0.1:7790（直连 GitHub 超时时使用）",
+      "清理：撤销误提交的 Word 锁文件 ~$1-学习摘要.docx，并在 .gitignore 里加入 ~$* 规则",
+      "提交：feat: W1 Day4 语义化骨架，站点首页结构完成"
+    ]},
+
+    {"type": "heading", "text": "五、明天要做的", "level": 3},
+    {"type": "paragraph",
+     "text": "把首页复制成三页：新建 about.html 和 contact.html，用相对路径把三个页面互相连起来，检查三页的大纲是否一致（同样的导航、同样的标题层级），最后把站点部署上线，拿到一个可以发给别人的网址。"},
+
+    {"type": "page_break"},
+
     {"type": "heading", "text": "附：自己独立完成一次 GitHub 提交", "level": 2},
     {"type": "paragraph",
      "text": "第 3 天开始前，学员提出要自己走一遍完整流程：改文件、暂存、提交、推送，理由是想理解原理，也想在没有老师的情况下自己完成。下面是他实际执行的步骤和用到的命令。"},
