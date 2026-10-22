@@ -20,3 +20,6 @@ npm-debug.log*
 # 依赖锁文件保留（package-lock.json 要提交），但 yarn/pnpm 的缓存不要
 .yarn/cache
 .pnpm-store/
+
+# Word / Excel 打开文件时生成的临时锁文件（~$ 开头），不属于项目内容
+~$*

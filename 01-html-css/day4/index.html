@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>W1 Day4 · 页面的骨架</title>
+    <style>
+      body {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 0 20px;
+        font-family: system-ui, sans-serif;
+        line-height: 1.85;
+        color: #222;
+      }
+      header {
+        border-bottom: 2px solid #eee;
+        padding-bottom: 16px;
+      }
+      section {
+        margin: 36px 0;
+      }
+      pre {
+        background: #f6f6f6;
+        padding: 14px 16px;
+        border-radius: 6px;
+        overflow-x: auto;
+      }
+      code {
+        font-family: Consolas, monospace;
+        font-size: 14px;
+      }
+      .bad {
+        border-left: 3px solid #e05a5a;
+        padding-left: 14px;
+        background: #fdf6f6;
+      }
+      .good {
+        border-left: 3px solid #4a9d5f;
+        padding-left: 14px;
+        background: #f6fbf7;
+      }
+      table {
+        border-collapse: collapse;
+      }
+      td,
+      th {
+        border: 1px solid #ccc;
+        padding: 8px 14px;
+        text-align: left;
+      }
+      .hint {
+        color: #777;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>第 4 天：页面的骨架</h1>
+      <nav>
+        <a href="#why">为什么需要骨架</a> |
+        <a href="#skeleton">典型结构长什么样</a> |
+        <a href="#exercise">今天的作业</a>
+      </nav>
+      <p>前两天学的是"零件"（标签）。今天学的是"怎么把零件装成一栋房子"。</p>
+    </header>
+
+    <main>
+      <section id="why">
+        <h2>一、为什么需要骨架</h2>
+
+        <p>
+          一个页面用 div 全能堆出来——div 是万能容器。但全是 div 的页面，
+          浏览器、搜索引擎、屏幕阅读器都不知道哪块是导航、哪块是正文。
+        </p>
+
+        <p>
+          语义标签的作用就是：<b>在你没有任何样式的情况下，也能说清"这块是什么"</b>。
+          视觉上它们和 div 没区别（都需要 CSS 才好看），但机器能读懂。
+        </p>
+      </section>
+
+      <section id="skeleton">
+        <h2>二、典型结构长什么样</h2>
+
+        <p>90% 的内容型页面都是这个形状：</p>
+
+        <pre><code>&lt;body&gt;
+  &lt;header&gt;            页面顶部：logo、标题、主导航
+    &lt;nav&gt;...&lt;/nav&gt;
+  &lt;/header&gt;
+
+  &lt;main&gt;              页面主体，一个页面只能有一个
+    &lt;article&gt;         一篇能独立成立的内容
+      &lt;h2&gt;...&lt;/h2&gt;
+      &lt;p&gt;...&lt;/p&gt;
+    &lt;/article&gt;
+    &lt;aside&gt;           旁注：相关链接、作者简介、广告位
+  &lt;/main&gt;
+
+  &lt;footer&gt;            页面底部：版权、备案、联系方式
+  &lt;/footer&gt;
+&lt;/body&gt;</code></pre>
+
+        <p class="hint">
+          记这个形状的方法：上（header）→ 中（main）→ 下（footer），
+          中间那张纸（main）旁边可以贴一张便签（aside）。
+        </p>
+      </section>
+
+      <section id="which">
+        <h2>三、最容易混的三组和aside的用法</h2>
+
+        <h3>1. header 不是 h1</h3>
+        <p>
+          header 是"区域"，h1 是"标题文字"。一个页面可以有多个 header
+          （比如每篇文章内部都可以有自己的 header），但 h1 只应该有一个。
+        </p>
+
+        <h3>2. article 和 section 怎么分</h3>
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">标签</th>
+              <th scope="col">判断标准</th>
+              <th scope="col">例子</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>article</td>
+              <td>把它单独剪下来贴到别处，仍然读得懂</td>
+              <td>一篇博客、一条评论、一张商品卡</td>
+            </tr>
+            <tr>
+              <td>section</td>
+              <td>是一个主题分组，离开这一页就没意义</td>
+              <td>“今天犯的错误”“新词与生词”</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p class="hint">
+          一句话记法：能单独发出去的用 article，只能在这页里成立的用 section。
+          拿不准的时候：section 永远比 article 安全，因为它的门槛更低。
+        </p>
+
+        <h3>3. div 什么时候才用</h3>
+        <p>
+          只有当"这块内容真的没有任何语义，只是需要一个容器来挂样式"时才用 div。
+          比如一个纯装饰的包裹层、一个 flex 布局容器。
+        </p>
+        <p>
+          判断法：如果你能说出"这是一个导航 / 一篇文章 / 一条评论"，
+          那就该用对应的语义标签，不该用 div。
+        </p>
+      </section>
+      <section id="aside">
+        <h2>四. aside 是什么</h2>
+
+        <p>
+          aside 是"旁注"：和主内容相关，但删掉也不影响主内容的完整性。
+          典型用途：作者简介、相关文章、术语解释、广告。
+        </p>
+        <p>
+          它不一定在侧边栏——aside 说的是"内容角色"，不是"位置"。
+          放在正文中间的一个"术语小贴士"，也可以是 aside。
+        </p>
+      </section>
+
+      <section id="outline">
+        <h2>五、文档大纲：机器看到的页面目录</h2>
+
+        <p>
+          浏览器和屏幕阅读器会把所有 h1-h6 提取成一棵树，叫文档大纲。
+          它应该像书的目录：有层级、不跳级、每级都有内容。
+        </p>
+
+        <p>
+          用 DevTools 可以看：Elements 面板右上角的 "Accessibility" 标签，
+          或者装个 "HeadingsMap" 扩展。
+        </p>
+
+        <div class="bad">
+          <p><b>常见错误示范</b>：</p>
+          <pre><code>&lt;h1&gt;我的网站&lt;/h1&gt;
+&lt;h3&gt;最新文章&lt;/h3&gt;      &lt;!-- 跳过了 h2 --&gt;
+&lt;h2&gt;关于我&lt;/h2&gt;       &lt;!-- 又跳回 h2，层级乱了 --&gt;
+&lt;h5&gt;联系方式&lt;/h5&gt;</code></pre>
+          <p>大纲读出来是断的，用户按标题跳读时会迷路。</p>
+        </div>
+
+        <div class="good">
+          <p><b>正确示范</b>：</p>
+          <pre><code>&lt;h1&gt;我的网站&lt;/h1&gt;
+&lt;h2&gt;最新文章&lt;/h2&gt;
+&lt;h3&gt;第一篇&lt;/h3&gt;
+&lt;h2&gt;关于我&lt;/h2&gt;
+&lt;h2&gt;联系方式&lt;/h2&gt;</code></pre>
+        </div>
+        <figure>
+          <figcaption>这是一段实例的代码</figcaption>
+          <pre><code>&lt;h1&gt;我的网站&lt;/h1&gt;
+&lt;h2&gt;最新文章&lt;/h2&gt;
+&lt;h3&gt;第一篇&lt;/h3&gt;
+&lt;h2&gt;关于我&lt;/h2&gt; 
+&lt;h2&gt;联系方式&lt;/h2&gt;</code></pre>
+        </figure>
+        <!--已加入figure和figcaption-->
+      </section>
+
+      <section id="exercise">
+        <h2>六、今天的作业</h2>
+
+        <p>
+          今天两件事：先把下面这五道小题做掉（就在本文件里改），
+          然后去搭你的第一个多页站点。
+        </p>
+
+        <h3>练习（本文件内）</h3>
+        <ol>
+          <li>
+            下面这段内容用 div 堆的，把它改成正确的语义标签
+            （提示：外层是什么？里面一条一条的是什么？）
+            <pre><code>&lt;section id="post-1" class="post"&gt;<!--我把最外层的改成了section-->
+  &lt;div class="post-head"&gt;
+    &lt;h2&gt;第一次提交&lt;/h2&gt;
+    &lt;time datetime="2026-10-19"&gt;2026-10-19&lt;/time&gt;
+  &lt;/div&gt;
+  &lt;p&gt;今天把学习日志推到了 GitHub。&lt;/p&gt;
+&lt;/section&gt;</code></pre>
+            <p class="hint">
+              第 2 条提示：日期用 &lt;time datetime="2026-10-19"&gt; 包起来，
+              机器才能解析成日期，而不是一串字。
+            </p>
+          </li>
+          <li>
+            这个页面里有一个 section 应该改成
+            aside（想一想：哪一块删掉也不影响主内容）。
+            改完在这一行下面写一句你的判断理由。
+          </li>
+          <li>
+            页面顶部缺一个 nav。在 header 里加一个只包含三个锚点的导航
+            （指向本页任意三节）。
+          </li>
+          <li>
+            给"四、文档大纲"那一节加一个 figure + figcaption，
+            里面放一段代码示例（可以直接复制上面那段）。
+            <p class="hint">
+              figure 是"插画/代码/图表"这类自成一体、需要配说明的内容；
+              figcaption 是它的说明文字。和 img 的 alt 不同，figcaption
+              是看得见的。
+            </p>
+          </li>
+          <li>
+            <b>去搭站点</b>：打开 <code>01-html-css/site/index.html</code>，
+            里面已经写好了骨架和 TODO 注释，按注释把五处补完。
+            这个文件会长成你的第一个三页网站，明天再加另外两页。
+          </li>
+        </ol>
+      </section>
+    </main>
+
+    <footer>
+      <p>W1 Day4 · 2026-10-22</p>
+    </footer>
+  </body>
+</html>
+
+<!-- ============================================================
+     今日练习清单（做完对照一遍）
+
+     1. div 堆的那段改成语义标签 + time datetime
+     2. 找出一个该用 aside 的 section，改掉并写理由
+     3. header 里加 nav（三个锚点）
+     4. 文档大纲那一节加 figure + figcaption
+     5. 去 01-html-css/site/index.html 补完五处 TODO
+
+     改完告诉我。我会对照真实文件看，然后提交、写进 W1 文档。
+     ============================================================ -->
