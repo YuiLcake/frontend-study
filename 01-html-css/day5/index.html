@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W1 Day5 · 从一个页面到一个网站</title>
+  <style>
+    body { max-width: 820px; margin: 40px auto; padding: 0 20px;
+           font-family: system-ui, sans-serif; line-height: 1.85; color: #222; }
+    header { border-bottom: 2px solid #eee; padding-bottom: 16px; }
+    section { margin: 40px 0; }
+    pre { background: #f6f6f6; padding: 14px 16px; border-radius: 6px; overflow-x: auto; }
+    code { font-family: Consolas, monospace; font-size: 14px; }
+    table { border-collapse: collapse; margin: 12px 0; }
+    td, th { border: 1px solid #ccc; padding: 8px 14px; text-align: left; }
+    thead th { background: #f5f5f5; }
+    .bad  { border-left: 3px solid #e05a5a; padding-left: 14px; background: #fdf6f6; }
+    .good { border-left: 3px solid #4a9d5f; padding-left: 14px; background: #f6fbf7; }
+    .hint { color: #777; font-size: 14px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>第 5 天：从一个页面到一个网站</h1>
+    <p>昨天你做出了一个合格的首页。今天要让它变成"网站"——多个页面，互相能找到对方。</p>
+  </header>
+
+  <main>
+
+    <section id="what">
+      <h2>一、网站不是"一个很大的页面"</h2>
+
+      <p>
+        网站是<b>一组独立的文件</b>，每个页面都是单独的 HTML，靠链接互相指路。
+        浏览器一次只加载一个文件，点到哪个就加载哪个。
+      </p>
+
+      <p>
+        这里有一个隐含规则：当用户访问一个目录（比如 <code>/docs/</code>）时，
+        服务器会自动去找那个目录下的 <code>index.html</code> 作为默认页面。
+        这就是为什么首页必须叫 index.html——不是约定，是服务器的默认行为。
+      </p>
+    </section>
+
+    <section id="path">
+      <h2>二、相对路径（今天最重要的一节）</h2>
+
+      <p>先看我们站点的目录形状：</p>
+
+<pre><code>frontend-study/          ← 仓库根目录
+├── docs/                ← 站点目录（GitHub Pages 认得这个名字）
+│   ├── index.html       ← 首页
+│   ├── about.html       ← 关于页（今天要建）
+│   └── contact.html     ← 联系页（今天要建）
+└── 01-html-css/         ← 前四天的练习，和站点无关
+    ├── day1/
+    └── day2/</code></pre>
+
+      <p>三个页面在<b>同一个文件夹</b>里，所以互相链接的写法最简单：</p>
+
+      <table>
+        <thead>
+          <tr><th scope="col">要去的文件</th><th scope="col">写法</th><th scope="col">含义</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>同目录的 about.html</td><td><code>href="about.html"</code></td><td>就在我旁边</td></tr>
+          <tr><td>同目录的 index.html</td><td><code>href="index.html"</code></td><td>同上；也可以写 <code>href="./"</code></td></tr>
+          <tr><td>子目录里的 posts/first.html</td><td><code>href="posts/first.html"</code></td><td>往下走一层</td></tr>
+          <tr><td>上一级的文件</td><td><code>href="../index.html"</code></td><td>往上退一层，<code>..</code> 就是"上一级"</td></tr>
+        </tbody>
+      </table>
+
+      <h3>为什么不用绝对路径</h3>
+
+      <div class="bad">
+        <p>这两种写法在你自己电脑上能点开，但别人访问时一定失效：</p>
+<pre><code>href="C:\Users\麦俊熙\Desktop\frontend-study\docs\about.html"
+href="file:///C:/Users/麦俊熙/Desktop/..."</code></pre>
+        <p>
+          第一个是你硬盘上的路径，别人的电脑没有这个目录；
+          第二个是"本地文件"协议，服务器上根本不存在。
+        </p>
+      </div>
+
+      <div class="good">
+        <p>相对路径跟着文件走，换机器、换服务器、换域名都能用：</p>
+<pre><code>href="about.html"</code></pre>
+      </div>
+
+      <h3>还有一个容易踩的：以 / 开头的路径</h3>
+      <p>
+        <code>href="/about.html"</code> 表示"从网站根目录开始找"。
+        它在你自己的顶级域名下没问题，但 GitHub Pages 的项目站点是
+        <code>用户名.github.io/仓库名/</code>，站点不在根上——
+        这时 <code>/about.html</code> 会去找 <code>用户名.github.io/about.html</code>，
+        直接 404。
+      </p>
+      <p class="hint">
+        结论：项目阶段一律用相对路径，别用以 / 开头的。
+      </p>
+    </section>
+
+    <section id="case">
+      <h2>三、本地能打开，线上 404 的三个原因</h2>
+
+      <table>
+        <thead>
+          <tr><th scope="col">原因</th><th scope="col">为什么本地看不出来</th><th scope="col">怎么避免</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>大小写不一致</td>
+            <td>Windows 的文件系统不区分大小写，写 <code>About.html</code> 也能打开 <code>about.html</code>；Linux 服务器区分，直接 404</td>
+            <td>文件名全小写，链接里的名字和文件名逐个字母对齐</td>
+          </tr>
+          <tr>
+            <td>路径写错或漏了扩展名</td>
+            <td>浏览器不会提醒你，只会给你一个 404 页面</td>
+            <td>用 VS Code 的自动补全：输入 <code>href="</code> 后会列出同目录的文件</td>
+          </tr>
+          <tr>
+            <td>中文文件名或空格</td>
+            <td>本地可能正常，线上会被编码成一串 %E4%B8%AD</td>
+            <td>文件名只用小写字母、数字、连字符</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="nav">
+      <h2>四、导航必须三页一致</h2>
+
+      <p>
+        用户在任何一页都应该能去其他任何一页。所以三个页面的 header 和 nav
+        要<b>一模一样</b>——做法是：写完首页的 header，直接复制到另外两页，不要各自手写。
+      </p>
+
+      <p>还有一个细节：当前所在的页面，在导航里应该被标出来。</p>
+
+<pre><code>&lt;nav&gt;
+  &lt;a href="index.html"&gt;首页&lt;/a&gt;
+  &lt;a href="about.html" aria-current="page"&gt;关于我&lt;/a&gt;
+  &lt;a href="contact.html"&gt;联系我&lt;/a&gt;
+&lt;/nav&gt;</code></pre>
+
+      <p>
+        <code>aria-current="page"</code> 是告诉屏幕阅读器"这个链接指向的就是当前页"，
+        用户能听出自己在哪。视觉上可以再用 CSS 加粗（W2 学）。
+      </p>
+    </section>
+
+    <section id="deploy">
+      <h2>五、部署到底是怎么回事</h2>
+
+      <p>
+        部署 = 把你的文件放到一台一直开着的服务器上，让别人能通过网址访问。
+        我们做的是<b>静态站点</b>：只有 HTML/CSS/图片，没有后端程序，
+        所以不需要买服务器、不需要配数据库。
+      </p>
+
+      <p>GitHub Pages 提供了免费托管，规则很简单：</p>
+
+      <ul>
+        <li>它只从仓库的两个位置取文件：<b>根目录</b> 或 <b>docs 目录</b></li>
+        <li>取到之后，你的仓库就变成了一个网站</li>
+        <li>网址格式是 <code>用户名.github.io/仓库名/</code></li>
+        <li>每次 push 之后，它会自动重新发布，通常一两分钟内生效</li>
+      </ul>
+
+      <p class="hint">
+        这也是我们把站点文件夹改名为 docs 的原因——不是我喜欢这个名字，
+        是 GitHub Pages 只认这两个位置。
+      </p>
+    </section>
+
+    <section id="exercise">
+      <h2>六、今天的作业</h2>
+
+      <ol>
+        <li>
+          <b>建 about.html</b>：复制 <code>docs/index.html</code>，另存为
+          <code>about.html</code>，然后改三处：<code>&lt;title&gt;</code>、
+          <code>&lt;h1&gt;</code>、正文内容（写你的学习目标、为什么学前端）。
+          日志列表那一段删掉，换成 2-3 段关于你自己的介绍。
+        </li>
+        <li>
+          <b>建 contact.html</b>：同样复制，改成联系方式页。
+          内容包含：邮箱（mailto 链接）、GitHub 主页地址。
+        </li>
+        <li>
+          <b>三页互链</b>：三个页面的 nav 都写成同样的三个相对路径链接：
+          <code>index.html</code>、<code>about.html</code>、<code>contact.html</code>。
+          点遍九个方向（每页点另外两个链接），确认都能到达。
+        </li>
+        <li>
+          <b>标记当前页</b>：每个页面里，把指向自己的那个链接加上
+          <code>aria-current="page"</code>。
+        </li>
+        <li>
+          <b>大纲自查</b>：三个页面各检查一遍——是不是只有一个 h1、
+          h2 层级是否一致、标题有没有跳级。把结论写在文件末尾的注释里。
+        </li>
+      </ol>
+
+      <p class="hint">
+        做完这五条，W1 就结束了。我们会在周末复盘这一周，
+        然后进入 W2——CSS，把这三个页面真正变好看。
+      </p>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>W1 Day5 · 2026-10-23</p>
+  </footer>
+
+</body>
+</html>
+
+<!-- ============================================================
+     今日清单
+     1. 复制 index.html → about.html，改 title / h1 / 内容
+     2. 复制 index.html → contact.html，写邮箱和 GitHub
+     3. 三页 nav 互链（相对路径）
+     4. 当前页链接加 aria-current="page"
+     5. 三页大纲自查，结论写在注释里
+     ============================================================ -->

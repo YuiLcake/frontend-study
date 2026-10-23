@@ -31,8 +31,10 @@ python -m http.server 8123
 
 ## 进度
 
-- [x] W1 第 1 天：环境配置、HTML 文档结构、Git 与 GitHub 首次推送，学习到Git和gitignore的作用和相关的细节
-- [x] W1 第 2 天：标题层级、段落、列表、链接、图片
+- [x] W1 第 1 天：环境配置、HTML 文档结构、Git 与 GitHub 首次推送，学习到Git和gitignore的作用和相关的细节  
+      W1 第 2 天：标题层级、段落、列表、链接、图片
+      W1 第 3 天：表格与表单：table 的正确用法（thead / tbody / th / scope）、form 与 input 的各种类型、label 为什么必须写、按钮的三种类型有什么差别
+      W1 第 4 天：语义化骨架与多页站点：用 header / nav / main / aside / footer 组织真实的页面结构，把前三天的东西连成一个三页的小网站，并把页面之间用相对路径串起来。
 - [ ] TODO：之后每周更新这里
 
 ## TODO（待我补完）
