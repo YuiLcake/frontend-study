@@ -2,6 +2,8 @@
 
 > 从零到前端开发的 110 天。记录计划、代码和踩过的坑。
 
+**线上站点：https://yuilcake.github.io/frontend-study/**
+
 ## 这是什么
 
 一个软件工程大四学生的前端转型记录，起点是零基础，终点是 2027 年春节后
@@ -15,7 +17,11 @@
 ```
 00-学习计划.md          到周的完整路线图（含验收标准）
 进度.md                 每日进度日志
-01-html-css/day1/       W1 的第一个页面
+01-html-css/day1/       W1 的第 1 天练习
+docs/                   站点（GitHub Pages 从这里发布）
+  index.html            首页
+  about.html            关于
+  contact.html          联系
 ```
 
 ## 怎么跑起来
