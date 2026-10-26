@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W2 Day6 · CSS 入门与选择器</title>
+  <style>
+    /* 这一页自己也用一份最简单的样式，看着舒服即可。CSS 原理今天开始正式讲。 */
+    body { max-width: 820px; margin: 40px auto; padding: 0 20px;
+           font-family: system-ui, sans-serif; line-height: 1.85; color: #222; }
+    header { border-bottom: 2px solid #eee; padding-bottom: 16px; }
+    section { margin: 40px 0; }
+    pre { background: #f6f6f6; padding: 14px 16px; border-radius: 6px; overflow-x: auto; }
+    code { font-family: Consolas, monospace; font-size: 14px; }
+    table { border-collapse: collapse; margin: 12px 0; width: 100%; }
+    td, th { border: 1px solid #ccc; padding: 8px 12px; text-align: left; vertical-align: top; }
+    thead th { background: #f5f5f5; }
+    .hint { color: #777; font-size: 14px; }
+    .demo { border: 1px solid #ddd; padding: 12px; border-radius: 6px; margin: 10px 0; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>第 6 天：CSS 入门——先学会"指哪打哪"</h1>
+    <p>前一周你在写"内容是什么"。从今天起，你决定"它长什么样"。</p>
+  </header>
+
+  <main>
+
+    <section id="what">
+      <h2>一、CSS 解决什么问题</h2>
+
+      <p>
+        HTML 只负责结构和语义，CSS 负责表现：颜色、字体、间距、位置、大小。
+        分开的好处是同一份内容可以有不同的样子（手机版、打印版、暗色模式）。
+      </p>
+
+      <p>
+        写 CSS 的两件事永远在循环：<b>选中元素</b>，<b>给它声明样式</b>。
+        选择器是前半句，声明是后半句。
+      </p>
+
+<pre><code>选择器 {
+  属性: 值;
+  属性: 值;
+}
+
+/* 例子：选中所有 h2，字号 24 像素，下边距 12 像素 */
+h2 {
+  font-size: 24px;
+  margin-bottom: 12px;
+}</code></pre>
+    </section>
+
+    <section id="link">
+      <h2>二、CSS 怎么写进页面：三种方式</h2>
+
+      <table>
+        <thead>
+          <tr><th scope="col">方式</th><th scope="col">写法</th><th scope="col">评价</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>外部样式表</td>
+            <td><code>&lt;link rel="stylesheet" href="css/main.css"&gt;</code></td>
+            <td><b>正确做法。</b>一份样式管多个页面，改一处全部生效，浏览器还能缓存</td>
+          </tr>
+          <tr>
+            <td>内部样式表</td>
+            <td><code>&lt;style&gt; … &lt;/style&gt;</code> 写在 head 里</td>
+            <td>只在单个页面、或临时调试时用。三页各写一份就是灾难</td>
+          </tr>
+          <tr>
+            <td>行内样式</td>
+            <td><code>&lt;p style="color: red"&gt;</code></td>
+            <td>尽量不用。优先级最高、无法复用、以后改起来要一个个找</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="hint">
+        你现在三个页面各有一份完整的 <code>&lt;style&gt;</code>，三份内容几乎一样。
+        这就是"内部样式表"的问题——想改一个颜色要改三个地方，漏一个就不一致。
+        今天的作业就是把它合并成一个外部文件。
+      </p>
+    </section>
+
+    <section id="selector">
+      <h2>三、选择器：先说清选谁</h2>
+
+      <table>
+        <thead>
+          <tr><th scope="col">选择器</th><th scope="col">写法</th><th scope="col">选中什么</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>类型</td><td><code>p</code></td><td>所有 p 元素</td></tr>
+          <tr><td>类</td><td><code>.post</code></td><td>所有 class="post" 的元素（最常用）</td></tr>
+          <tr><td>ID</td><td><code>#posts</code></td><td>id="posts" 的那一个元素（页面里唯一）</td></tr>
+          <tr><td>后代</td><td><code>nav a</code></td><td>nav 里面<b>任意层级</b>的 a</td></tr>
+          <tr><td>子代</td><td><code>nav &gt; a</code></td><td>nav 的<b>直接子元素</b> a</td></tr>
+          <tr><td>并集</td><td><code>h1, h2</code></td><td>h1 和 h2 都选</td></tr>
+          <tr><td>属性</td><td><code>input[type="email"]</code></td><td>type 等于 email 的 input</td></tr>
+          <tr><td>伪类</td><td><code>a:hover</code></td><td>鼠标悬停时的 a（状态）</td></tr>
+          <tr><td>伪元素</td><td><code>p::first-line</code></td><td>元素内部的某一部分（这里指第一行）</td></tr>
+          <tr><td>通用</td><td><code>*</code></td><td>所有元素（慎用，性能差）</td></tr>
+        </tbody>
+      </table>
+
+      <p class="hint">
+        记两种就够开始：<code>p</code>（元素）和 <code>.post</code>（类）。
+        类选择器是你以后 90% 时间在用的东西——它不绑定标签，随处可复用。
+      </p>
+    </section>
+
+    <section id="specificity">
+      <h2>四、优先级：为什么我的样式没生效</h2>
+
+      <p>
+        这是新手第一个大坑。当多条规则选中同一个元素，浏览器要决定听谁的。
+        规则是算分，分高的赢：
+      </p>
+
+      <table>
+        <thead>
+          <tr><th scope="col">来源</th><th scope="col">分数</th><th scope="col">例子</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>行内样式</td><td>1000</td><td><code>style="color:red"</code></td></tr>
+          <tr><td>ID 选择器</td><td>100</td><td><code>#posts</code></td></tr>
+          <tr><td>类 / 属性 / 伪类</td><td>10</td><td><code>.post</code>、<code>[type]</code>、<code>:hover</code></td></tr>
+          <tr><td>元素 / 伪元素</td><td>1</td><td><code>p</code>、<code>::before</code></td></tr>
+          <tr><td><code>!important</code></td><td>最高</td><td>压过一切（除非另一条也写了）</td></tr>
+        </tbody>
+      </table>
+
+      <div class="demo">
+        <p><b>算个分：</b></p>
+        <p><code>nav a</code> = 1 + 1 = <b>2 分</b></p>
+        <p><code>.post h3</code> = 10 + 1 = <b>11 分</b></p>
+        <p><code>article .post h3</code> = 1 + 10 + 1 = <b>12 分</b></p>
+        <p>所以第二条会赢第一条，第三条会赢第二条——不管它们谁写在前面。</p>
+      </div>
+
+      <h3>!important 为什么是坏东西</h3>
+      <p>
+        它一写上就压过一切，只有另一条 !important 能盖它。于是为了盖住别人，
+        你只能再加 !important，最后整个项目的优先级变成一团乱麻。
+        真实项目里的规律是：只有在覆盖第三方库、别无办法时才用。
+      </p>
+
+      <p class="hint">
+        遇到"样式没生效"，正确的排查顺序是：DevTools 选中元素 → 看 Styles 面板
+        → 被划掉的那条就说明被更高优先级的规则盖住了，它下面会写着来自哪个文件哪一行。
+      </p>
+    </section>
+
+    <section id="cascade">
+      <h2>五、层叠与继承</h2>
+
+      <p>
+        <b>层叠</b>：优先级相同的时候，<b>后写的赢</b>。
+        这条规则解释了为什么 CSS 里顺序有意义——同一个文件里，越靠后的规则越强势。
+      </p>
+
+      <p>
+        <b>继承</b>：有些属性会自动传给子元素，有些不会。
+      </p>
+
+      <table>
+        <thead>
+          <tr><th scope="col">会继承</th><th scope="col">不会继承</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>color、font-family、font-size、line-height、text-align</td>
+            <td>margin、padding、border、width、height、background、display</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="hint">
+        所以你在 body 上写 <code>color: #222</code>，全站文字都变深灰——因为 color 会继承。
+        而在 body 上写 <code>border</code>，只有 body 自己有边框，子元素不会有。
+      </p>
+    </section>
+
+    <section id="exercise">
+      <h2>六、今天的作业：把三份样式合并成一份</h2>
+
+      <p>
+        你的三个页面现在各有一份几乎相同的 <code>&lt;style&gt;</code>，
+        而且里面塞着大量用不到的规则（form、table、input……三个页面都没用到）。
+        今天把它们合并、清理、外置。
+      </p>
+
+      <ol>
+        <li>
+          <b>建文件</b>：在 <code>docs/</code> 下新建 <code>css/</code> 文件夹，
+          里面建 <code>main.css</code>。
+        </li>
+        <li>
+          <b>搬规则</b>：把三个页面 <code>&lt;style&gt;</code> 里的规则搬进去，
+          但<b>只保留真正用得到的</b>：body、header、section、article、aside、footer、img。
+          表单、表格、textarea、fieldset、legend、caption、.hint、.field 全部删掉
+          ——这三个页面里没有那些元素，写了也不会生效。
+        </li>
+        <li>
+          <b>改引入</b>：三个页面都删掉整段 <code>&lt;style&gt;</code>，
+          在 <code>&lt;head&gt;</code> 里加：
+          <pre><code>&lt;link rel="stylesheet" href="css/main.css"&gt;</code></pre>
+          注意路径：三个页面和 css 文件夹是同级，所以写 <code>css/main.css</code>。
+        </li>
+        <li>
+          <b>加三条新规则</b>，练选择器：
+          <ul>
+            <li><code>nav a</code>：左右各 4px 内边距，去掉下划线</li>
+            <li><code>nav a:hover</code>：文字变成 #0066cc</li>
+            <li><code>.post h3</code>：字号 20px，颜色 #1a1a1a</li>
+          </ul>
+        </li>
+        <li>
+          <b>做个优先级实验</b>（这条最重要）：在 main.css 里同时写下
+          <pre><code>article h3 { color: red; }
+.post h3 { color: navy; }</code></pre>
+          刷新页面，记下标题实际是什么颜色，然后用今天学的算分法解释
+          <b>为什么</b>（提示：一个是 1+1=2 分，一个是 10+1=11 分）。
+          把结论写在 main.css 最后的注释里，然后把红色那条删掉。
+        </li>
+      </ol>
+
+      <p class="hint">
+        做完之后你会得到：一份样式文件、三个页面共享、想改颜色只改一处。
+        这就是"外部样式表"的实际价值——不是规范要求，是省事。
+      </p>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>W2 Day6 · 2026-10-26</p>
+  </footer>
+
+</body>
+</html>
+
+<!-- ============================================================
+     今日清单
+     1. docs/css/main.css，只保留用得到的规则
+     2. 三页删 <style>，改 <link rel="stylesheet" href="css/main.css">
+     3. 加 nav a / nav a:hover / .post h3 三条规则
+     4. 优先级实验：article h3 红 vs .post h3 蓝，算分解释，删掉红的那条
+     5. 三页刷新确认样式一致，无 404（DevTools 的 Network 面板看 main.css 是否 200）
+     ============================================================ -->
