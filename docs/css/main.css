@@ -1,3 +1,8 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 body {
   max-width: 820px;
   margin: 40px auto;
@@ -31,6 +36,17 @@ nav a:hover {
   font-size: 20px;
   color: navy;
 }
+.post {
+  padding: 16px 20px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
 /* 优先级实验：article h3（1+1=2 分）输给 .post h3（10+1=11 分），
    而且无论把 article h3 写在文件最上面还是最下面，都是 navy 赢。
    结论：优先级比的是选择器的分数，不是书写的先后顺序。 */
+
+/*10/27 
+  在3.中：在DevTools中的h3的margin是20px*/
+/*10/27 
+  nav a 的Styles：content是32.003*20，padding是0 4px，border和margin都是0*/
