@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W2 Day7 · 盒模型</title>
+  <style>
+    body { max-width: 820px; margin: 40px auto; padding: 0 20px;
+           font-family: system-ui, sans-serif; line-height: 1.85; color: #222; }
+    header { border-bottom: 2px solid #eee; padding-bottom: 16px; }
+    section { margin: 40px 0; }
+    pre { background: #f6f6f6; padding: 14px 16px; border-radius: 6px; overflow-x: auto; }
+    code { font-family: Consolas, monospace; font-size: 14px; }
+    table { border-collapse: collapse; margin: 12px 0; width: 100%; }
+    td, th { border: 1px solid #ccc; padding: 8px 12px; text-align: left; vertical-align: top; }
+    thead th { background: #f5f5f5; }
+    .hint { color: #777; font-size: 14px; }
+    .note { background: #fffbe6; border-left: 3px solid #e0b400; padding: 10px 14px; margin: 14px 0; }
+
+    /* ---- 演示区 1：四层结构 ---- */
+    .box-demo {
+      width: 220px;
+      padding: 24px;
+      border: 10px solid #444;
+      margin: 20px 0 20px 0;
+      background: #ffd9a0;            /* 这一层会从 padding 区透出来 */
+      box-sizing: content-box;
+    }
+    .box-demo-inner {
+      background: #7fb3ff;            /* 内容区 */
+      padding: 10px;
+      text-align: center;
+    }
+
+    /* ---- 演示区 2：两种 box-sizing ---- */
+    .wrap { width: 320px; border: 1px dashed #999; padding: 4px; margin: 10px 0 24px; }
+    .cb { width: 100%; padding: 20px; border: 6px solid #d9534f; box-sizing: content-box; background: #ffeaea; }
+    .bb { width: 100%; padding: 20px; border: 6px solid #4a9d5f; box-sizing: border-box;  background: #eaf7ee; }
+
+    /* ---- 演示区 3：margin 折叠 ---- */
+    .m1 { background: #fff3c4; margin-bottom: 30px; padding: 6px; }
+    .m2 { background: #d8f0ff; margin-top: 30px;  padding: 6px; }
+    .ruler { border-left: 2px solid #999; padding-left: 8px; color: #555; font-size: 14px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>第 7 天：盒模型——CSS 的地基</h1>
+    <p>上周那个 <code>box-sizing</code> 的疑问，今天彻底讲清。</p>
+  </header>
+
+  <main>
+
+    <section id="why">
+      <h2>一、页面里每个元素都是一个盒子</h2>
+
+      <p>
+        不管它看起来多不像盒子，浏览器内部都把它当成一个矩形框来处理。
+        这个框由里到外有四层：
+      </p>
+
+      <table>
+        <thead>
+          <tr><th scope="col">层</th><th scope="col">中文</th><th scope="col">作用</th><th scope="col">DevTools 里的颜色</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>content</td><td>内容区</td><td>文字、图片真正占据的地方</td><td>蓝色</td></tr>
+          <tr><td>padding</td><td>内边距</td><td>内容到边框的距离，会撑大盒子</td><td>绿色</td></tr>
+          <tr><td>border</td><td>边框</td><td>盒子自己的边线</td><td>黄色</td></tr>
+          <tr><td>margin</td><td>外边距</td><td>这个盒子与其他盒子的距离</td><td>橙色</td></tr>
+        </tbody>
+      </table>
+
+      <p>看这个盒子，四层用不同颜色标出来了（外层浅橙是 padding，里层蓝色是 content，黑色粗边是 border，上下留白是 margin）：</p>
+
+      <div class="box-demo">
+        <div class="box-demo-inner">内容区 220px 宽</div>
+      </div>
+
+      <p class="hint">
+        用 DevTools 选中它，右侧 Styles 面板最下面有一个盒模型图，四层颜色和你看到的一致，
+        数值也写在上面。这是你以后调间距时最常用的工具，比反复改代码快十倍。
+      </p>
+    </section>
+
+    <section id="box-sizing">
+      <h2>二、box-sizing：那个让你疑惑 width: 100% 溢出的东西</h2>
+
+      <p>
+        先记住一句话：<b>width 到底管哪一层，取决于 box-sizing。</b>
+      </p>
+
+      <table>
+        <thead>
+          <tr><th scope="col">值</th><th scope="col">width 包含什么</th><th scope="col">结果</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>content-box</code>（默认）</td>
+            <td>只算内容区</td>
+            <td>width:100% 再加上 padding 和 border，一定超出容器</td>
+          </tr>
+          <tr>
+            <td><code>border-box</code></td>
+            <td>内容 + padding + border</td>
+            <td>width:100% 就是 100%，padding 从里面让位</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>下面两个盒子都是 <code>width:100%; padding:20px; border:6px solid</code>，唯一区别是 box-sizing：</p>
+
+      <div class="wrap">
+        <div class="cb">content-box：我溢出了虚线框</div>
+      </div>
+
+      <div class="wrap">
+        <div class="bb">border-box：我规矩地待在框里</div>
+      </div>
+
+      <p class="hint">
+        外面那条虚线框宽 320px。上面红边的盒子明显冲出去了——因为 320px 的内容 + 40px padding
+        + 12px border = 372px。下面绿边的盒子没有，因为它把 padding 和 border 算在那 320px 里面。
+      </p>
+
+      <div class="note">
+        上周你在 textarea 上踩过这个坑：<code>width: 100%</code> 顶到了 fieldset 的边框，
+        你当时的办法是把宽度改成 90% 来"凑"。那不是解决，是绕开。
+        真正的解法就是今天这个 <code>box-sizing: border-box</code>。
+      </div>
+
+      <p><b>真实项目里的标准做法</b>，几乎所有站点都会在 CSS 开头写这三行：</p>
+
+<pre><code>*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}</code></pre>
+
+      <p>
+        为什么连伪元素一起写：因为 ::before / ::after 也是盒子，同样会受 box-sizing 影响。
+        统一成 border-box 之后，你写的 width 就是你想要的宽度，不用再心算 padding。
+      </p>
+    </section>
+
+    <section id="margin-collapse">
+      <h2>三、margin 折叠：两个 30 不会变成 60</h2>
+
+      <p>
+        这是 CSS 里最反直觉的规则之一：<b>上下相邻的两个块，它们之间的 margin 会合并，取较大的那个</b>，
+        而不是相加。
+      </p>
+
+      <p>下面两个盒子的 margin-bottom 和 margin-top 都是 30px：</p>
+
+      <div class="m1">上面的盒子，margin-bottom: 30px</div>
+      <div class="m2">下面的盒子，margin-top: 30px</div>
+
+      <p class="ruler">它们之间的间距是 <b>30px</b>，不是 60px。</p>
+
+      <p>
+        只在<b>垂直方向</b>、<b>相邻的块级元素</b>之间发生。左右方向的 margin 不会折叠。
+        这条规则会解释你以后遇到的很多"为什么间距不对"。
+      </p>
+
+      <p class="hint">
+        规避办法：给父元素加 <code>display: flex</code>（Flex 布局里的子元素之间不折叠，
+        改用 gap 控制间距）——这就是下周要学的 Flexbox 更省心的原因之一。
+      </p>
+    </section>
+
+    <section id="shorthand">
+      <h2>四、简写和单位</h2>
+
+      <h3>四个值怎么省略</h3>
+      <table>
+        <thead>
+          <tr><th scope="col">写法</th><th scope="col">含义</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>margin: 10px;</code></td><td>四边都是 10</td></tr>
+          <tr><td><code>margin: 10px 20px;</code></td><td>上下 10，左右 20</td></tr>
+          <tr><td><code>margin: 10px 20px 30px;</code></td><td>上 10，左右 20，下 30</td></tr>
+          <tr><td><code>margin: 10px 20px 30px 40px;</code></td><td>上 10，右 20，下 30，左 40（顺时针）</td></tr>
+        </tbody>
+      </table>
+
+      <h3>居中为什么是 margin: 0 auto</h3>
+      <p>
+        <code>auto</code> 的意思是"把剩下的空间自动分配给左右两边"，两边一样多，盒子就居中了。
+        所以它要求这个盒子有明确的宽度，否则没有"剩下的空间"可分。
+      </p>
+
+      <h3>单位</h3>
+      <table>
+        <thead>
+          <tr><th scope="col">单位</th><th scope="col">相对谁</th><th scope="col">什么时候用</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>px</code></td><td>绝对像素</td><td>边框、圆角、细小间距</td></tr>
+          <tr><td><code>%</code></td><td>父元素的宽度</td><td>流式布局，注意它永远是相对宽度</td></tr>
+          <tr><td><code>rem</code></td><td>根元素 html 的字号（默认 16px）</td><td>字号、间距，用户放大字号时会跟着变</td></tr>
+          <tr><td><code>em</code></td><td>当前元素的字号</td><td>组件内部按比例缩放，容易算错，先少用</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="exercise">
+      <h2>五、今天的作业</h2>
+
+      <ol>
+        <li>
+          <b>统一 box-sizing</b>：在 <code>docs/css/main.css</code> 最上面加那三行
+          （<code>*, *::before, *::after { box-sizing: border-box; }</code>）。
+          加完刷新，页面应该几乎没变化——因为你现在的布局很简单。这是打地基，不是改外观。
+        </li>
+        <li>
+          <b>把日志卡片做成真正的卡片</b>：给 <code>.post</code> 加
+          <pre><code>.post {
+  padding: 16px 20px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}</code></pre>
+          刷新首页，三篇日志应该变成三张独立的卡片。
+        </li>
+        <li>
+          <b>观察 margin 折叠</b>：卡片之间的间距是 20px 还是 40px？
+          用 DevTools 选中第二张卡片，看它上下两边的橙色区域，然后写一句你的观察。
+        </li>
+        <li>
+          <b>复现一次溢出</b>（重要）：在 DevTools 里给某个卡片临时加
+          <code>padding: 60px</code>，看它有没有撑出容器。
+          再把 box-sizing 从 border-box 改成 content-box，对比两次的结果。
+          这个实验做过一次，你就再也不会忘记 box-sizing 是干什么的。
+        </li>
+        <li>
+          <b>读一次盒模型</b>：选中导航里的一个链接，在 Styles 面板的盒模型图上读出
+          content / padding / border / margin 四个数值，写在 main.css 的注释里。
+        </li>
+      </ol>
+
+      <p class="hint">
+        这五条做完，你的站点会出现第一层"卡片感"。下周学完 Flexbox 之后，
+        这些卡片会再变一次样子——那时候你才真正开始"设计"而不只是"排版"。
+      </p>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>W2 Day7 · 2026-10-27</p>
+  </footer>
+
+</body>
+</html>
+
+<!-- ============================================================
+     今日清单
+     1. main.css 顶部加 *, *::before, *::after { box-sizing: border-box; }
+     2. .post 加 padding / border / border-radius / margin-bottom
+     3. 观察卡片间距，回答：20 还是 40，为什么
+     4. DevTools 里把 padding 改成 60px，对比 border-box 和 content-box
+     5. 读出导航链接的盒模型四个数值，写进注释
+     ============================================================ -->
