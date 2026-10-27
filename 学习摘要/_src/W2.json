@@ -89,6 +89,79 @@
 
     {"type": "heading", "text": "五、明天要做的", "level": 3},
     {"type": "paragraph",
-     "text": "盒模型：content、padding、border、margin 四层结构，box-sizing 的两种计算方式，以及为什么 width:100% 会溢出容器（上周在 textarea 上踩过一次）。这是 CSS 布局的地基，也是面试常问的基础题。"}
+     "text": "盒模型：content、padding、border、margin 四层结构，box-sizing 的两种计算方式，以及为什么 width:100% 会溢出容器（上周在 textarea 上踩过一次）。这是 CSS 布局的地基，也是面试常问的基础题。"},
+
+    {"type": "page_break"},
+
+    {"type": "heading", "text": "第 7 天 · 2026-10-27", "level": 2},
+
+    {"type": "heading", "text": "一、今天犯的错误", "level": 3},
+    {"type": "table",
+     "header": ["错误", "发生了什么", "以后怎么办"],
+     "rows": [
+       ["卡片样式加到了标题上",
+        "作业要求给 .post 加 padding / border / radius，实际加到了 .post h3。结果是只有标题被框住，正文露在框外。",
+        "改「整个组件」用组件自己的类（.post），改「组件里的某类元素」才用后代选择器（.post h3）。这一步分错，后面所有样式都跑偏。"],
+       ["答错了题目的对象",
+        "第 3 题问「两张卡片之间的间距」，回答的是「h3 的 margin 是 20px」。",
+        "读题先确认问的是哪个元素。观察数据对、对象错，等于没答对。"],
+       ["把行内样式和 <style> 标签混为一谈",
+        "笔记里写「三是行内的 <style>」，行内样式指的是 style=\"...\" 属性，和 <style> 块是两种不同的写法。",
+        "三种写法：外部文件（link）、内部样式块（style 标签）、行内属性（style 属性）。名字相近，作用范围和优先级都不同。"],
+       ["加了类名但没有对应样式",
+        "联系页给一个 article 加了 class=\"mailtome\"，但 CSS 里没有 .mailtome 的规则。",
+        "类名是给样式或 JS 用的钩子。加了不用就是死代码，和写了一条不生效的 CSS 一样。"]
+     ]},
+
+    {"type": "heading", "text": "二、新词与生词", "level": 3},
+    {"type": "table",
+     "header": ["英文", "中文", "用大白话说"],
+     "rows": [
+       ["box model", "盒模型", "每个元素在浏览器眼里都是一个矩形盒子"],
+       ["content", "内容区", "文字和图片真正占据的区域"],
+       ["padding", "内边距", "内容到边框的距离，在盒子内部"],
+       ["border", "边框", "盒子自己的边线"],
+       ["margin", "外边距", "盒子与别的盒子之间的距离，在盒子外部"],
+       ["box-sizing", "盒尺寸计算方式", "决定 width 这个数字指内容区还是整个盒子"],
+       ["content-box", "内容盒（默认）", "width 只算内容，padding 和 border 额外加上去"],
+       ["border-box", "边框盒", "width 包含内容 + padding + border"],
+       ["margin collapse", "外边距折叠", "上下相邻的块级元素，外边距合并取大值而不是相加"],
+       ["shorthand", "简写属性", "margin: 10px 20px 这种一个属性写四个方向"],
+       ["auto", "自动", "不是长度，是让浏览器自己算；左右 auto 就是居中"],
+       ["rem", "根相对单位", "相对 html 的字号，默认 1rem = 16px"],
+       ["em", "自身相对单位", "相对当前元素的字号，会逐层相乘"],
+       ["user agent stylesheet", "浏览器默认样式", "浏览器自带的一份 CSS，h1~h6 自带 margin 就是它给的"],
+       ["element.style", "行内样式面板", "DevTools 里给元素临时加样式的地方，优先级 1000"]
+     ]},
+
+    {"type": "heading", "text": "三、今天学到的新知识", "level": 3},
+    {"type": "bullet_list", "items": [
+      "盒模型四层：content（内容）、padding（内边距）、border（边框）、margin（外边距）。DevTools 里对应蓝、绿、黄、橙四种颜色。",
+      "box-sizing 不改变 padding 和 border 的大小，它只改变 width 这个数字指哪一段：content-box 指内容区，border-box 指整个盒子。",
+      "具体算：容器 820px、padding 60px、width:100% 时，content-box 实际占 940px（溢出 120），border-box 实际占 820px（内容压到 700）。",
+      "width:auto（不写宽度）时，块级元素会自动让位，padding 不会造成溢出；只有写了明确宽度（如 100%）才会。这解释了「只加 padding 看不出问题」。",
+      "真实项目的标准做法是在 CSS 开头给 *、*::before、*::after 统一设 box-sizing: border-box，因为人设计时想的是「这块占多宽」。",
+      "通配符 * 的优先级是 0 分，几乎最低，但它命中了所有元素、没有竞争者，所以照样生效。优先级只在两条规则抢同一个元素时才有意义。",
+      "margin 折叠：上下相邻的块级元素，间距取两个 margin 中较大的那个，不是相加。只在垂直方向、块级元素之间发生。",
+      "margin: 0 auto 居中的原理：左右 margin 为 auto 时，剩余空间被平均分配。前提是盒子有明确宽度。",
+      "百分比的参照物：width/height 相对父元素；但 padding 和 margin 的百分比，即使是上下方向，也相对父元素的宽度。",
+      "height: 50% 在父元素高度为 auto 时不生效——没有参照物，百分比无从计算。",
+      "em 会逐层相乘：父级 20px 时 1.5em 是 30px，子级再 1.5em 就变成 45px。所以实际项目里首选 px 或 rem。",
+      "浏览器有默认样式（user agent stylesheet）：h1~h6 自带上下 margin（1em），body 自带 8px margin，p 自带上下 margin。写 CSS 前先知道有这份底子。"
+    ]},
+
+    {"type": "heading", "text": "四、今天的产出", "level": 3},
+    {"type": "bullet_list", "items": [
+      "main.css 顶部加入全局 box-sizing: border-box（含伪元素）",
+      "日志卡片化：.post 加 padding 16px 20px、1px 边框、8px 圆角、下外边距 20px",
+      "实测卡片间距为 20px（margin-bottom 20 与下一张的 margin-top 0 折叠）",
+      "首页侧栏加入 figure + figcaption + 配图",
+      "验证：main.css 与站点页面均返回 HTTP 200，CSS 共 9 条规则、括号配对正确",
+      "提交：style: 日志卡片化，全局 box-sizing"
+    ]},
+
+    {"type": "heading", "text": "五、明天要做的", "level": 3},
+    {"type": "paragraph",
+     "text": "display 与 position：块级、行内、inline-block、flex、none 五种显示方式的区别，以及 static / relative / absolute / fixed / sticky 五种定位。这是把元素「摆到该在的位置」的工具箱。"}
   ]
 }
