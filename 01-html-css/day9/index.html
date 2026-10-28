@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W2 Day9 · Flexbox 上</title>
+  <style>
+    body { max-width: 860px; margin: 40px auto; padding: 0 20px;
+           font-family: system-ui, sans-serif; line-height: 1.85; color: #222; }
+    header { border-bottom: 2px solid #eee; padding-bottom: 16px; }
+    section { margin: 40px 0; }
+    pre { background: #f6f6f6; padding: 14px 16px; border-radius: 6px; overflow-x: auto; }
+    code { font-family: Consolas, monospace; font-size: 14px; }
+    table { border-collapse: collapse; margin: 12px 0; width: 100%; }
+    td, th { border: 1px solid #ccc; padding: 8px 12px; text-align: left; vertical-align: top; }
+    thead th { background: #f5f5f5; }
+    .hint { color: #777; font-size: 14px; }
+    .note { background: #fffbe6; border-left: 3px solid #e0b400; padding: 10px 14px; margin: 14px 0; }
+
+    /* ---- 演示通用 ---- */
+    .fx { display: flex; background: #f2f6ff; border: 1px dashed #8aa; padding: 8px; margin: 6px 0 18px; height: 90px; }
+    .fx.tall { height: 140px; }
+    .item { background: #cfe0ff; border: 1px solid #6a8fd8; padding: 8px 14px; }
+    .item.b { background: #ffe0cf; border-color: #d88f6a; }
+    .item.c { background: #d8f5cf; border-color: #6aa86a; }
+    .label { font-size: 13px; color: #666; margin-top: 14px; }
+    .jc1 { justify-content: flex-start; }
+    .jc2 { justify-content: center; }
+    .jc3 { justify-content: flex-end; }
+    .jc4 { justify-content: space-between; }
+    .jc5 { justify-content: space-around; }
+    .jc6 { justify-content: space-evenly; }
+    .ai1 { align-items: stretch; }
+    .ai2 { align-items: flex-start; }
+    .ai3 { align-items: center; }
+    .ai4 { align-items: flex-end; }
+    .col { flex-direction: column; }
+    .gap16 { gap: 16px; }
+    .wrap { flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>第 9 天：Flexbox 上——主轴、交叉轴、对齐</h1>
+    <p>这一节是整周最重要的。学完它，你才真正开始"布局"。</p>
+  </header>
+
+  <main>
+
+    <section id="why">
+      <h2>一、为什么需要 Flexbox</h2>
+
+      <p>
+        你之前想让三个盒子并排，用的是 <code>inline-block</code> 或者 <code>float</code>。
+        这两种办法都能排，但有一堆麻烦：元素之间的空白间隙、垂直居中做不出来、
+        高度不一致会错位、还要手动清除浮动。
+      </p>
+
+      <p>
+        Flexbox 把这些事一次解决：<b>你只声明"我要横着排、怎么对齐、间距多少"，
+        剩下的浏览器算。</b>
+      </p>
+
+      <div class="note">
+        一句话记法：<b>Flexbox 是给"一维"布局用的</b>——要么排成一行，要么排成一列。
+        二维（行和列同时控制）用 Grid，下周学。
+      </div>
+    </section>
+
+    <section id="axis">
+      <h2>二、容器和项目，主轴和交叉轴</h2>
+
+      <p>
+        用 Flex 有两个角色：
+      </p>
+
+      <ul>
+        <li><b>容器</b>：写了 <code>display: flex</code> 的那个元素</li>
+        <li><b>项目</b>：容器<b>直接子元素</b>（不是孙子，只认直接子元素）</li>
+      </ul>
+
+      <p>
+        容器里有两条轴：
+      </p>
+
+      <table>
+        <thead>
+          <tr><th scope="col">轴</th><th scope="col">方向</th><th scope="col">由谁决定</th><th scope="col">控制对齐的属性</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>主轴</b>（main axis）</td>
+            <td>默认水平，从左到右</td>
+            <td><code>flex-direction</code></td>
+            <td><code>justify-content</code></td>
+          </tr>
+          <tr>
+            <td><b>交叉轴</b>（cross axis）</td>
+            <td>与主轴垂直</td>
+            <td>跟着主轴走</td>
+            <td><code>align-items</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>
+        <b>这是初学者最容易乱的一点</b>：justify-content 管的是"沿着主轴怎么排"，
+        align-items 管的是"沿着交叉轴怎么对齐"。主轴是横的时候，前者管左右、后者管上下；
+        一旦把 flex-direction 改成 column，主轴变成竖的，两个属性的职责就对调了。
+      </p>
+    </section>
+
+    <section id="justify">
+      <h2>三、justify-content：主轴方向怎么分配空间</h2>
+
+      <p class="label">flex-start（默认）：都挤在起点</p>
+      <div class="fx jc1"><div class="item">1</div><div class="item b">2</div><div class="item c">3</div></div>
+
+      <p class="label">center：整体居中</p>
+      <div class="fx jc2"><div class="item">1</div><div class="item b">2</div><div class="item c">3</div></div>
+
+      <p class="label">flex-end：都挤到末端</p>
+      <div class="fx jc3"><div class="item">1</div><div class="item b">2</div><div class="item c">3</div></div>
+
+      <p class="label">space-between：两端贴边，中间均分</p>
+      <div class="fx jc4"><div class="item">1</div><div class="item b">2</div><div class="item c">3</div></div>
+
+      <p class="label">space-around：每个项目左右各有相等的空间（两端是中间的一半）</p>
+      <div class="fx jc5"><div class="item">1</div><div class="item b">2</div><div class="item c">3</div></div>
+
+      <p class="label">space-evenly：所有间隙完全相等</p>
+      <div class="fx jc6"><div class="item">1</div><div class="item b">2</div><div class="item c">3</div></div>
+
+      <p class="hint">
+        最常用的两个是 <code>space-between</code>（左一个右一个，中间空）和 <code>center</code>。
+        导航栏通常用前者：logo 在左，菜单在右。
+      </p>
+    </section>
+
+    <section id="align">
+      <h2>四、align-items：交叉轴方向怎么对齐</h2>
+
+      <p class="label">stretch（默认）：拉伸填满容器高度</p>
+      <div class="fx ai1 tall"><div class="item">1</div><div class="item b">2</div><div class="item c">3</div></div>
+
+      <p class="label">flex-start：顶端对齐</p>
+      <div class="fx ai2 tall"><div class="item">1</div><div class="item b">2</div><div class="item c">3</div></div>
+
+      <p class="label">center：垂直居中（这个以前要写一堆 hack）</p>
+      <div class="fx ai3 tall"><div class="item">1</div><div class="item b">2</div><div class="item c">3</div></div>
+
+      <p class="label">flex-end：底端对齐</p>
+      <div class="fx ai4 tall"><div class="item">1</div><div class="item b">2</div><div class="item c">3</div></div>
+
+      <div class="note">
+        注意默认值 <code>stretch</code>：项目没写高度时会被拉满整个容器。
+        这就是为什么很多 Flex 布局里子元素"莫名其妙变高了"——不是 bug，是默认行为。
+        不想要就写 <code>align-items: center</code> 或给项目加高度。
+      </div>
+    </section>
+
+    <section id="gap">
+      <h2>五、gap：项目之间的间距</h2>
+
+      <p>不用再给子元素一个个加 margin，直接在容器上写 gap：</p>
+
+      <div class="fx jc1 gap16"><div class="item">1</div><div class="item b">2</div><div class="item c">3</div></div>
+
+<pre><code>.container {
+  display: flex;
+  gap: 16px;          /* 项目之间 16px，两端不加 */
+  gap: 16px 24px;     /* 行间距 16，列间距 24 */
+}</code></pre>
+
+      <p class="hint">
+        gap 只加在项目<b>之间</b>，不会加在两端——所以它比 margin 好用，
+        不会像 margin 那样在边缘多出空白。
+      </p>
+    </section>
+
+    <section id="flex">
+      <h2>六、flex：让项目自己分配剩余空间</h2>
+
+      <p>
+        <code>flex</code> 是三个属性的简写：<code>flex-grow</code>（能长多大）、
+        <code>flex-shrink</code>（能缩多小）、<code>flex-basis</code>（初始占多少）。
+        实际项目里 99% 的情况只写前两个值或者一个值：
+      </p>
+
+      <table>
+        <thead>
+          <tr><th scope="col">写法</th><th scope="col">含义</th><th scope="col">用在哪</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>flex: 1</code></td><td>剩余空间全给我，几个各 1 就平分</td><td>等宽分栏、占满剩余</td></tr>
+          <tr><td><code>flex: 2</code></td><td>我拿两份，别人一份</td><td>主内容区宽、侧栏窄</td></tr>
+          <tr><td><code>flex: 0 0 200px</code></td><td>不长不缩，固定 200px</td><td>固定宽度的侧栏、图标位</td></tr>
+          <tr><td><code>flex: none</code></td><td>完全按自身内容大小</td><td>按钮、标签</td></tr>
+        </tbody>
+      </table>
+
+      <p class="label">下面三个项目，中间那个写了 flex: 1，它吃掉了所有剩余空间：</p>
+      <div class="fx ai3">
+        <div class="item">固定</div>
+        <div class="item b" style="flex: 1;">flex: 1（吃掉剩余）</div>
+        <div class="item c">固定</div>
+      </div>
+    </section>
+
+    <section id="direction">
+      <h2>七、flex-direction：主轴换方向</h2>
+
+      <p class="label">column：主轴变成竖直，justify-content 就变成管上下</p>
+      <div class="fx col" style="height: 180px; justify-content: space-between;">
+        <div class="item">1</div><div class="item b">2</div><div class="item c">3</div>
+      </div>
+
+      <p>
+        记住这条：<b>justify-content 永远管主轴，align-items 永远管交叉轴</b>。
+        轴转了，它们管的方向就跟着转——不要死记"左右"和"上下"。
+      </p>
+    </section>
+
+    <section id="wrap">
+      <h2>八、flex-wrap：装不下时换行</h2>
+
+      <p>
+        默认 <code>nowrap</code>：所有项目挤在一行，宁可压缩也不换行。
+        改成 <code>wrap</code> 之后装不下就换到下一行——做响应式卡片列表必须开。
+      </p>
+
+<pre><code>.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.card {
+  flex: 1 1 260px;   /* 最小 260px，空间够就长，不够就换行 */
+}</code></pre>
+    </section>
+
+    <section id="exercise">
+      <h2>九、作业</h2>
+
+      <ol>
+        <li>
+          <b>导航改成 flex</b>：现在是 <code>inline-block</code> 拼出来的。
+          在 main.css 里把 <code>nav</code> 改成
+          <code>display: flex; gap: 8px; align-items: center;</code>，
+          然后把 <code>nav a</code> 的 <code>display: inline-block</code> 删掉。
+          视觉应该几乎不变，但结构更正确了。
+        </li>
+        <li>
+          <b>卡片头部改成 flex 分布</b>：现在是给 <code>.post time</code> 用了 absolute。
+          改成用 Flex 实现同样的效果：
+          <pre><code>.post header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}</code></pre>
+          然后把 <code>.post time</code> 里的 <code>position: absolute; top: 14px; right: 20px;</code> 三行删掉。
+          对比一下：哪种写法你更愿意维护？（答案是后者，因为它不依赖"父元素必须定位"这个隐藏条件）
+        </li>
+        <li>
+          <b>footer 改成两端分布</b>：现在版权和邮箱挤在一起。给 <code>footer</code>
+          加上 <code>justify-content: space-between;</code>，让版权靠左、邮箱靠右。
+        </li>
+        <li>
+          <b>日志列表改成并排卡片</b>：给 <code>.posts</code> 加
+          <code>display: flex; flex-wrap: wrap; gap: 20px;</code>，
+          给 <code>.post</code> 加 <code>flex: 1 1 260px;</code>，
+          并把它的 <code>margin-bottom</code> 删掉（间距交给 gap）。
+          窗口拉宽时卡片应该自动变成两列、三列。
+        </li>
+      </ol>
+    </section>
+
+    <section id="deep">
+      <h2>十、深水区（新增，约 1 小时）</h2>
+
+      <p>
+        这一段不加新知识，只做一件事：<b>把真实网站的导航栏复刻出来</b>。
+      </p>
+
+      <p><b>任务：</b>打开 https://developer.mozilla.org/zh-CN/ ，只看顶部那条导航栏，复刻它。</p>
+
+      <p><b>要求：</b></p>
+      <ul>
+        <li>左边是 logo（可以先用一个色块 + 文字代替）</li>
+        <li>中间或右边是一排文字链接，间距均匀</li>
+        <li>最右边有一个按钮（比如"登录"或"主题切换"）</li>
+        <li>整条栏高度固定，内容垂直居中</li>
+        <li>窗口拉窄到 400px 时，链接可以换行或者隐藏——你自己选一种合理的处理</li>
+      </ul>
+
+      <p><b>要用的：</b>只有今天学的 <code>display: flex</code>、<code>justify-content</code>、
+      <code>align-items</code>、<code>gap</code>、<code>flex: 1</code>。不准用 float，不准用 absolute。</p>
+
+      <p><b>自检标准：</b>把你的版本和原网站并排放，宽度 1440px 下看——位置、间距、
+      对齐方式是否一致。不用管颜色和字体，只看<b>布局骨架</b>。</p>
+
+      <div class="note">
+        为什么用 MDN 而不是随便是哪个网站：MDN 的导航栏结构干净、左边 logo + 中间菜单 +
+        右边按钮，是全世界最常见的导航布局。复刻完这一个，你以后遇到 80% 的网站导航都能套。
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>W2 Day9 · 2026-10-29</p>
+  </footer>
+
+</body>
+</html>
+
+<!-- ============================================================
+     今日清单
+     作业：
+     1. nav 改 display:flex + gap，删掉 nav a 的 inline-block
+     2. .post header 用 flex space-between，删掉 .post time 的 absolute 三行
+     3. footer 加 justify-content: space-between
+     4. .posts 改 flex + wrap + gap，.post 改 flex: 1 1 260px，删 margin-bottom
+
+     深水区（1 小时）：
+     5. 复刻 MDN 顶部导航栏，只用 flex，不用 float / absolute
+     ============================================================ -->
