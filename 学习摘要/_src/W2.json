@@ -162,6 +162,82 @@
 
     {"type": "heading", "text": "五、明天要做的", "level": 3},
     {"type": "paragraph",
-     "text": "display 与 position：块级、行内、inline-block、flex、none 五种显示方式的区别，以及 static / relative / absolute / fixed / sticky 五种定位。这是把元素「摆到该在的位置」的工具箱。"}
+     "text": "display 与 position：块级、行内、inline-block、flex、none 五种显示方式的区别，以及 static / relative / absolute / fixed / sticky 五种定位。这是把元素「摆到该在的位置」的工具箱。"},
+
+    {"type": "page_break"},
+
+    {"type": "heading", "text": "第 8 天 · 2026-10-28", "level": 2},
+
+    {"type": "heading", "text": "一、今天犯的错误", "level": 3},
+    {"type": "table",
+     "header": ["错误", "发生了什么", "以后怎么办"],
+     "rows": [
+       ["同一个属性写了两遍",
+        "nav a 里先写 padding: 6px 12px，隔一行又写 padding: 0 4px。层叠规则下后写的覆盖前写的，所以实际生效的是 0 4px，导航看起来没有上下留白。",
+        "同一属性只出现一次。写完一段样式扫一眼，看有没有重复的键。"],
+       ["注释重复",
+        "opacity: 0 和 opacity: 1 两行都贴了同一句注释。",
+        "注释写在规则块上方一次就够，逐行贴同一句反而干扰阅读。"],
+       ["过时注释没有清理",
+        "文件末尾还留着 10/26、10/27 的旧观察记录，其中「h3 的 margin 是 20px」那条当时答错了对象。",
+        "注释也是代码的一部分。过时的观察应该更新或删掉，否则以后自己会被它误导。"],
+       ["老师读文件时截断了内容（我的失误）",
+        "用 tail 查看 index.html 尾部，因为文件末尾有一大段注释块，脚本没被显示出来，差点误判「script 没加」。",
+        "检查学员作业时读完整文件或按关键词搜索，不要用固定行数的窗口去判断有无。"]
+     ]},
+
+    {"type": "heading", "text": "二、新词与生词", "level": 3},
+    {"type": "table",
+     "header": ["英文", "中文", "用大白话说"],
+     "rows": [
+       ["document flow", "文档流", "浏览器默认从上到下、从左到右排列元素的秩序"],
+       ["display: block", "块级显示", "独占一行，宽高可设"],
+       ["display: inline", "行内显示", "跟文字排一行，宽高设置无效"],
+       ["display: inline-block", "行内块", "能排一行，又能设宽高"],
+       ["display: none", "不渲染", "从页面和布局里彻底拿掉"],
+       ["visibility: hidden", "不可见", "看不见但保留占位，也无法点击"],
+       ["position: static", "静态定位", "默认值，不偏离、不脱离文档流"],
+       ["position: relative", "相对定位", "相对自己的原位置偏移，原位置仍占着"],
+       ["position: absolute", "绝对定位", "相对最近的已定位祖先定位，脱离文档流"],
+       ["position: fixed", "固定定位", "相对浏览器视口定位，滚动时不动"],
+       ["position: sticky", "粘性定位", "正常流动，滚到阈值后吸附"],
+       ["containing block", "包含块", "定位时用来量距离的那个参照盒子"],
+       ["z-index", "层叠顺序", "决定重叠时谁在上层，只对定位元素生效"],
+       ["stacking context", "堆叠上下文", "z-index 的比较范围，超出范围不参与比较"],
+       ["querySelector", "查询元素", "JS 里按 CSS 选择器找元素的写法"],
+       ["addEventListener", "事件监听", "告诉浏览器「发生某件事时执行这段代码」"],
+       ["scrollY", "滚动距离", "页面已经向下滚动了多少像素"],
+       ["classList.toggle", "切换类名", "条件为真时加类，为假时去掉"],
+       ["transition", "过渡", "属性变化时用一段时间平滑过渡"],
+       ["progressive enhancement", "渐进增强", "基础功能不依赖 JS，增强体验才用 JS"]
+     ]},
+
+    {"type": "heading", "text": "三、今天学到的新知识", "level": 3},
+    {"type": "bullet_list", "items": [
+      "display 和 position 都在改变元素在文档流里的行为：display 决定怎么占位置，position 决定还在不在流里。",
+      "行内元素（inline）的 width 和 height 会被浏览器直接忽略，这是 span / a 设了宽高却没反应的原因。",
+      "display: none 不占位置，后面的元素会顶上来；visibility: hidden 占着位置，只是看不见、也不能点。",
+      "position: relative 不带偏移值时不移动任何东西，它的实际用途是「给子元素划一块定位范围」。",
+      "absolute 的参照物是「最近的、position 不是 static 的祖先」；一路往上都没有时，相对整个页面（html）定位。",
+      "父相子绝：父元素 position: relative，子元素 position: absolute。角标、下拉菜单、关闭按钮都是这个组合。",
+      "z-index 只对定位元素生效，且只在同一个堆叠上下文内比较；不写时按 HTML 顺序，后面的盖前面的。",
+      "滚动触发的显隐可以用 CSS 的 animation-timeline: scroll() 实现，但 Firefox 目前不支持，所以真实站点仍以 JS 为主。",
+      "JS 里 document.querySelector('.to-top') 和 CSS 的 .to-top 选的是同一个元素，只是换了语言的写法。",
+      "操作不可见元素时要同时处理两个属性：opacity 管「看不看得见」，visibility 管「能不能点」。只用 opacity: 0 时按钮仍然可以被点到。"
+    ]},
+
+    {"type": "heading", "text": "四、今天的产出", "level": 3},
+    {"type": "bullet_list", "items": [
+      "导航链接改为 inline-block + padding，hover 有背景色，三个页面的分隔符全部去掉",
+      ".post 加 position: relative，日期用 absolute 定位到卡片右上角",
+      "新增固定定位的「回到顶部」按钮，滚动 300px 后才淡入，用 JS 监听 scroll 事件",
+      "实测：返回顶部按钮在页面顶部隐藏且不可点击，下滑后淡入",
+      "验证：main.css 12 条规则、括号配对正确，四个地址均返回 HTTP 200",
+      "提交：feat: Day8 布局改造（导航按钮、日期角标、回到顶部按钮）"
+    ]},
+
+    {"type": "heading", "text": "五、明天要做的", "level": 3},
+    {"type": "paragraph",
+     "text": "Flexbox 上：主轴与交叉轴、flex-direction、justify-content、align-items、gap、flex 简写。学完之后导航会真正排成一行，卡片列表也能并排——这是整周最重要的一节。"}
   ]
 }
