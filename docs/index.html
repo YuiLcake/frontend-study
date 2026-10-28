@@ -16,8 +16,8 @@
       <h1>熙熙的前端学习日志</h1>
       <p>从零开始，第 1 周。</p>
       <nav>
-        <a href="index.html" aria-current="page">日志</a> |
-        <a href="about.html">关于熙熙</a> |
+        <a href="index.html" aria-current="page">日志</a>
+        <a href="about.html">关于熙熙</a>
         <a href="contact.html">联系熙熙</a>
       </nav>
     </header>
@@ -92,6 +92,18 @@
     <!-- TODO 5：换成 footer。加两行：
        一行版权（用 &copy; 符号），一行联系邮箱（用 mailto 链接）。
        顺便试试用 address 标签包住联系方式——它专门用于"文档作者的联系方式"。 -->
+    <a class="to-top" href="#">回到顶部↑ </a>
+    <script>
+      const toTop = document.querySelector(".to-top");
+
+      const updateToTop = () => {
+        toTop.classList.toggle("is-visible", window.scrollY > 300);
+      };
+
+      window.addEventListener("scroll", updateToTop);
+      updateToTop();
+    </script>
+
     <footer class="site-bottom">
       <p>&copy; xixi</p>
       <address>

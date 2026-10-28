@@ -25,10 +25,13 @@ footer {
   align-items: center;
 }
 nav a {
-  padding: 0 4px;
+  display: inline-block;
+  padding: 6px 12px;
   text-decoration: none;
 }
 nav a:hover {
+  background-color: #b6bde0;
+  border-radius: 4px;
   color: #0066cc;
 }
 
@@ -37,16 +40,48 @@ nav a:hover {
   color: navy;
 }
 .post {
+  position: relative;
   padding: 16px 20px;
-  border: 1px solid #e5e5e5;
+  border: 1px solid #a8a8a8;
   border-radius: 8px;
   margin-bottom: 20px;
 }
+.post time {
+  position: absolute;
+  top: 14px;
+  right: 20px;
+  font-size: 13px;
+  color: #999;
+}
+.to-top {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 10;
+  padding: 10px 14px;
+  background: #7b7b7b;
+  color: #fff;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 14px;
+  opacity: 0; /*让按钮不要过早的出现，它应该在页面向下滑到一定阶段后出现*/
+  visibility: hidden;
+  transition:
+    opacity 0.2s,
+    visibility 0.2s;
+}
+.to-top.is-visible {
+  opacity: 1; /*让按钮不要过早的出现，它应该在页面向下滑到一定阶段后出现*/
+  visibility: visible;
+}
+
 /* 优先级实验：article h3（1+1=2 分）输给 .post h3（10+1=11 分），
    而且无论把 article h3 写在文件最上面还是最下面，都是 navy 赢。
    结论：优先级比的是选择器的分数，不是书写的先后顺序。 */
 
-/*10/27 
-  在3.中：在DevTools中的h3的margin是20px*/
-/*10/27 
-  nav a 的Styles：content是32.003*20，padding是0 4px，border和margin都是0*/
+/* 10/27 
+   在3.中：在DevTools中的h3的margin是20px
+   nav a 的Styles：content是32.003*20，padding是0 4px，border和margin都是0 */
+
+/* 10/26 
+   加入display:none的时候卡片直接消失，改成visibility :hidden的时候也是消失，但是会保留该框占的空位 */
