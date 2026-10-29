@@ -11,52 +11,87 @@ body {
   line-height: 1.85;
   color: #222;
 }
+
 header {
   border-bottom: 2px solid #eee;
-  padding-bottom: 16px;
+}
+main {
+  display: flex;
+  flex-direction: column;
 }
 section {
-  margin: 40px 0;
+  margin: 0 0;
+}
+
+.fx {
+  display: flex;
+  gap: 5px;
 }
 
 footer {
   display: flex;
+  justify-content: space-between;
   gap: 12px;
   align-items: center;
 }
+
+nav {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
 nav a {
-  display: inline-block;
+  display: flex;
   padding: 6px 12px;
   text-decoration: none;
 }
 nav a:hover {
-  background-color: #b6bde0;
+  background-color: #eed0f2;
   border-radius: 4px;
-  color: #0066cc;
+  color: #ed70e9;
 }
 
-.post h3 {
+.fx2 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.post h2 {
   font-size: 20px;
-  color: navy;
+  color: rgb(190, 3, 190);
 }
 .post {
+  padding: 16px 20px;
+  border: 1px solid #a8a8a8;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 260px;
+  gap: 20px;
+}
+.post header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.post time {
+  font-size: 13px;
+  color: #999;
+}
+
+.card {
   position: relative;
   padding: 16px 20px;
   border: 1px solid #a8a8a8;
   border-radius: 8px;
   margin-bottom: 20px;
 }
-.post time {
-  position: absolute;
-  top: 14px;
-  right: 20px;
-  font-size: 13px;
-  color: #999;
-}
+
 .to-top {
   position: fixed;
   right: 24px;
-  bottom: 24px;
+  bottom: 80px;
   z-index: 10;
   padding: 10px 14px;
   background: #7b7b7b;
@@ -73,6 +108,20 @@ nav a:hover {
 .to-top.is-visible {
   opacity: 1; /*让按钮不要过早的出现，它应该在页面向下滑到一定阶段后出现*/
   visibility: visible;
+}
+
+.title1 {
+  font-size: 19px;
+  margin: 40px 0 0;
+}
+aside {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+.self-introduction {
+  font-size: 16px;
+  margin: 0;
 }
 
 /* 优先级实验：article h3（1+1=2 分）输给 .post h3（10+1=11 分），

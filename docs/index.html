@@ -22,21 +22,12 @@
       </nav>
     </header>
 
-    <!-- TODO 2：把 div 换成 main。一个页面只能有一个 main。 -->
     <main class="content">
-      <!-- 这一块是文章列表。每一条都是一篇能独立成立的日志，
-         所以外面这层应该是 section，里面每条是 article。 -->
-      <section class="posts" id="posts">
-        <h2 class="title">最新日志</h2>
-
-        <!-- 结构说明：日志列表是 section（标题 h2），每篇日志是 article。
-             article 内部用 header 包住题头（h3 + time），正文跟在后面。
-             标题用 h3 而不是 h2，因为父级“最新日志”已经是 h2，再写 h2 就同级了。
-             header 的作用是告诉机器：这两样是这篇文章的题头，不是两个碰巧排在前面的元素。 -->
-
+      <h2 class="title">最新日志</h2>
+      <section class="posts fx2" id="posts">
         <article class="post">
           <header>
-            <h3>第 3 天：表格与表单</h3>
+            <h2>第 3 天：表格与表单</h2>
             <time class="post-date" datetime="2026-10-21">2026-10-21</time>
           </header>
           <p>
@@ -47,7 +38,7 @@
 
         <article class="post">
           <header>
-            <h3>第 2 天：标题、段落、链接、图片</h3>
+            <h2>第 2 天：标题、段落、链接、图片</h2>
             <time class="post-date" datetime="2026-10-20">2026-10-20</time>
           </header>
           <p>
@@ -58,7 +49,7 @@
 
         <article class="post">
           <header>
-            <h3>第 1 天：第一个页面</h3>
+            <h2>第 1 天：第一个页面</h2>
             <time class="post-date" datetime="2026-10-19">2026-10-19</time>
           </header>
           <p>
@@ -68,16 +59,13 @@
         </article>
       </section>
 
-      <!-- TODO 4：这一块是"旁注"，删掉不影响日志本身。
-         用 aside 而不是 section。里面加一段关于我的简介，
-         并用 figure + figcaption 放一张图（可以先放占位图）。 -->
       <aside class="sidebar">
-        <p class="title">关于我</p>
-        <p>
+        <p class="title title1">关于我</p>
+        <p class="self-introduction">
           软件工程大四，目标 2027 年春节后拿到前端开发的工作。 每天学 4 到 6
           小时，把过程记在这里。
         </p>
-        <figure>
+        <figure class="self-introduction-img">
           <img
             src="img/k-on.png"
             alt="一张轻音少女的图片"
@@ -89,9 +77,6 @@
       </aside>
     </main>
 
-    <!-- TODO 5：换成 footer。加两行：
-       一行版权（用 &copy; 符号），一行联系邮箱（用 mailto 链接）。
-       顺便试试用 address 标签包住联系方式——它专门用于"文档作者的联系方式"。 -->
     <a class="to-top" href="#">回到顶部↑ </a>
     <script>
       const toTop = document.querySelector(".to-top");
