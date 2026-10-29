@@ -238,6 +238,93 @@
 
     {"type": "heading", "text": "五、明天要做的", "level": 3},
     {"type": "paragraph",
-     "text": "Flexbox 上：主轴与交叉轴、flex-direction、justify-content、align-items、gap、flex 简写。学完之后导航会真正排成一行，卡片列表也能并排——这是整周最重要的一节。"}
+     "text": "Flexbox 上：主轴与交叉轴、flex-direction、justify-content、align-items、gap、flex 简写。学完之后导航会真正排成一行，卡片列表也能并排——这是整周最重要的一节。"},
+
+    {"type": "page_break"},
+
+    {"type": "heading", "text": "第 9 天 · 2026-10-29", "level": 2},
+
+    {"type": "heading", "text": "一、今天犯的错误", "level": 3},
+    {"type": "table",
+     "header": ["错误", "发生了什么", "以后怎么办"],
+     "rows": [
+       ["写了一个不存在的值：position: flex",
+        "position 只接受 static / relative / absolute / fixed / sticky 五个值，flex 不在其中。浏览器直接忽略这条声明，页面看起来「没反应」。",
+        "每个属性都有固定的取值范围。拿不准时去 MDN 查一下值列表，比试错快。"],
+       ["把容器属性写到了项目上",
+        "gap 和 align-items 被写在 <a class=\"aifornav\"> 上——a 是 flex 项目，不是容器。项目上的这两个属性对排列毫无作用。",
+        "flex 属性分两类：容器属性（display / flex-direction / justify-content / align-items / gap / flex-wrap）写在父元素；项目属性（flex / align-self / order）写在子元素。"],
+       ["nav 加了 flex-direction: column 和 width: 100px",
+        "主轴变成竖直，导航变成竖排；宽度被压到 100px。作业要的是横向导航。",
+        "默认的 row 就是横向，不需要写。写 flex-direction 之前先问：我要改方向吗？"],
+       ["给 .posts 加了 col 类",
+        "col 是 flex-direction: column，把刚设置好的横向排列又改回竖直，flex-wrap 因此失去意义。",
+        "一个元素上不要同时挂两个互相冲突的方向类。改完刷新看一眼，别只看代码。"],
+       ["盲写：border 漏了样式值",
+        "写成 border: 1px #ccc，缺 solid。边框样式默认是 none，所以边框根本不显示。",
+        "border 简写要三样：宽度、样式、颜色。缺一样不会报错，只会静默失效。"],
+       ["盲写：absolute 漏了偏移值",
+        "只写 position: absolute，没写 top / right。元素脱离文档流但仍停在静态位置，不会跑到右上角。",
+        "absolute 只负责「脱离流」，要移动必须配 top / right / bottom / left 中的至少一个。"],
+       ["深水区：HTML 标签没闭合",
+        "统计结果是 div 开 3 个、闭 1 个；还有一处把 </div> 写成了 <div>，并且在 div 上写了 href 属性。",
+        "写完 HTML 数一遍标签；或者用编辑器的高亮配对提示。div 上没有 href，要可点击就用 a。"],
+       ["深水区：nav 套 nav",
+        "外层容器也是 nav，里面又嵌了一个 nav。语义上页面应只有一个主导航，屏幕阅读器会报两个导航区。",
+        "外层当布局容器时用 div，nav 留给真正的导航区。"]
+     ]},
+
+    {"type": "heading", "text": "二、新词与生词", "level": 3},
+    {"type": "table",
+     "header": ["英文", "中文", "用大白话说"],
+     "rows": [
+       ["flexbox", "弹性盒子布局", "一维布局方案，排一行或一列时最顺手"],
+       ["flex container", "弹性容器", "写了 display: flex 的那个元素"],
+       ["flex item", "弹性项目", "容器的直接子元素，只有直接子元素算"],
+       ["main axis", "主轴", "项目排列的方向，默认水平，由 flex-direction 决定"],
+       ["cross axis", "交叉轴", "与主轴垂直的那条轴"],
+       ["justify-content", "主轴对齐", "项目沿主轴怎么分配空间"],
+       ["align-items", "交叉轴对齐", "项目在交叉轴方向怎么对齐"],
+       ["flex-direction", "主轴方向", "row / column / row-reverse / column-reverse"],
+       ["flex-wrap", "换行", "nowrap 挤在一行，wrap 装不下就换行"],
+       ["gap", "间距", "项目之间的距离，不加在两端"],
+       ["flex-grow", "放大比例", "有剩余空间时，我分多少份"],
+       ["flex-shrink", "缩小比例", "空间不够时，我让出多少"],
+       ["flex-basis", "基准尺寸", "分配空间前我先占多大"],
+       ["flex: 1", "弹性简写", "剩余空间全给我，多个各 1 就平分"],
+       ["intrinsic responsiveness", "内在响应式", "布局靠规则自动适应，不靠媒体查询断点"],
+       ["container property", "容器属性", "描述「我怎么排孩子」，写在父元素上"],
+       ["item property", "项目属性", "描述「我自己怎么长缩」，写在子元素上"]
+     ]},
+
+    {"type": "heading", "text": "三、今天学到的新知识", "level": 3},
+    {"type": "bullet_list", "items": [
+      "Flexbox 是一维布局：要么排一行，要么排一列。二维（行列同时控制）要用 Grid。",
+      "容器和项目的划分只认「直接子元素」。孙子元素不受容器的 flex 属性影响，除非它自己也变成容器。",
+      "justify-content 永远管主轴，align-items 永远管交叉轴。轴转了，它们管的方向跟着转——不要死记左右和上下。",
+      "align-items 的默认值是 stretch：项目没写高度时会被拉满整个容器。很多「元素莫名变高」都是这个原因。",
+      "space-between / space-around / space-evenly 的区别：两端贴边 / 两端留半份 / 所有间隙相等。",
+      "flex: 1 表示吃掉剩余空间；几个都是 1 就平分。做等宽分栏、左右自适应布局全靠它。",
+      "flex: 1 1 260px 是卡片网格的标准写法：最小 260px，空间够就长，不够就换行。",
+      "gap 只加在项目之间，不加在两端，所以比 margin 好用，不会在容器边缘多出空白。",
+      "flex-wrap 是「内在响应式」：靠「放不放得下」自动换行，不需要写任何媒体查询。能用内在布局解决的，就不要用断点。",
+      "flex 属性分容器属性和项目属性两类。写到错误的层级上，浏览器不报错，只是没效果——这是最容易卡住人的地方。",
+      "position 只接受五个值（static / relative / absolute / fixed / sticky）。写别的值等于没写。",
+      "可以给单个项目加 display: flex，它同时是父容器的项目、也是自己孩子的容器。嵌套布局就是这么长出来的。"
+    ]},
+
+    {"type": "heading", "text": "四、今天的产出", "level": 3},
+    {"type": "bullet_list", "items": [
+      "作业：导航改 flex 横排、footer 两端分布、卡片列表改 flex-wrap 并排、卡片头部用 flex 替代 absolute",
+      "效果：820px 容器内卡片自动两列，窄屏自动一列，未写任何媒体查询",
+      "盲写练习：practice/warmup-day9.html（暴露了 border 缺样式、absolute 缺偏移两个盲点）",
+      "深水区：practice2/day1.html 复刻 MDN 顶部导航（logo + 菜单 + 登录按钮，中间用 flex:1 撑开）",
+      "验证：main.css 22 条规则、括号配对正确，四个地址均返回 HTTP 200",
+      "提交：feat: Day9 作业 / docs: 加入盲写与导航复刻练习"
+    ]},
+
+    {"type": "heading", "text": "五、明天要做的", "level": 3},
+    {"type": "paragraph",
+     "text": "Flexbox 下：常见布局套路的实战——三栏（左中右自适应）、卡片网格、垂直水平居中、导航栏、媒体对象（头像 + 文字）。把这些模式记熟，日常布局基本不用再想。"}
   ]
 }
