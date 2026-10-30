@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W2 Day10 · Flexbox 下：六个固定套路</title>
+  <style>
+    body { max-width: 880px; margin: 40px auto; padding: 0 20px;
+           font-family: system-ui, sans-serif; line-height: 1.85; color: #222; }
+    header { border-bottom: 2px solid #eee; padding-bottom: 16px; }
+    section { margin: 44px 0; }
+    pre { background: #f6f6f6; padding: 14px 16px; border-radius: 6px; overflow-x: auto; }
+    code { font-family: Consolas, monospace; font-size: 14px; }
+    table { border-collapse: collapse; margin: 12px 0; width: 100%; }
+    td, th { border: 1px solid #ccc; padding: 8px 12px; text-align: left; vertical-align: top; }
+    thead th { background: #f5f5f5; }
+    .hint { color: #777; font-size: 14px; }
+    .note { background: #fffbe6; border-left: 3px solid #e0b400; padding: 10px 14px; margin: 14px 0; }
+
+    /* 演示通用 */
+    .demo { border: 1px dashed #8aa; background: #f4f8ff; padding: 8px; margin: 8px 0 20px; }
+    .box { background: #cfe0ff; border: 1px solid #6a8fd8; padding: 10px 16px; }
+    .box.b { background: #ffe0cf; border-color: #d88f6a; }
+    .box.c { background: #d8f5cf; border-color: #6aa86a; }
+    .cap { font-size: 13px; color: #666; margin: 16px 0 4px; }
+
+    .center-demo { height: 160px; display: flex; justify-content: center; align-items: center; }
+    .three-col { display: flex; gap: 8px; }
+    .three-col .mid { flex: 1; }
+    .equal-height { display: flex; gap: 8px; align-items: stretch; }
+    .equal-height .box { flex: 1; }
+    .media { display: flex; gap: 12px; align-items: flex-start; }
+    .avatar { width: 48px; height: 48px; border-radius: 50%; background: #9bb8e8; flex: none; }
+    .grid-demo { display: flex; flex-wrap: wrap; gap: 12px; }
+    .grid-demo > div { flex: 1 1 200px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>第 10 天：Flexbox 下——六个固定套路</h1>
+    <p>今天不学新属性，只学"组合技"。这六种模式覆盖了日常布局的绝大部分。</p>
+  </header>
+
+  <main>
+
+    <section id="why">
+      <h2>一、为什么要背套路</h2>
+
+      <p>
+        昨天的属性你已经会了：<code>display: flex</code>、<code>justify-content</code>、
+        <code>align-items</code>、<code>gap</code>、<code>flex</code>。
+      </p>
+
+      <p>
+        但真实工作里，你不是从零想"该用什么属性"，而是想"我要做一个三栏布局"——
+        然后直接写出那几行。<b>把常见需求背成固定组合，是布局提速的关键。</b>
+      </p>
+
+      <p>今天这六个，覆盖了你以后 80% 的布局需求。</p>
+    </section>
+
+    <section id="center">
+      <h2>二、套路 1：水平垂直居中</h2>
+
+      <p>以前这是个著名的难题，现在三行搞定：</p>
+
+<pre><code>.parent {
+  display: flex;
+  justify-content: center;   /* 主轴（水平）居中 */
+  align-items: center;       /* 交叉轴（垂直）居中 */
+}</code></pre>
+
+      <div class="cap">演示：容器 160px 高，里面的方块在正中间</div>
+      <div class="demo center-demo">
+        <div class="box">我居中了</div>
+      </div>
+
+      <p class="hint">
+        两个方向都要写。只写 justify-content 是水平居中，只写 align-items 是垂直居中。
+        这就是昨天说的"两个属性各管一条轴"最典型的应用。
+      </p>
+    </section>
+
+    <section id="three-col">
+      <h2>三、套路 2：三栏布局（左右固定，中间自适应）</h2>
+
+<pre><code>.layout { display: flex; gap: 12px; }
+
+.left  { flex: 0 0 160px; }   /* 不长不缩，固定 160px */
+.mid   { flex: 1; }           /* 吃掉全部剩余空间 */
+.right { flex: 0 0 120px; }</code></pre>
+
+      <div class="cap">演示：左右固定宽度，中间跟着窗口伸缩</div>
+      <div class="demo three-col">
+        <div class="box">左 160px</div>
+        <div class="box b mid">中间自适应</div>
+        <div class="box c">右 120px</div>
+      </div>
+
+      <p class="hint">
+        <code>flex: 0 0 160px</code> 的三个值分别是 grow=0（不放大）、shrink=0（不缩小）、
+        basis=160px（基准宽度）。写 <code>flex: 1</code> 等价于 <code>flex: 1 1 0%</code>——
+        能放大、能缩小、基准为 0，所以它总是吃掉剩余空间。
+      </p>
+    </section>
+
+    <section id="equal">
+      <h2>四、套路 3：等高列</h2>
+
+      <p>
+        三张卡片内容长短不一，想让它们高度一致——Flex 默认就会做到，不需要额外代码。
+      </p>
+
+      <div class="cap">演示：三个方块内容高度不同，但外壳被拉齐了</div>
+      <div class="demo equal-height">
+        <div class="box">一行</div>
+        <div class="box b">三行<br>内容<br>更多</div>
+        <div class="box c">两行<br>中等</div>
+      </div>
+
+      <p class="hint">
+        原理就是昨天讲的 <code>align-items: stretch</code>（默认值）——交叉轴方向拉伸对齐。
+        这曾经也需要 hack，现在是免费的。
+      </p>
+    </section>
+
+    <section id="media">
+      <h2>五、套路 4：媒体对象（头像 + 文字）</h2>
+
+      <p>评论区、消息列表、成员列表，全是这个结构：</p>
+
+<pre><code>.media { display: flex; gap: 12px; align-items: flex-start; }
+.avatar { flex: none; }        /* 头像固定，不被压缩 */</code></pre>
+
+      <div class="cap">演示</div>
+      <div class="demo">
+        <div class="media">
+          <div class="avatar"></div>
+          <div>
+            <p><b>熙熙</b> · 3 分钟前</p>
+            <p>今天学了 Flexbox 的六个套路，其中媒体对象最实用。</p>
+          </div>
+        </div>
+      </div>
+
+      <p class="hint">
+        关键是给头像写 <code>flex: none</code>——否则文字一长，头像会被压缩变形。
+        这是这个模式里唯一容易错的地方。
+      </p>
+    </section>
+
+    <section id="grid">
+      <h2>六、套路 5：卡片网格（自动换行）</h2>
+
+<pre><code>.grid { display: flex; flex-wrap: wrap; gap: 16px; }
+.grid > * { flex: 1 1 220px; }</code></pre>
+
+      <div class="cap">演示：窗口宽时三列、窄时两列、更窄时一列</div>
+      <div class="demo grid-demo">
+        <div class="box">卡片 1</div>
+        <div class="box b">卡片 2</div>
+        <div class="box c">卡片 3</div>
+        <div class="box">卡片 4</div>
+      </div>
+
+      <p class="hint">
+        第四张卡片的宽度：空间够时它跟前面几个平分，不够时它单独换行并占满整行。
+        这就是 <code>flex: 1 1 220px</code> 的效果——最小 220，能长能缩。
+      </p>
+    </section>
+
+    <section id="sticky-footer">
+      <h2>七、套路 6：页脚贴底（sticky footer）</h2>
+
+      <p>内容很少的页面，页脚会浮在页面中间。想让它永远贴底：</p>
+
+<pre><code>body {
+  min-height: 100vh;      /* 至少占满一屏 */
+  display: flex;
+  flex-direction: column;
+}
+main {
+  flex: 1;                /* 主内容吃掉多余空间，把页脚推下去 */
+}</code></pre>
+
+      <p class="hint">
+        <code>min-height</code> 而不是 <code>height</code>：内容超过一屏时页面要能继续长。
+        用 height 会把内容裁掉。
+      </p>
+    </section>
+
+    <section id="exercise">
+      <h2>八、作业</h2>
+
+      <ol>
+        <li>
+          <b>侧栏 + 主内容变成两栏</b>：你的 <code>main</code> 里现在是
+          <code>section.posts</code> 和 <code>aside.sidebar</code> 上下排列。
+          改成左右：
+          <pre><code>main {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: flex-start;
+}
+.posts   { flex: 1 1 420px; }
+.sidebar { flex: 0 1 240px; }</code></pre>
+          <p class="hint">
+            窄屏时会自动变成上下（因为 wrap + 两个 basis 加起来放不下）。
+            这就是内在响应式，不需要媒体查询。
+          </p>
+        </li>
+        <li>
+          <b>页脚贴底</b>：给 <code>body</code> 加
+          <code>min-height: 100vh; display: flex; flex-direction: column;</code>，
+          给 <code>main</code> 加 <code>flex: 1;</code>。
+          然后打开内容很短的 contact 页——页脚应该贴在窗口底部，而不是浮在中间。
+        </li>
+        <li>
+          <b>卡片里的图片改成媒体对象</b>：给
+          <code>.post img</code>（如果有）或侧栏那个 figure 加
+          <code>display: flex; gap: 12px; align-items: center;</code>，
+          图片设 <code>flex: none</code>，让文字和图片横排。
+        </li>
+        <li>
+          <b>检查等高</b>：把两栏布局做出来后，看两根栏的高度是否一致。
+          如果侧栏被拉得跟主内容一样高，那就是 <code>align-items: stretch</code> 在起作用；
+          如果你希望它只占自己需要的高度，就写 <code>align-items: flex-start</code>
+          （上面的代码已经写了）。两种都试试，记住区别。
+        </li>
+      </ol>
+    </section>
+
+    <section id="deep">
+      <h2>九、深水区（约 1 小时）</h2>
+
+      <p><b>任务：复刻一张 GitHub 仓库卡片。</b></p>
+
+      <p>
+        打开 https://github.com/YuiLcake/frontend-study ，
+        看右侧或列表里的仓库信息卡（有仓库名、描述、语言圆点、star / fork 数）。
+      </p>
+
+      <p><b>要复刻的要素：</b></p>
+      <ul>
+        <li>第一行：仓库名（蓝色、加粗）+ 一个"Public"标签</li>
+        <li>第二行：一行描述文字</li>
+        <li>第三行：左侧一个彩色圆点 + 语言名，中间 star 数，右边 fork 数</li>
+        <li>整张卡片有边框、圆角、内边距</li>
+        <li>鼠标移上去有淡淡的背景变化</li>
+      </ul>
+
+      <p><b>技术约束：</b>只能用 Flexbox。第三行那种"左边一组、右边一组"的排布，
+      正是 <code>justify-content: space-between</code> + 内部嵌套 flex 的练习。</p>
+
+      <p><b>自检：</b>1440px 宽度下和 GitHub 原卡并排，看三行的位置关系是否一致。
+      不用管字体和精确颜色。</p>
+
+      <div class="note">
+        这张卡片几乎用到了今天全部的套路：媒体对象（圆点 + 文字）、
+        space-between（左右分组）、嵌套 flex、gap、align-items。
+        能独立做出来，W2 的 CSS 就算过关了。
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>W2 Day10 · 2026-10-30</p>
+  </footer>
+
+</body>
+</html>
+
+<!-- ============================================================
+     今日清单
+     作业：
+     1. main 改两栏（posts 自适应 + sidebar 固定 240）
+     2. body flex column + main flex:1 → 页脚贴底
+     3. 图片改媒体对象（flex: none）
+     4. 对比 align-items: stretch 与 flex-start 的差别
+
+     深水区（1 小时）：
+     5. 复刻 GitHub 仓库卡片（三行结构 + space-between + 嵌套 flex）
+     ============================================================ -->
