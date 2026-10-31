@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W2 Day11 · 复刻挑战</title>
+  <style>
+    body { max-width: 860px; margin: 40px auto; padding: 0 20px;
+           font-family: system-ui, sans-serif; line-height: 1.85; color: #222; }
+    header { border-bottom: 2px solid #eee; padding-bottom: 16px; }
+    section { margin: 40px 0; }
+    pre { background: #f6f6f6; padding: 14px 16px; border-radius: 6px; overflow-x: auto; }
+    code { font-family: Consolas, monospace; font-size: 14px; }
+    table { border-collapse: collapse; margin: 12px 0; width: 100%; }
+    td, th { border: 1px solid #ccc; padding: 8px 12px; text-align: left; vertical-align: top; }
+    thead th { background: #f5f5f5; }
+    .hint { color: #777; font-size: 14px; }
+    .note { background: #fffbe6; border-left: 3px solid #e0b400; padding: 10px 14px; margin: 14px 0; }
+    ol li, ul li { margin: 6px 0; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>W2 Day11 · 复刻挑战</h1>
+    <p>2-3 小时，复刻真实网站的一块。这是 W2 的收官，也是第一次完整模拟真实工作。</p>
+  </header>
+
+  <main>
+
+    <section id="method">
+      <h2>一、先学方法：怎么读别人的页面</h2>
+
+      <p>
+        新手复刻的方式通常是"看着像，凭感觉写，然后无限微调"。
+        专业做法是反过来：<b>先量，再写。</b>
+      </p>
+
+      <h3>四步测量法</h3>
+
+      <ol>
+        <li>
+          <b>看结构</b>：右键 → 检查，把目标区域的 HTML 展开。
+          数清楚几层、谁包谁、哪些是并列的兄弟。
+          <span class="hint">这一步不要写代码，只在纸上/脑子里画出层级。</span>
+        </li>
+        <li>
+          <b>量盒子</b>：选中每一层，看 Styles 面板最下方的盒模型图。
+          记下 padding、border、margin 的数值。
+        </li>
+        <li>
+          <b>读文字样式</b>：在 Computed 面板看 font-size、line-height、color、font-weight。
+          <span class="hint">颜色可以直接复制十六进制值。</span>
+        </li>
+        <li>
+          <b>量间距规律</b>：把几个间距值写下来，看它们是不是同一套倍数
+          （常见是 4 / 8 / 12 / 16 / 24）。
+          <b>看出一套系统，比记住一堆数字有用。</b>
+        </li>
+      </ol>
+
+      <div class="note">
+        <b>禁止：直接抄他们的 CSS。</b> 你可以看数值，但选择器、结构、写法必须自己写。
+        抄一遍什么也学不到；量一遍再自己实现，才是真的会。
+      </div>
+    </section>
+
+    <section id="target">
+      <h2>二、选题（选一个）</h2>
+
+      <h3>选题 A：GitHub 仓库卡片（推荐，约 2 小时）</h3>
+
+      <p>目标页面：https://github.com/YuiLcake?tab=repositories 上的仓库列表卡。</p>
+
+      <p><b>卡片里的四层内容：</b></p>
+      <ul>
+        <li>第一行：仓库名（蓝色、粗体）+ 紧跟其后的 "Public" 小标签（灰色描边）</li>
+        <li>第二行：一句描述，灰色</li>
+        <li>第三行：彩色圆点 + 语言名、星标数、分支数（图标可以用文字符号代替：★ ⑂）</li>
+        <li>整卡：1px 边框、圆角、内边距、鼠标悬停时边框变蓝</li>
+      </ul>
+
+      <p class="hint">
+        难点在于第一行：仓库名和标签要"挨着"，不是两端分开。
+        这里要用 flex + gap，而不是 space-between——先想清楚这两个的区别再动手。
+      </p>
+
+      <h3>选题 B：定价表（更难，约 3 小时）</h3>
+
+      <p>找任意一个有定价页的网站（Vercel、Linear、Notion 都行），复刻三张价格卡并排：</p>
+      <ul>
+        <li>三张卡等高（flex 默认就能做到）</li>
+        <li>中间那张"推荐"的稍微突出（边框加粗或加个标签）</li>
+        <li>每张卡：名称、价格、功能清单、底部按钮</li>
+        <li>按钮要在卡片最底部对齐——即使某张卡的功能条目更多</li>
+      </ul>
+
+      <p class="hint">
+        难点是最后一条：按钮对齐。这需要把卡片本身做成 flex 列，再给按钮上面的内容
+        <code>flex: 1</code>，把按钮顶到底部。这是"卡片内部也用 flex"的典型场景。
+      </p>
+    </section>
+
+    <section id="accept">
+      <h2>三、验收标准</h2>
+
+      <table>
+        <thead>
+          <tr><th scope="col">维度</th><th scope="col">合格线</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>结构</td><td>语义标签，不用 table 布局，不用 absolute 排位置</td></tr>
+          <tr><td>布局</td><td>用 flex 完成；能用 gap 就不用 margin 造间距</td></tr>
+          <tr><td>间距</td><td>用同一套数字（4 / 8 / 12 / 16 / 24），不是随手取的值</td></tr>
+          <tr><td>响应式</td><td>窗口拉到 400px 不出现横向滚动条，内容不重叠</td></tr>
+          <tr><td>还原度</td><td>1440px 宽度下与原站并排，各元素的位置关系一致（颜色和字体不必完全一致）</td></tr>
+        </tbody>
+      </table>
+
+      <h3>交付方式</h3>
+
+      <p>
+        文件放 <code>practice2/challenge.html</code>（或自己起个名字），
+        样式可以写在文件内的 <code>&lt;style&gt;</code> 里——这次是单文件挑战，不用拆。
+      </p>
+
+      <h3>时间盒</h3>
+
+      <p>
+        <b>2-3 小时到就停。</b>做不完的部分记下来——没做完的原因比做完的结果更有信息量：
+        是卡在结构？卡在某个属性？还是卡在"看着像但不知道差在哪"？
+      </p>
+    </section>
+
+    <section id="tips">
+      <h2>四、做的时候注意</h2>
+
+      <ul>
+        <li><b>先搭结构，再写样式。</b>HTML 写完在浏览器里看，是一堆竖着排的方块——这是对的。</li>
+        <li><b>一次只调一个东西。</b>改一个值，刷新，看效果。不要同时改五个然后不知道是哪个起的作用。</li>
+        <li><b>卡住超过 30 分钟就问我。</b>今天允许问的次数不限，但要先描述清楚你试过什么、现象是什么。</li>
+        <li><b>做完自己先对照检查一遍</b>，把"我做到哪、哪里没做到"写进文件末尾的注释。</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>W2 Day11 · 2026-10-31</p>
+  </footer>
+
+</body>
+</html>

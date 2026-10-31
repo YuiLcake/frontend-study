@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>flex: 1 与 min-width: 0 到底各管什么</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 1000px; margin: 30px auto;
+           padding: 0 16px; line-height: 1.8; color: #222; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 17px; margin-top: 40px; }
+    pre { background: #f6f6f6; padding: 12px 14px; border-radius: 6px; overflow-x: auto; }
+    code { font-family: Consolas, monospace; font-size: 13.5px; }
+    .note { background: #fffbe6; border-left: 3px solid #e0b400; padding: 10px 14px; margin: 12px 0; }
+    .hint { color: #666; font-size: 14px; }
+
+    /* 三个面板共用：固定 300px 宽，模拟"容器放不下"的情况 */
+    .panel { width: 300px; border: 2px solid #333; margin: 10px 0 26px;
+             padding: 4px; background: #fafafa; }
+    .row { display: flex; justify-content: space-between; background: #eef4ff; gap: 8px; }
+    .content { background: #cfe0ff; padding: 6px; }
+    .star { background: #ffe0cf; padding: 6px 10px; flex: none; white-space: nowrap; }
+
+    /* 情况 1：默认 flex: 0 1 auto，min-width 默认 auto */
+    .case1 .content { }
+
+    /* 情况 2：只加 flex: 1 */
+    .case2 .content { flex: 1; }
+
+    /* 情况 3：flex: 1 + min-width: 0 */
+    .case3 .content { flex: 1; min-width: 0; }
+
+    /* 情况 0：短内容，容器够宽 —— 对照组 */
+    .case0 .row { width: 100%; }
+    .case0 .content { flex: 0 1 auto; }
+  </style>
+</head>
+<body>
+
+  <h1>flex: 1 和 min-width: 0 各管什么</h1>
+
+  <p>同一个结构，只改 <code>.content</code> 的规则，看四种结果。</p>
+
+  <h2>对照组：内容短，容器放得下</h2>
+  <p class="hint">这里什么都没加，看起来完全正常——因为根本用不上。</p>
+  <div class="panel case0">
+    <div class="row">
+      <div class="content">frontend-study</div>
+      <div class="star">Star</div>
+    </div>
+  </div>
+  <pre><code>.content { }              /* 默认 flex: 0 1 auto */
+.star    { flex: none; }</code></pre>
+
+  <h2>情况 1：内容超长，什么也不加</h2>
+  <p class="hint">
+    内容是一长串不带空格的字符（真实场景：长 URL、长英文单词、没有空格的中文长串）。
+    蓝色块顶破了黑框，橙色 Star 被挤到框外面去。
+  </p>
+  <div class="panel case1">
+    <div class="row">
+      <div class="content">http://localhost:8123/01-html-css/day11/challenge.html</div>
+      <div class="star">Star</div>
+    </div>
+  </div>
+  <pre><code>.content { }              /* flex: 0 1 auto，min-width: auto */
+.star    { flex: none; }</code></pre>
+
+  <div class="note">
+    <b>为什么缩不下来？</b><br>
+    flex 项目默认 <code>min-width: auto</code>，意思是"我最小不能小于我内容的最小宽度"。<br>
+    这一长串字符的最小宽度（min-content）本身就比容器宽，所以它顶住不动，
+    多出来的部分只能溢出——把 Star 推出去。
+  </div>
+
+  <h2>情况 2：只加 <code>flex: 1</code></h2>
+  <p class="hint">结果和情况 1 一模一样，Star 还是在框外。</p>
+  <div class="panel case2">
+    <div class="row">
+      <div class="content">http://localhost:8123/01-html-css/day11/challenge.html</div>
+      <div class="star">Star</div>
+    </div>
+  </div>
+  <pre><code>.content { flex: 1; }     /* 只解决"长大"，不解决"缩小" */
+.star    { flex: none; }</code></pre>
+
+  <div class="note">
+    <b>这就是我上一条说错的地方。</b><br>
+    <code>flex: 1</code> = <code>1 1 0%</code>，它的作用是<b>容器有剩余空间时，把剩余空间吃掉</b>。<br>
+    但情况 2 里根本没有剩余空间——是空间不够。所以它什么也没改变，Star 照样被挤出去。
+  </div>
+
+  <h2>情况 3：<code>flex: 1</code> + <code>min-width: 0</code></h2>
+  <p class="hint">蓝色块不再顶破框，Star 乖乖待在框里。文本溢出部分撑开了行高。</p>
+  <div class="panel case3">
+    <div class="row">
+      <div class="content">http://localhost:8123/01-html-css/day11/challenge.html</div>
+      <div class="star">Star</div>
+    </div>
+  </div>
+  <pre><code>.content { flex: 1; min-width: 0; }
+.star    { flex: none; }</code></pre>
+
+  <div class="note">
+    <b><code>min-width: 0</code> 才是关键。</b><br>
+    它把"最小不能小于内容宽度"这条限制去掉了，于是 content 可以缩到比内容更窄，
+    空间不够时大家一起缩，Star 就保住了位置。
+  </div>
+
+  <h2>那 <code>flex: 1</code> 到底什么时候有用？</h2>
+
+  <p>看这个：容器很宽，内容很短。</p>
+
+  <div class="panel" style="width: 100%;">
+    <div class="row">
+      <div class="content" style="flex: 0 1 auto;">frontend-study</div>
+      <div class="star">Star</div>
+    </div>
+  </div>
+  <p class="hint">没有 flex: 1 —— 蓝色块只有内容那么宽，中间的空白露出来了。</p>
+
+  <div class="panel" style="width: 100%;">
+    <div class="row">
+      <div class="content" style="flex: 1;">frontend-study</div>
+      <div class="star">Star</div>
+    </div>
+  </div>
+  <p class="hint">有 flex: 1 —— 蓝色块撑满，Star 被推到最右。整个布局稳了。</p>
+
+  <h2>一句话总结</h2>
+
+  <ul>
+    <li><code>flex: 1</code> —— 管「有剩余空间时，我占多少」（防留白）</li>
+    <li><code>min-width: 0</code> —— 管「空间不够时，我能不能缩」（防挤爆）</li>
+    <li>两条一起写，布局才在宽屏和窄屏下都稳</li>
+  </ul>
+
+  <div class="note">
+    <b>为什么很多人只写 <code>flex: 1</code> 也没事？</b><br>
+    因为绝大多数文字中间有空格或能换行，min-content 很小，默认就能缩。
+    只有遇到长 URL、长英文单词、<code>white-space: nowrap</code> 这类"不可断"的内容，
+    <code>min-width: 0</code> 才显出必要性。<br>
+    <b>平时加上它，是花一个词买一份保险。</b>
+  </div>
+
+</body>
+</html>
