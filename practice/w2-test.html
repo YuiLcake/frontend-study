@@ -1,0 +1,49 @@
+<style>
+  .card {
+    width: 320px;
+    padding: 20px;
+    border: 2px solid #000;
+    border-radius: 8px;
+  } /*实际内容22px*/
+
+  .box {
+    color: red;
+  }
+  p {
+    color: red;
+  } /*我觉得是p的优先级高*/
+
+  /*三个span是从上到下排列，给span写display：flex，或者inline-block*/
+
+  .button {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+  }
+
+  .thing {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .thingall {
+    display: flex;
+    justify-content: space-between;
+  }
+  .thing1 {
+    flex: 0 0 200px;
+  }
+  .thing2 {
+    flex: 1;
+  }
+  .thing3 {
+    flex: 0 0 200px;
+  }
+
+  /*不会*/
+
+  /*中间的实际间距是30px，去两者的最大值*/
+
+  /*position：static 不能成为absolute的父元素，只能是relative*/
+</style>
