@@ -1,0 +1,90 @@
+{
+  "page": {"width_mm": 210, "height_mm": 297,
+           "margins_mm": {"top": 22, "bottom": 22, "left": 20, "right": 20}},
+  "header": "前端学习摘要 · W3",
+  "footer_page_numbers": true,
+  "styles": [
+    {"name": "Note", "base": "Normal", "size_pt": 10, "color": "666666"}
+  ],
+  "blocks": [
+    {"type": "heading", "text": "W3 学习摘要", "level": 1},
+    {"type": "paragraph", "style": "Note",
+     "text": "2026-11-02 至 2026-11-08 ｜ 熙熙 ｜ 前端转型计划第 3 周 · Grid、响应式、CSS 变量"},
+    {"type": "paragraph",
+     "text": "本周从「会写样式」走向「有系统」：Grid 布局、响应式适配、设计令牌。周内的产出目标是个人主页 v1（桌面与手机两套布局）。"},
+
+    {"type": "heading", "text": "第 12 天 · 2026-11-02", "level": 2},
+
+    {"type": "heading", "text": "一、今天犯的错误", "level": 3},
+    {"type": "table",
+     "header": ["错误", "发生了什么", "以后怎么办"],
+     "rows": [
+       ["W2 概念复述不牢（6 条里 3 条不达标）",
+        "box-sizing 说成「按页面宽高计算」；display 三种没说清 block；flex:1 说成「固定宽高」；min-width:0 完全答不出；position 只列出四个值，漏 sticky，也说不清 fixed 与 absolute 的区别。",
+        "盲写和复述要交替做。写得出来不等于讲得出来，讲不出来就是没懂。"],
+       ["算盒子宽度漏乘 2",
+        "width 200 + padding 20 + border 5 算成 225px。正确是 200 + 20×2 + 5×2 = 250px。",
+        "padding 和 border 是四条边，左右各一份。算完再验一遍：宽度 + 左侧 + 右侧。"],
+       ["把浅色变量嵌套进 [data-theme=\"light\"]",
+        ":root { [data-theme=\"light\"] { ... } } 这段按 CSS 嵌套规则编译成「html 内部带该属性的元素」，而 body 上写的是 dark，所以从来没生效。结果所有颜色变量都未定义，页面颜色全丢。",
+        "定义基准值就直接写在 :root 里，不要套条件选择器。变量必须有兜底定义，否则 var() 取不到会静默退回默认值。"],
+       ["属性挂在 body 上，选择器却写 :root",
+        ":root 指的是 <html>，属性写在 <body> 上，选择器匹配不到任何元素，深色主题完全不生效。",
+        "属性选择器要和属性所在的那个元素对上。要全站生效就把 data-theme 写在 <html> 上。"],
+       ["删掉 .theme 后 body 忘了加 background",
+        "原来背景色是 .theme 那条规则给的，删掉类之后 body 只剩文字色。即使变量全对，也只会得到白底浅字。",
+        "变量定义了还要有人真的用它。改结构时逐条确认「这条规则原来负责什么」。"],
+       ["变量名少了一个连字符",
+        "定义的是 --color-button-background，引用写成 var(--color-buttonbackground)，变量不存在，背景变透明，不报错。",
+        "写完用脚本核对「定义过的变量」与「引用过的变量」两张表，比肉眼找快得多。"],
+       ["引用了未定义的 --text-h3",
+        ".post h3 用了 var(--text-h3)，但这个变量从未定义。字号退回默认值。",
+        "引用变量前先确认它存在；必要时用 var(--text-content, 20px) 加兜底值。"]
+     ]},
+
+    {"type": "heading", "text": "二、新词与生词", "level": 3},
+    {"type": "table",
+     "header": ["英文", "中文", "用大白话说"],
+     "rows": [
+       ["custom property", "自定义属性", "CSS 变量的正式名称，以两个减号开头"],
+       ["var()", "取值函数", "把变量的值取出来放到这里"],
+       [":root", "根元素", "指 <html>，定义在这里的变量全页面可用"],
+       ["fallback", "回退值", "var(--x, 兜底值)，变量不存在时用它"],
+       ["design token", "设计令牌", "把颜色、间距、字号写成一组有名字的变量，构成设计系统"],
+       ["attribute selector", "属性选择器", "[属性名=\"值\"] 形式的写法，匹配带该属性的元素"],
+       ["data-* attribute", "自定义数据属性", "HTML5 允许自己起名的属性，用来存状态，不参与样式默认渲染"],
+       ["CSS nesting", "CSS 嵌套", "在选择器内部再写选择器，编译后变成后代选择器"],
+       ["theme switching", "主题切换", "通过改变同名变量的值，让同一套结构呈现不同皮肤"],
+       ["token naming", "令牌命名", "按用途命名（color-accent）而不是按样子命名（blue）"]
+     ]},
+
+    {"type": "heading", "text": "三、今天学到的新知识", "level": 3},
+    {"type": "bullet_list", "items": [
+      "CSS 变量（自定义属性）以 -- 开头，用 var() 取值。它解决的是「同一个值散落在几十个地方，改一处要改几十处」的问题。",
+      "定义在 :root 上的变量全页面可用，因为 :root 就是 <html>，所有元素都是它的后代。",
+      "变量是「往下传」的：定义在哪个元素上，只对它自己和后代生效。想给某个区域换主题，在那个容器上重新定义变量即可，不用逐个写类名。",
+      "主题切换的本质不是「重新定义」，而是「同名变量在更靠近它的元素上被重新赋值」。变量在使用它的元素上解析，一路向上找最近的声明。",
+      "所以覆盖必须同名。换一个名字就是新增变量，原来的值不变，覆盖失效。",
+      "变量必须有兜底定义。:root 里那一份是基准，取不到值时 var() 会静默退回默认值——页面不会报错，只是颜色没了。",
+      "设计令牌要按用途命名：--color-accent 而不是 --blue。按样子命名的令牌在换主题时会变成谎言（blue 变成了绿色）。",
+      "[data-theme=\"dark\"] 是属性选择器，含义是「任何带这个属性的元素」。前面的限定可以换成 body、:root、.card，也可以整个省掉。",
+      "data-theme 这个属性名可以自己起（data-mode、data-skin），值也可以随便定，只要 HTML 和 CSS 两边一致。",
+      "想全站切换主题，属性应该放在 <html>（:root）上，而不是 body 上——放在 body 上时，body 之外的元素看不到这些变量。",
+      "CSS 嵌套里，:root { [data-theme=\"light\"] { ... } } 会编译成 :root [data-theme=\"light\"]（后代选择器），不等于「根元素带这个属性」。后者要写成 :root[data-theme=\"light\"]，中间不能有空格。",
+      "变量名少一个连字符、拼错一个字母，都不会报错，只会静默失效。用脚本把「定义过的变量」和「引用过的变量」做差集，一秒就能查出来。",
+      "整理变量表的过程本身就是整理设计系统：你会被迫回答「这个颜色到底是什么用途」「这个间距为什么是 18px 而不是 16px」。"
+    ]},
+
+    {"type": "heading", "text": "四、今天的产出", "level": 3},
+    {"type": "bullet_list", "items": [
+      "学习站点完成令牌化改造：:root 定义 27 个变量（12 个颜色、7 个间距、3 个圆角、5 个字号），全文 23 处引用",
+      "新增深色主题：:root[data-theme=\"dark\"] 覆盖 12 个颜色令牌，三个页面的 <html> 均加上 data-theme=\"dark\"",
+      "自动校验：变量定义与引用做差集，确认无悬空引用；CSS 括号 28 对 28；三个页面均返回 HTTP 200",
+      "补漏：W2 六个概念的口头复述 + 六条标准表述，暴露并修正了 box-sizing、优先级、display、position、flex 五处模糊点"
+    ]},
+
+    {"type": "heading", "text": "五、明天要做的", "level": 3},
+    {"type": "paragraph",
+     "text": "Grid 布局基础：grid-template-columns / rows、fr 单位、gap、grid-area 命名区域、auto-fit 与 minmax。Grid 是二维布局，和 Flex 的一维形成互补——页面的整体骨架用 Grid，组件内部的排列用 Flex。"}
+  ]
+}
