@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>W3 Day1 · CSS 变量与设计令牌</title>
+    <style>
+      :root {
+        --page-max: 880px;
+        --c-text: #1f2328;
+        --c-muted: #59636e;
+        --c-border: #d1d9e0;
+        --c-bg: #ffffff;
+        --c-surface: #f6f8fa;
+        --c-accent: #0969da;
+        --radius: 8px;
+        --space-2: 8px;
+        --space-4: 16px;
+        --space-5: 24px;
+      }
+
+      body {
+        max-width: var(--page-max);
+        margin: 40px auto;
+        padding: 0 20px;
+        font-family: system-ui, sans-serif;
+        line-height: 1.85;
+        color: var(--c-text);
+        background: var(--c-bg);
+      }
+      header {
+        border-bottom: 2px solid var(--c-border);
+        padding-bottom: 16px;
+      }
+      section {
+        margin: 40px 0;
+      }
+      pre {
+        background: var(--c-surface);
+        padding: 14px 16px;
+        border-radius: var(--radius);
+        overflow-x: auto;
+        border: 1px solid var(--c-border);
+      }
+      code {
+        font-family: Consolas, monospace;
+        font-size: 14px;
+      }
+      table {
+        border-collapse: collapse;
+        margin: 12px 0;
+        width: 100%;
+      }
+      td,
+      th {
+        border: 1px solid var(--c-border);
+        padding: 8px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      thead th {
+        background: var(--c-surface);
+      }
+      .hint {
+        color: var(--c-muted);
+        font-size: 14px;
+      }
+      .note {
+        background: #fffbe6;
+        border-left: 3px solid #e0b400;
+        padding: 10px 14px;
+        margin: 14px 0;
+      }
+      .demo {
+        border: 1px dashed #8aa;
+        background: #f4f8ff;
+        padding: 12px;
+        margin: 10px 0 20px;
+      }
+
+      /* ===== 演示 1：同一个变量，处处复用 ===== */
+      .btn-demo {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        background: var(--c-accent);
+        color: #fff;
+        border: none;
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius);
+        font-size: 15px;
+        cursor: pointer;
+      }
+      .btn-ghost {
+        background: transparent;
+        color: var(--c-accent);
+        border: 1px solid var(--c-accent);
+      }
+      /* 只改这一处，两个按钮同时变紫 */
+      .theme-purple {
+        --c-accent: #8250df;
+      }
+
+      /* ===== 演示 2：作用域 ===== */
+      .scope-box {
+        --c-accent: #1a7f37; /* 只在这一块和它的后代生效 */
+        border: 2px solid var(--c-accent);
+        padding: var(--space-4);
+        border-radius: var(--radius);
+      }
+      .scope-box .btn {
+        padding: var(--space-2) var(--space-4);
+      }
+
+      /* ===== 演示 3：深浅主题并排 ===== */
+      .theme-pair {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .theme-card {
+        --c-card-bg: #ffffff;
+        --c-card-text: #1f2328;
+        --c-card-muted: #59636e;
+        --c-card-border: #d1d9e0;
+        --c-card-accent: #0969da;
+
+        flex: 1 1 240px;
+        background: var(--c-card-bg);
+        color: var(--c-card-text);
+        border: 1px solid var(--c-card-border);
+        border-radius: var(--radius);
+        padding: var(--space-4);
+      }
+      .theme-card[data-theme="dark"] {
+        --c-card-bg: #0d1117;
+        --c-card-text: #f0f6fc;
+        --c-card-muted: #9198a1;
+        --c-card-border: rgba(61, 68, 77, 0.7);
+        --c-card-accent: #4493f8;
+      }
+      .theme-card h4 {
+        margin: 0 0 var(--space-2);
+        font-size: 18px;
+      }
+      .theme-card h4 a {
+        color: var(--c-card-accent);
+        text-decoration: none;
+      }
+      .theme-card p {
+        margin: 0;
+        color: var(--c-card-muted);
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>第 12 天：CSS 变量与设计令牌</h1>
+      <p>今天学一个"用一次就回不去"的东西。它会一直用到你的毕设。</p>
+    </header>
+
+    <main>
+      <section id="why">
+        <h2>一、没有变量的时候有多痛</h2>
+
+        <p>看看你现在站点的 CSS：</p>
+
+        <pre><code>.post h3 { color: rgb(190, 3, 190); }
+body      { color: #222; }
+.repo-name { color: #4493f8; }
+...</code></pre>
+
+        <p>
+          假设你要把全站的紫色换成蓝色。你得打开文件、搜索、一处一处改。
+          <b>改漏一处，就有一个地方颜色不对，而且你可能永远注意不到。</b>
+        </p>
+
+        <p>这还只是颜色。字号、间距、圆角全都散落在各处，更没法统一调整。</p>
+      </section>
+
+      <section id="what">
+        <h2>二、CSS 变量是什么</h2>
+
+        <p>
+          官名叫 <b>自定义属性（custom properties）</b>，写法是以两个减号开头：
+        </p>
+
+        <pre><code>/* 声明：定义一个叫 --c-accent 的变量，值是蓝色 */
+:root {
+  --c-accent: #0969da;
+}
+
+/* 使用：用 var() 取出来 */
+.btn {
+  background: var(--c-accent);
+}</code></pre>
+
+        <p>
+          <code>:root</code> 是文档的根元素（就是 <code>&lt;html&gt;</code>）。
+          定义在这里，<b>全页面都能用</b>。
+        </p>
+
+        <p class="hint">
+          把它想成一个"全局配置表"：颜色、间距、字号都写成变量放在最上面，
+          下面所有规则都来取。以后改配色，只改表里那一行。
+        </p>
+
+        <div class="demo">
+          <p class="hint" style="margin-top: 0">
+            这两个按钮取的都是 <code>var(--c-accent)</code>：
+          </p>
+          <div class="btn-demo">
+            <button class="btn">主要按钮</button>
+            <button class="btn btn-ghost">次要按钮</button>
+          </div>
+        </div>
+
+        <p>现在给外面套一个类，<b>只改一个变量的值</b>：</p>
+
+        <pre><code>.theme-purple { --c-accent: #8250df; }   /* 一行 */</code></pre>
+
+        <div class="demo theme-purple">
+          <div class="btn-demo">
+            <button class="btn">主要按钮</button>
+            <button class="btn btn-ghost">次要按钮</button>
+          </div>
+        </div>
+
+        <p class="hint">
+          两个按钮的颜色、边框、文字色一起变了——因为它们全都引用同一个变量。
+          <b>这就是变量的全部价值：一处定义，处处引用，改一处全变。</b>
+        </p>
+      </section>
+
+      <section id="scope">
+        <h2>三、作用域：变量是"往下传"的</h2>
+
+        <p>
+          变量不是全局唯一的。定义在哪个元素上，就只对<b>它自己和它的后代</b>生效。
+          这就是"层叠"在变量上的体现。
+        </p>
+
+        <pre><code>:root        { --c-accent: #0969da; }   /* 全站蓝 */
+.scope-box   { --c-accent: #1a7f37; }   /* 这一块改绿 */</code></pre>
+
+        <div class="demo">
+          <div class="scope-box">
+            这一块里的
+            <code>--c-accent</code> 被改成了绿色——边框和按钮都跟着变。
+            <div style="margin-top: 12px">
+              <button class="btn">块内按钮</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="hint">
+          块外面的东西不受影响，还是蓝色。
+          <b>这条规则的用处极大</b
+          >：想给某一块区域换个主题，只要在那个容器上重新定义变量，
+          里面所有子元素自动跟着变，不用逐个写类名。
+        </p>
+      </section>
+
+      <section id="theme">
+        <h2>四、真正的用处：深浅主题</h2>
+
+        <p>
+          这是 CSS 变量最经典的场景。同一套结构，只换变量值，就变成两套皮肤。
+        </p>
+
+        <pre><code>.card {
+  background: var(--c-card-bg);
+  color: var(--c-card-text);
+  border: 1px solid var(--c-card-border);
+}
+
+/* 深色模式：只覆盖变量的值 */
+.card[data-theme="dark"] {
+  --c-card-bg: #0d1117;
+  --c-card-text: #f0f6fc;
+  --c-card-border: rgba(61, 68, 77, 0.7);
+  --c-card-accent: #4493f8;
+}</code></pre>
+
+        <div class="demo" style="background: #fff">
+          <div class="theme-pair">
+            <div class="theme-card">
+              <h4><a href="#">frontend-study</a></h4>
+              <p>Public · HTML</p>
+            </div>
+            <div class="theme-card" data-theme="dark">
+              <h4><a href="#">frontend-study</a></h4>
+              <p>Public · HTML</p>
+            </div>
+          </div>
+        </div>
+
+        <p class="hint">
+          左边和右边是<b>同一套 HTML、同一套 CSS 规则</b>。
+          唯一的区别是最外层多了一个 <code>data-theme="dark"</code> 属性。
+        </p>
+
+        <div class="note">
+          <b>注意这些值眼熟吗？</b><br />
+          <code>#0d1117</code>、<code>#f0f6fc</code>、<code>#4493f8</code>、
+          <code>rgba(61, 68, 77, 0.7)</code> —— 全部是你在复刻挑战里从 GitHub
+          量出来的。<br />
+          你现在做的这张卡，装上变量之后，加一行属性就能切换深浅模式。
+        </div>
+      </section>
+
+      <section id="fallback">
+        <h2>五、两个必须知道的细节</h2>
+
+        <h3>1. 变量名区分大小写</h3>
+        <p>
+          <code>--Color</code> 和 <code>--color</code> 是两个不同的变量。
+          约定俗成都用小写加连字符：<code>--color-text</code>、<code>--space-4</code>。
+        </p>
+
+        <h3>2. 可以给回退值</h3>
+
+        <pre><code>color: var(--c-accent, #0969da);
+/* 变量没定义时用后面的兜底值 */</code></pre>
+
+        <p class="hint">
+          做主题系统时很有用：万一某个主题忘了定义某个变量，页面不会变成透明或黑色，
+          而是退回默认值。
+        </p>
+      </section>
+
+      <section id="tokens">
+        <h2>六、设计令牌：一套变量就是一套设计系统</h2>
+
+        <p>把变量按用途分类命名，而不是按颜色命名。对比一下：</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">❌ 按样子命名</th>
+              <th scope="col">✅ 按用途命名</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <code>--blue</code>、<code>--light-gray</code>、<code
+                  >--purple</code
+                >
+              </td>
+              <td>
+                <code>--color-accent</code>、<code>--color-border</code>、<code
+                  >--color-text-muted</code
+                >
+              </td>
+            </tr>
+            <tr>
+              <td>换成绿色主题时，"blue 变成了绿色"，名字骗人</td>
+              <td>不管什么主题，accent 永远是"强调色"，意思不变</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p><b>一套最小可用的令牌表：</b></p>
+
+        <pre><code>:root {
+  /* 颜色 */
+  --color-bg: #ffffff;
+  --color-surface: #f6f8fa;
+  --color-text: #1f2328;
+  --color-text-muted: #59636e;
+  --color-border: #d1d9e0;
+  --color-accent: #0969da;
+
+  /* 间距：4 的倍数 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+
+  /* 圆角 */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+
+  /* 字号 */
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-lg: 20px;
+}</code></pre>
+
+        <p class="hint">
+          注意间距那五个：全是 4 的倍数。这就是你在复刻挑战里量到的"间距规律"。
+          <b>把规律写成变量，就再也不用记数字了。</b>
+        </p>
+      </section>
+
+      <section id="exercise">
+        <h2>七、作业</h2>
+
+        <p>
+          在你的学习站点上做，改 <code>docs/css/main.css</code> 和
+          <code>docs/index.html</code>。
+        </p>
+
+        <ol>
+          <li>
+            <b>定义令牌表</b>：在 <code>main.css</code> 最上面加
+            <code>:root { ... }</code>， 至少包含 6 个颜色、4 个间距、2
+            个圆角、3 个字号。
+            <span class="hint">值就用你现在站点正在用的颜色，不要改外观。</span>
+          </li>
+          <li>
+            <b>替换硬编码</b>：把文件里所有写死的颜色、间距、圆角换成
+            <code>var()</code>。
+            改完刷新，<b>页面必须和改之前长得一模一样</b>——这是验收标准。
+          </li>
+          <li>
+            <b>做一套深色主题</b>：给 <code>&lt;body&gt;</code> 加
+            <code>data-theme="dark"</code>
+            属性选择器，在里面覆盖颜色变量。然后手动给
+            <code>body</code> 加上这个属性，看整站变深色。
+          </li>
+          <li>
+            <b>回答</b>（写在 CSS 注释里）：如果把 <code>:root</code> 里的
+            <code>--color-accent</code> 改成红色，页面里哪些地方会变？
+          </li>
+        </ol>
+
+        <div class="note">
+          <b>第 2 步是重点。</b
+          >替换过程会让你发现：有些地方你根本不知道用了什么颜色
+          （因为当初是随手写的），有些间距根本不是 4 的倍数。
+          <b>这个过程本身就是在整理你的设计系统。</b>
+        </div>
+      </section>
+    </main>
+
+    <footer
+      style="
+        border-top: 1px solid var(--c-border);
+        padding-top: 16px;
+        margin-top: 40px;
+      "
+    >
+      <p class="hint">W3 Day1 · 2026-11-02</p>
+    </footer>
+  </body>
+</html>
