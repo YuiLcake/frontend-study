@@ -3,29 +3,82 @@
 *::after {
   box-sizing: border-box;
 }
+:root {
+  /* 颜色 */
+  --color-bg: #ffffff;
+  --color-surface: #f6f8fa;
+  --color-text: #222;
+  --color-post-h3: rgb(190, 3, 190);
+  --color-text-muted: #59636e;
+  --color-border: #ccc;
+  --color-accent: #0969da;
+  --color-nav-background: #eed0f2;
+  --color-nav-hover: #ac65c0;
+  --color-datetime: #999;
+  --color-button: #fff;
+  --color-button-background: #7b7b7b;
+
+  /* 间距：4 的倍数 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 40px;
+
+  /* 圆角 */
+  --radius-sm: 4px;
+  --radius-button-totop: 6px;
+  --radius-md: 8px;
+
+  /* 字号 */
+  --text-post-time: 12px;
+  --text-sm: 13px;
+  --text-button-totop: 14px;
+  --text-base: 15px;
+  --text-content: 20px;
+}
+
+:root[data-theme="dark"] {
+  /*深色主题*/
+  --color-bg: #0d1117;
+  --color-surface: #151b23;
+  --color-text: #f0f6fc;
+  --color-text-muted: #9198a1;
+  --color-border: #3d444d;
+  --color-accent: #4493f8;
+  --color-post-h3: #d2a8ff; /* 紫色在深色底上要调亮 */
+  --color-nav-background: #21262d;
+  --color-nav-hover: #6e40c9;
+  --color-datetime: #9198a1;
+  --color-button: #f0f6fc;
+  --color-button-background: #30363d;
+}
+
 body {
+  font-family: system-ui, sans-serif;
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.85;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-
   max-width: 820px;
-  margin: 40px auto;
-  padding: 0 20px;
-  font-family: system-ui, sans-serif;
-  line-height: 1.85;
-  color: #222;
+  margin: var(--space-7) auto;
+  padding: 0 var(--space-5);
 }
 
 header {
-  border-bottom: 2px solid #eee;
+  border-bottom: 2px solid var(--color-border);
 }
 main {
   display: flex;
   flex: 1;
   flex-wrap: wrap;
-  gap: 24px;
+  gap: var(--space-6);
   align-items: flex-start;
-  margin-top: 30px;
+  margin-top: var(--space-6);
 }
 section {
   margin: 0 0;
@@ -33,37 +86,37 @@ section {
 
 .fx {
   display: flex;
-  gap: 5px;
+  gap: var(--space-1);
 }
 
 footer {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--space-3);
   align-items: center;
 }
 
 nav {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: var(--space-5);
 }
 nav a {
   display: flex;
-  padding: 6px 12px;
+  padding: var(--space-1) var(--space-3);
   text-decoration: none;
 }
 nav a:hover {
-  background-color: #eed0f2;
-  border-radius: 4px;
-  color: #ed70e9;
+  background-color: var(--color-nav-background);
+  border-radius: var(--radius-sm);
+  color: var(--color-nav-hover);
 }
 
 .fx2 {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: var(--space-5);
 }
 
 .posts > .title {
@@ -71,17 +124,18 @@ nav a:hover {
 }
 
 .post h3 {
-  font-size: 20px;
-  color: rgb(190, 3, 190);
+  font-size: var(--text-content);
+  color: var(--color-post-h3);
 }
 .post {
-  padding: 16px 20px;
-  border: 1px solid #a8a8a8;
-  border-radius: 8px;
+  font-size: var(--text-base);
   display: flex;
   flex-direction: column;
   flex: 1 1 260px;
-  gap: 20px;
+  gap: var(--space-5);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
 }
 .post header {
   display: flex;
@@ -89,18 +143,18 @@ nav a:hover {
   align-items: baseline;
 }
 .post time {
-  font-size: 13px;
-  color: #999;
+  font-size: var(--text-post-time);
+  color: var(--color-datetime);
 }
 
 .card {
   display: flex;
   flex-direction: column;
   position: relative;
-  padding: 16px 20px;
-  border: 1px solid #a8a8a8;
-  border-radius: 8px;
-  margin-bottom: 20px;
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-5);
 }
 
 .to-top {
@@ -109,11 +163,11 @@ nav a:hover {
   bottom: 80px;
   z-index: 10;
   padding: 10px 14px;
-  background: #7b7b7b;
-  color: #fff;
-  border-radius: 6px;
+  background: var(--color-button-background);
+  color: var(--color-button);
+  border-radius: var(--radius-button-totop);
   text-decoration: none;
-  font-size: 14px;
+  font-size: var(--text-button-totop);
   opacity: 0; /*让按钮不要过早的出现，它应该在页面向下滑到一定阶段后出现*/
   visibility: hidden;
   transition:
@@ -146,12 +200,13 @@ aside {
 }
 .self-introduction-img {
   display: flex;
-  gap: 12px;
+  gap: var(--space-3);
   align-items: center;
 }
 .self-introduction-img img {
   flex: none;
 }
+
 /* 优先级实验：article h3（1+1=2 分）输给 .post h3（10+1=11 分），
    而且无论把 article h3 写在文件最上面还是最下面，都是 navy 赢。
    结论：优先级比的是选择器的分数，不是书写的先后顺序。 */
@@ -162,3 +217,6 @@ aside {
 
 /* 10/26 
    加入display:none的时候卡片直接消失，改成visibility :hidden的时候也是消失，但是会保留该框占的空位 */
+
+/* 10/27 
+   没有任何变化，可能是我没有用过这个属性名 */
