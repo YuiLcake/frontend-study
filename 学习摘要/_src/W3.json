@@ -85,6 +85,84 @@
 
     {"type": "heading", "text": "五、明天要做的", "level": 3},
     {"type": "paragraph",
-     "text": "Grid 布局基础：grid-template-columns / rows、fr 单位、gap、grid-area 命名区域、auto-fit 与 minmax。Grid 是二维布局，和 Flex 的一维形成互补——页面的整体骨架用 Grid，组件内部的排列用 Flex。"}
+     "text": "Grid 布局基础：grid-template-columns / rows、fr 单位、gap、grid-area 命名区域、auto-fit 与 minmax。Grid 是二维布局，和 Flex 的一维形成互补——页面的整体骨架用 Grid，组件内部的排列用 Flex。"},
+
+    {"type": "page_break"},
+
+    {"type": "heading", "text": "第 13 天 · 2026-11-03", "level": 2},
+
+    {"type": "heading", "text": "一、今天犯的错误", "level": 3},
+    {"type": "table",
+     "header": ["错误", "发生了什么", "以后怎么办"],
+     "rows": [
+       ["grid-template-areas 画成了非矩形",
+        "写成 \"main main\" 换行 \"foot\"——第一行两格、第二行一格，而且和 grid-template-rows 的三行对不上。浏览器丢弃整条声明，后面所有 grid-area 都成了空指向。",
+        "每一行的格子数必须一样，行数要和 grid-template-rows 一致。写之前先在纸上把图画成矩形。"],
+       ["想让 footer 进 main 的网格",
+        "footer 是 main 的兄弟节点，不是子元素。grid-area 只对网格容器的直接子元素有效，所以写在 footer 上完全没作用，它按普通文档流排在 main 后面。",
+        "用网格前先确认「谁是谁的孩子」。要让 footer 参与，它必须和网格容器同层，或者让 body 当容器。"],
+       ["类名拼错 aerea-foot",
+        "HTML 写 aerea-foot，CSS 写 .area-foot，差两个字母，匹配不上。",
+        "类名拼错不会报错，只会静默失效。写完立刻刷新看效果。"],
+       ["把 flex: 1 0 100% 留在 grid 容器里",
+        "posts 已经从 flex 改成 grid，但标题那条规则还在用 flex 属性。flex 是弹性项目的属性，网格项目不看它，于是标题只占一格，跑到左上角和卡片并排。",
+        "换布局模型时，把原来那套属性全部检查一遍。Grid 里对应写法是 grid-column: 1 / -1。"],
+       [".fx2 与 .posts 的 display 冲突",
+        "posts 同时挂着 .fx2（display: flex）和 .posts（display: grid），两条规则打架；flex: 1 1 420px 在网格里也无意义。",
+        "一个元素上不要同时挂两套互相冲突的布局规则。换模型时把旧类和旧属性一起清掉。"]
+     ]},
+
+    {"type": "heading", "text": "二、新词与生词", "level": 3},
+    {"type": "table",
+     "header": ["英文", "中文", "用大白话说"],
+     "rows": [
+       ["grid container", "网格容器", "写了 display: grid 的那个元素"],
+       ["grid item", "网格项目", "容器的直接子元素，被放进格子里"],
+       ["grid-template-columns", "列定义", "有几列、每列多宽"],
+       ["grid-template-rows", "行定义", "有几行、每行多高"],
+       ["fr", "份", "fraction，按剩余空间的比例分配"],
+       ["grid line", "网格线", "格子的边界，n 列有 n+1 条线，编号从 1 开始"],
+       ["grid cell", "单元格", "两条列线和两条行线围出来的空间"],
+       ["span", "跨格", "grid-column: span 2 表示往右占两格"],
+       ["grid-area", "区域名", "给一块区域起名，或把项目放进某个区域"],
+       ["grid-template-areas", "区域图", "用字符串画出的布局示意图"],
+       ["auto-fit", "自动填充", "能塞几列就塞几列，数量由浏览器算"],
+       ["minmax()", "最小最大值", "minmax(180px, 1fr) 表示最窄 180、最宽一份"],
+       ["implicit grid", "隐式网格", "超出定义范围的自动新增行列"],
+       ["measure", "行长", "一行文字的长度，中文 30–40 字最舒适"]
+     ]},
+
+    {"type": "heading", "text": "三、今天学到的新知识", "level": 3},
+    {"type": "bullet_list", "items": [
+      "Flexbox 是一维的（一次管一个方向），Grid 是二维的（行列同时管）。整体页面骨架用 Grid，组件内部排列用 Flex。",
+      "fr 分的是扣掉固定尺寸和 gap 之后的剩余空间。3 列时先扣两段 gap，再按份数分；多个 fr 按比例。",
+      "1fr 实际等于 minmax(auto, 1fr)，最小值是内容宽度。长 URL、长单词会撑破网格——修法是 minmax(0, 1fr)，和 Flex 里的 min-width: 0 是同一个思路。",
+      "线永远比格多一条：3 列产生 4 条线。格是线夹出来的空间，不是线上的东西。",
+      "写在 grid-column 里的数字永远是线的编号，不是格的编号。1 / 3 表示从线 1 到线 3，占第 1、2 列，不含第 3 列。线号相减 = 占几格。",
+      "负数是倒数：-1 是最后一条线，1 / -1 表示占满所有列。列数动态变化（auto-fit）时只能用这种写法，写死数字会出错。",
+      "auto-fit 时列数不固定，所以不知道有几条线。这也是不要手数线号的理由。",
+      "隐式网格：只定义了 3 行但有 10 个元素时，Grid 会自动往下加行，行线要多少有多少。有 DevTools 的网格叠加显示比数数字可靠。",
+      "grid-template-areas 用一张字符串图描述整页布局，同一个词出现几次就跨几格。这张图的形状就是布局本身，改布局不用碰 HTML。",
+      "grid-template-areas 必须是矩形，且行数要和 grid-template-rows 一致，否则整条声明被丢弃。",
+      "grid-area 只对网格容器的直接子元素有效。兄弟节点、孙子节点都进不了这个网格。",
+      "auto-fit + minmax(180px, 1fr) 能自动决定列数，全程零媒体查询——这是「内在响应式」，比写断点更稳。",
+      "Grid 的对齐分两层：justify-content / align-content 调整整个网格在容器里的位置；justify-items / align-items 调整每个格子里的内容。place-items 是后两条的简写。",
+      "名字和 Flex 一样但含义有差别：Flex 的 justify-content 管主轴（可能横可能竖），Grid 的 justify 永远管横、align 永远管竖。",
+      "换布局模型（flex → grid）时，旧模型的属性会静默失效，不报错也不会提醒。这是 CSS 最危险的一类错误。"
+    ]},
+
+    {"type": "heading", "text": "四、今天的产出", "level": 3},
+    {"type": "bullet_list", "items": [
+      "卡片列表从 flex 改为 grid：repeat(auto-fit, minmax(240px, 1fr))，自动决定列数",
+      "页面骨架用 grid-template-areas: \"posts side\" 做两栏，替代原来的 flex 布局",
+      ".posts > .title 改用 grid-column: 1 / -1 独占一行，修复标题跑到左上角的问题",
+      "day13 课件：7 个实时演示（三列、fr 比例、混合单位、跨行列、命名区域、自动列数、对齐）",
+      "grid-lines.html：用带编号的红线图示讲清「线比格多一条」和 1 / 3 的真实含义",
+      "补记 进度.md 第 9–13 天，并修正第 8 天「今日提交」的复制粘贴错误"
+    ]},
+
+    {"type": "heading", "text": "五、明天要做的", "level": 3},
+    {"type": "paragraph",
+     "text": "响应式三件套：viewport meta 标签、移动端优先的写法、媒体查询断点。学完之后个人主页要同时适配桌面和手机，W3 的验收目标就是这个。"}
   ]
 }
