@@ -72,29 +72,6 @@ body {
 header {
   border-bottom: 2px solid var(--color-border);
 }
-main {
-  display: flex;
-  flex: 1;
-  flex-wrap: wrap;
-  gap: var(--space-6);
-  align-items: flex-start;
-  margin-top: var(--space-6);
-}
-section {
-  margin: 0 0;
-}
-
-.fx {
-  display: flex;
-  gap: var(--space-1);
-}
-
-footer {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-3);
-  align-items: center;
-}
 
 nav {
   display: flex;
@@ -113,20 +90,29 @@ nav a:hover {
   color: var(--color-nav-hover);
 }
 
-.fx2 {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-5);
+main {
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  grid-template-areas: "posts side";
+  gap: var(--space-6);
+  align-items: flex-start;
+  margin-top: var(--space-6);
 }
 
+.posts {
+  display: grid;
+  grid-area: posts;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-2);
+}
 .posts > .title {
-  flex: 1 0 100%; /* 在换行的 flex 容器里占满一整行 */
+  grid-column: 1 / -1; /* 在换行的 flex 容器里占满一整行 */
 }
 
-.post h3 {
-  font-size: var(--text-content);
-  color: var(--color-post-h3);
+section {
+  margin: 0 0;
 }
+
 .post {
   font-size: var(--text-base);
   display: flex;
@@ -136,6 +122,10 @@ nav a:hover {
   padding: var(--space-4) var(--space-5);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
+}
+.post h3 {
+  font-size: var(--text-content);
+  color: var(--color-post-h3);
 }
 .post header {
   display: flex;
@@ -157,6 +147,7 @@ nav a:hover {
   margin-bottom: var(--space-5);
 }
 
+/*让按钮不要过早的出现，它应该在页面向下滑到一定阶段后出现*/
 .to-top {
   position: fixed;
   right: 24px;
@@ -168,16 +159,17 @@ nav a:hover {
   border-radius: var(--radius-button-totop);
   text-decoration: none;
   font-size: var(--text-button-totop);
-  opacity: 0; /*让按钮不要过早的出现，它应该在页面向下滑到一定阶段后出现*/
+  opacity: 0;
   visibility: hidden;
   transition:
     opacity 0.2s,
     visibility 0.2s;
 }
 .to-top.is-visible {
-  opacity: 1; /*让按钮不要过早的出现，它应该在页面向下滑到一定阶段后出现*/
+  opacity: 1;
   visibility: visible;
 }
+/*让按钮不要过早的出现，它应该在页面向下滑到一定阶段后出现*/
 
 .title1 {
   font-size: 19px;
@@ -188,16 +180,15 @@ aside {
   justify-content: flex-start;
   flex-direction: column;
 }
+.sidebar {
+  grid-area: side;
+}
+
 .self-introduction {
   font-size: 16px;
   margin: 0;
 }
-.posts {
-  flex: 1 1 420px;
-}
-.sidebar {
-  flex: 0 1 240px;
-}
+
 .self-introduction-img {
   display: flex;
   gap: var(--space-3);
@@ -207,11 +198,18 @@ aside {
   flex: none;
 }
 
+footer {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  align-items: center;
+}
+
 /* 优先级实验：article h3（1+1=2 分）输给 .post h3（10+1=11 分），
    而且无论把 article h3 写在文件最上面还是最下面，都是 navy 赢。
    结论：优先级比的是选择器的分数，不是书写的先后顺序。 */
 
-/* 10/27 
+/* 10/26 
    在3.中：在DevTools中的h3的margin是20px
    nav a 的Styles：content是32.003*20，padding是0 4px，border和margin都是0 */
 
@@ -220,3 +218,6 @@ aside {
 
 /* 10/27 
    没有任何变化，可能是我没有用过这个属性名 */
+
+/* 11/3 
+   因为auto-fit比flex-wrap多一个参数minmax，能够限制元素的最窄宽度和最宽的宽度 */
