@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W3 Day2 · Grid 布局基础</title>
+  <style>
+    :root {
+      --c-text: #1f2328;
+      --c-muted: #59636e;
+      --c-border: #d1d9e0;
+      --c-surface: #f6f8fa;
+      --c-accent: #0969da;
+      --radius: 8px;
+      --sp-2: 8px;
+      --sp-3: 12px;
+      --sp-4: 16px;
+      --sp-5: 24px;
+    }
+    body {
+      max-width: 900px; margin: 40px auto; padding: 0 20px;
+      font-family: system-ui, sans-serif; line-height: 1.85; color: var(--c-text);
+    }
+    header { border-bottom: 2px solid var(--c-border); padding-bottom: var(--sp-4); }
+    section { margin: 40px 0; }
+    pre {
+      background: var(--c-surface); padding: 14px 16px; border-radius: var(--radius);
+      overflow-x: auto; border: 1px solid var(--c-border);
+    }
+    code { font-family: Consolas, monospace; font-size: 14px; }
+    table { border-collapse: collapse; margin: 12px 0; width: 100%; }
+    td, th { border: 1px solid var(--c-border); padding: 8px 12px; text-align: left; vertical-align: top; }
+    thead th { background: var(--c-surface); }
+    .hint { color: var(--c-muted); font-size: 14px; }
+    .note { background: #fffbe6; border-left: 3px solid #e0b400; padding: 10px 14px; margin: 14px 0; }
+    .cap { font-size: 13px; color: var(--c-muted); margin: 16px 0 4px; }
+
+    .demo { border: 1px dashed #8aa; background: #f4f8ff; padding: 8px; margin: 8px 0 20px; }
+    .cell { background: #cfe0ff; border: 1px solid #6a8fd8; padding: 14px; text-align: center; border-radius: 4px; }
+    .cell.b { background: #ffe0cf; border-color: #d88f6a; }
+    .cell.c { background: #d8f5cf; border-color: #6aa86a; }
+
+    /* 演示 1：三列等宽 */
+    .g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-2); }
+
+    /* 演示 2：按比例分配 */
+    .g-ratio { display: grid; grid-template-columns: 1fr 2fr 1fr; gap: var(--sp-2); }
+
+    /* 演示 3：混合单位，和 Flex 三栏对照 */
+    .g-mix { display: grid; grid-template-columns: 160px 1fr 120px; gap: var(--sp-2); }
+
+    /* 演示 4：跨列 */
+    .g-span { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-2); }
+    .span-2 { grid-column: span 2; }
+    .span-row { grid-row: span 2; }
+
+    /* 演示 5：命名区域 */
+    .g-areas {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      grid-template-rows: auto 1fr auto;
+      grid-template-areas:
+        "head head"
+        "side main"
+        "foot foot";
+      gap: var(--sp-2);
+    }
+    .area-head { grid-area: head; }
+    .area-side { grid-area: side; }
+    .area-main { grid-area: main; }
+    .area-foot { grid-area: foot; }
+
+    /* 演示 6：自动列数 */
+    .g-auto { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--sp-2); }
+
+    /* 演示 7：对齐 */
+    .g-align {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-auto-rows: 90px;
+      gap: var(--sp-2);
+      justify-items: center;
+      align-items: center;
+    }
+    .g-align .cell { width: 80px; padding: 8px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>第 13 天：Grid 布局基础</h1>
+    <p>昨天之前你只有一个布局工具。今天多第二个——而且它管的是 Flex 管不了的事。</p>
+  </header>
+
+  <main>
+
+    <section id="why">
+      <h2>一、Flex 的边界在哪</h2>
+
+      <p>
+        Flexbox 是<b>一维</b>布局：它一次只处理一个方向。你要么排一行，要么排一列。
+      </p>
+
+      <p>
+        所以做卡片列表时，你得靠 <code>flex-wrap: wrap</code> 让它自己换行——
+        <b>但你控制不了"每行几个"</b>。它是根据宽度自己算的。
+      </p>
+
+      <p>
+        如果你想要"左边一块固定、右边一块自适应、而且右边内部再分两行"这种**同时管行和列**的布局，
+        Flex 就得靠一层层嵌套硬凑。
+      </p>
+
+      <p>
+        <b>Grid 是二维的</b>：你先画好一张格子纸，然后把元素放进去。
+      </p>
+
+      <div class="note">
+        <b>怎么选，一句话：</b><br>
+        整体页面骨架（几行几列）用 <b>Grid</b>；组件内部的排列（一行按钮、一个头像加文字）用 <b>Flex</b>。<br>
+        不是"哪个更高级"，是"哪个更顺手"。很多人习惯全用 Flex，也能做出来，只是更啰嗦。
+      </div>
+    </section>
+
+    <section id="basic">
+      <h2>二、最小可用：三列</h2>
+
+<pre><code>.container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);   /* 三列，每列一份 */
+  gap: 8px;
+}</code></pre>
+
+      <div class="cap">效果</div>
+      <div class="demo">
+        <div class="g3">
+          <div class="cell">1</div>
+          <div class="cell b">2</div>
+          <div class="cell c">3</div>
+        </div>
+      </div>
+
+      <p class="hint">
+        <code>repeat(3, 1fr)</code> 等于写三遍 <code>1fr</code>：
+        <code>grid-template-columns: 1fr 1fr 1fr;</code>
+      </p>
+    </section>
+
+    <section id="fr">
+      <h2>三、fr 是 Grid 的灵魂</h2>
+
+      <p>
+        <code>fr</code> 是"份"（fraction）。它表示<b>剩余空间按比例分</b>，不是固定像素。
+      </p>
+
+<pre><code>grid-template-columns: 1fr 2fr 1fr;   /* 中间是两边两倍宽 */</code></pre>
+
+      <div class="cap">1fr 2fr 1fr</div>
+      <div class="demo">
+        <div class="g-ratio">
+          <div class="cell">1fr</div>
+          <div class="cell b">2fr</div>
+          <div class="cell c">1fr</div>
+        </div>
+      </div>
+
+      <p>
+        它和 <code>px</code> 可以混用——需要固定的地方给固定值，需要伸缩的地方给 <code>fr</code>：
+      </p>
+
+<pre><code>grid-template-columns: 160px 1fr 120px;   /* 左右固定，中间自适应 */</code></pre>
+
+      <div class="cap">和 Flex 三栏的写法对照</div>
+      <div class="demo">
+        <div class="g-mix">
+          <div class="cell">160px</div>
+          <div class="cell b">1fr</div>
+          <div class="cell c">120px</div>
+        </div>
+      </div>
+
+      <table>
+        <thead><tr><th scope="col">做法</th><th scope="col">写法</th></tr></thead>
+        <tbody>
+          <tr><td>Flex 版</td><td><code>.left{flex:0 0 160px} .mid{flex:1} .right{flex:0 0 120px}</code></td></tr>
+          <tr><td>Grid 版</td><td><code>grid-template-columns: 160px 1fr 120px</code></td></tr>
+        </tbody>
+      </table>
+
+      <p class="hint">
+        Grid 这版短得多，而且不用管子元素的顺序——<b>列宽定义在容器上，跟子元素是谁无关。</b>
+      </p>
+    </section>
+
+    <section id="span">
+      <h2>四、跨列与跨行</h2>
+
+      <p>格子画好之后，可以让某个元素占好几格。</p>
+
+<pre><code>.item-wide { grid-column: span 2; }   /* 横向占两列 */
+.item-tall { grid-row: span 2; }      /* 纵向占两行 */</code></pre>
+
+      <div class="cap">四列网格，第 1 个占两列，最后一个占两行</div>
+      <div class="demo">
+        <div class="g-span">
+          <div class="cell span-2">占 2 列</div>
+          <div class="cell b">3</div>
+          <div class="cell c">4</div>
+          <div class="cell span-row b">占<br>2 行</div>
+          <div class="cell">5</div>
+          <div class="cell c">6</div>
+        </div>
+      </div>
+
+      <p class="hint">
+        注意 <code>span</code> 是"跨几格"，不是"从哪到哪"。要精确指定位置可以用线号：
+        <code>grid-column: 1 / 3</code>（从第 1 条线到第 3 条线，也就是占第 1、2 列）。
+      </p>
+    </section>
+
+    <section id="areas">
+      <h2>五、命名区域：把布局画出来</h2>
+
+      <p>
+        这是 Grid 最好用的功能。<b>直接在 CSS 里画一张图</b>，每个词代表一块区域：
+      </p>
+
+<pre><code>.layout {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "head head"
+    "side main"
+    "foot foot";
+  gap: 8px;
+}
+
+.area-head { grid-area: head; }
+.area-side { grid-area: side; }
+.area-main { grid-area: main; }
+.area-foot { grid-area: foot; }</code></pre>
+
+      <div class="cap">效果：这块就是整个页面骨架</div>
+      <div class="demo">
+        <div class="g-areas">
+          <div class="cell area-head">header（横跨两列）</div>
+          <div class="cell b area-side">侧栏</div>
+          <div class="cell c area-main">主内容</div>
+          <div class="cell area-foot">footer（横跨两列）</div>
+        </div>
+      </div>
+
+      <p class="hint">
+        那张用引号写的图，<b>形状就是布局本身</b>。同一个词出现几次，那块区域就跨几格。
+        改布局只要改这张图，不用碰 HTML。
+      </p>
+
+      <div class="note">
+        <b>为什么这个重要：</b>手机版和桌面版可以用同一套 HTML，
+        只换两张 <code>grid-template-areas</code> 图。<br>
+        桌面版是侧栏在左，手机版可以写成
+        <code>"head" "main" "side" "foot"</code> 一列到底——<b>改三行字符串就完成适配</b>。
+      </div>
+    </section>
+
+    <section id="auto">
+      <h2>六、自动列数：响应式的杀手锏</h2>
+
+<pre><code>grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));</code></pre>
+
+      <div class="cap">拖动窗口宽度，看列数自动变化</div>
+      <div class="demo">
+        <div class="g-auto">
+          <div class="cell">A</div>
+          <div class="cell b">B</div>
+          <div class="cell c">C</div>
+          <div class="cell">D</div>
+          <div class="cell b">E</div>
+        </div>
+      </div>
+
+      <p>这句话拆开读：</p>
+
+      <table>
+        <thead><tr><th scope="col">部分</th><th scope="col">意思</th></tr></thead>
+        <tbody>
+          <tr><td><code>repeat(auto-fit, ...)</code></td><td>能塞几列就塞几列，数量我自己算</td></tr>
+          <tr><td><code>minmax(180px, 1fr)</code></td><td>每列最窄 180px，最宽可以到 1fr（平分剩余）</td></tr>
+        </tbody>
+      </table>
+
+      <p class="hint">
+        容器够宽 → 塞更多列；容器变窄 → 列数减少，直到只剩一列。
+        <b>全程没有写一行媒体查询。</b>这和你之前学的 <code>flex-wrap</code> 是同一类"内在响应式"，
+        但 Grid 版能控制"每列最小多宽"。
+      </p>
+    </section>
+
+    <section id="align">
+      <h2>七、对齐：三个层级的区别</h2>
+
+      <p>Grid 里的对齐分两层：<b>整个网格在容器里怎么摆</b>，和<b>格子里的内容怎么摆</b>。</p>
+
+      <table>
+        <thead><tr><th scope="col">属性</th><th scope="col">管什么</th></tr></thead>
+        <tbody>
+          <tr><td><code>justify-content</code></td><td>整个网格在容器里水平怎么摆（网格比容器小的时候才有意义）</td></tr>
+          <tr><td><code>align-content</code></td><td>整个网格垂直怎么摆</td></tr>
+          <tr><td><code>justify-items</code></td><td>每个格子里的内容水平怎么对齐</td></tr>
+          <tr><td><code>align-items</code></td><td>每个格子里的内容垂直怎么对齐</td></tr>
+          <tr><td><code>place-items</code></td><td>上面两条的简写：<code>place-items: center</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="cap">place-items: center —— 每个格子里的内容都居中</div>
+      <div class="demo">
+        <div class="g-align">
+          <div class="cell">1</div>
+          <div class="cell b">2</div>
+          <div class="cell c">3</div>
+          <div class="cell b">4</div>
+          <div class="cell">5</div>
+          <div class="cell c">6</div>
+        </div>
+      </div>
+
+      <p class="hint">
+        注意这些名字和 Flex 是同一套（<code>items</code> / <code>content</code> / <code>justify</code> / <code>align</code>），
+        但含义有差别：Flex 里 <code>justify-content</code> 管主轴（可能是横也可能是竖），
+        Grid 里 <code>justify</code> 永远管横、<code>align</code> 永远管竖。
+      </p>
+    </section>
+
+    <section id="exercise">
+      <h2>八、作业</h2>
+
+      <ol>
+        <li>
+          <b>卡片列表改用 Grid</b>：把 <code>.posts</code> 从 flex 改成
+          <code>grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));</code>，
+          观察和 Flex 版的差别（特别是窄屏时的表现）。
+        </li>
+        <li>
+          <b>页面骨架用命名区域</b>：给 <code>main</code> 那一层改成
+          <code>grid-template-areas: "posts side";</code>，把 <code>.posts</code> 和
+          <code>.sidebar</code> 分别指到两个区域。
+          <span class="hint">这次不用 flex，看看写起来是不是更短。</span>
+        </li>
+        <li>
+          <b>对比记录</b>：在 CSS 注释里写三句话——Grid 版比 Flex 版短在哪里、清楚在哪里、
+          哪一处反而不如 Flex。
+        </li>
+        <li>
+          <b>思考题</b>（也写注释）：为什么"卡片列表"用 <code>auto-fit</code> 比
+          <code>flex-wrap</code> 更可控？
+        </li>
+      </ol>
+    </section>
+
+    <section id="deep">
+      <h2>九、深水区（有时间再做）</h2>
+
+      <p><b>用 Grid 复刻 GitHub 个人主页的两栏布局。</b></p>
+
+      <ul>
+        <li>左栏固定 296px（头像 + 简介 + 关注数），右栏自适应（仓库列表）</li>
+        <li>窄屏时变成一列，左右顺序不变</li>
+        <li>右侧仓库列表用 <code>auto-fit</code> 网格</li>
+      </ul>
+
+      <p><b>验收</b>：1440px 下两栏，800px 下自动变一列，且不出现横向滚动条。</p>
+
+      <div class="note">
+        这一题练的是"用一张 areas 图描述整页"。做完你会发现：
+        <b>页面结构可以先用 Grid 画出来，再往里填内容</b>——这比"边写边想怎么排"快得多。
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="border-top:1px solid var(--c-border);padding-top:16px;margin-top:40px">
+    <p class="hint">W3 Day2 · 2026-11-03</p>
+  </footer>
+
+</body>
+</html>
