@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>W3 Day3 · 响应式三件套</title>
+    <style>
+      :root {
+        --c-text: #1f2328;
+        --c-muted: #59636e;
+        --c-border: #d1d9e0;
+        --c-surface: #f6f8fa;
+        --c-accent: #0969da;
+        --radius: 8px;
+        --sp-2: 8px;
+        --sp-3: 12px;
+        --sp-4: 16px;
+        --sp-5: 24px;
+      }
+      body {
+        max-width: 880px;
+        margin: 40px auto;
+        padding: 0 20px;
+        font-family: system-ui, sans-serif;
+        line-height: 1.85;
+        color: var(--c-text);
+      }
+      header {
+        border-bottom: 2px solid var(--c-border);
+        padding-bottom: var(--sp-4);
+      }
+      section {
+        margin: 40px 0;
+      }
+      pre {
+        background: var(--c-surface);
+        padding: 14px 16px;
+        border-radius: var(--radius);
+        overflow-x: auto;
+        border: 1px solid var(--c-border);
+      }
+      code {
+        font-family: Consolas, monospace;
+        font-size: 14px;
+      }
+      table {
+        border-collapse: collapse;
+        margin: 12px 0;
+        width: 100%;
+      }
+      td,
+      th {
+        border: 1px solid var(--c-border);
+        padding: 8px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      thead th {
+        background: var(--c-surface);
+      }
+      .hint {
+        color: var(--c-muted);
+        font-size: 14px;
+      }
+      .note {
+        background: #fffbe6;
+        border-left: 3px solid #e0b400;
+        padding: 10px 14px;
+        margin: 14px 0;
+      }
+      .cap {
+        font-size: 13px;
+        color: var(--c-muted);
+        margin: 16px 0 4px;
+      }
+      .demo {
+        border: 1px dashed #8aa;
+        background: #f4f8ff;
+        padding: 12px;
+        margin: 8px 0 20px;
+      }
+
+      /* ===== 演示 1：移动优先的媒体查询 ===== */
+      .mq-demo {
+        display: grid;
+        gap: var(--sp-2);
+      }
+      .mq-demo > div {
+        background: #cfe0ff;
+        border: 1px solid #6a8fd8;
+        padding: 14px;
+        border-radius: 4px;
+        text-align: center;
+      }
+
+      /* 默认（手机）：一列 */
+      .mq-demo {
+        grid-template-columns: 1fr;
+      }
+      /* 屏幕宽 ≥ 600px 时：两列 */
+      @media (min-width: 600px) {
+        .mq-demo {
+          grid-template-columns: 1fr 1fr;
+        }
+        .mq-demo > div {
+          background: #d8f5cf;
+          border-color: #6aa86a;
+        }
+      }
+      /* 屏幕宽 ≥ 800px 时：三列 */
+      @media (min-width: 800px) {
+        .mq-demo {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .mq-demo > div {
+          background: #ffe0cf;
+          border-color: #d88f6a;
+        }
+      }
+
+      /* ===== 演示 2：流体字号 ===== */
+      .fluid-title {
+        font-size: clamp(20px, 4vw, 36px);
+        font-weight: 700;
+        margin: 0;
+      }
+
+      /* ===== 演示 3：响应式图片 ===== */
+      .img-demo img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        border-radius: var(--radius);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>第 14 天：响应式三件套</h1>
+      <p>
+        viewport、移动端优先、媒体查询。学完这一课，你的站点在手机上才算能用。
+      </p>
+    </header>
+
+    <main>
+      <section id="why">
+        <h2>一、同一份代码，所有屏幕</h2>
+
+        <p>同一套 HTML/CSS，要同时在下面这些宽度上正常工作：</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">设备</th>
+              <th scope="col">CSS 宽度</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>手机（竖）</td>
+              <td>360 – 430px</td>
+            </tr>
+            <tr>
+              <td>手机（横）/ 小平板</td>
+              <td>568 – 768px</td>
+            </tr>
+            <tr>
+              <td>平板</td>
+              <td>768 – 1024px</td>
+            </tr>
+            <tr>
+              <td>笔记本</td>
+              <td>1280 – 1536px</td>
+            </tr>
+            <tr>
+              <td>外接显示器</td>
+              <td>1920px 以上</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p><b>差 5 倍以上。</b>写死一个尺寸，必然有一类是坏的。</p>
+
+        <p class="hint">
+          注意这里说的是 <b>CSS 宽度</b>——不是物理分辨率。手机的物理像素有 1080
+          甚至 1440， 但 CSS 宽度只有 360–430。这个换算就是下面要说的 viewport。
+        </p>
+      </section>
+
+      <section id="viewport">
+        <h2>二、第 0 步：<code>viewport</code> meta 标签</h2>
+
+        <p>这一行没有的话，下面所有努力全部白费：</p>
+
+        <pre><code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code></pre>
+
+        <p><b>不加会发生什么：</b></p>
+
+        <p>
+          手机浏览器默认按 <b>980px</b> 的"虚拟宽度"来渲染页面，然后把整张 980px
+          宽的图缩小塞进屏幕。 结果是：字变得极小，你得用两根手指放大才能看。
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">写法</th>
+              <th scope="col">效果</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>没有 meta</td>
+              <td>
+                按 980px 渲染再缩小 → 字小到看不清，媒体查询也按 980px 判断
+              </td>
+            </tr>
+            <tr>
+              <td><code>width=device-width</code></td>
+              <td>页面宽度 = 设备宽度 → 正常显示，<b>媒体查询才有意义</b></td>
+            </tr>
+            <tr>
+              <td><code>initial-scale=1.0</code></td>
+              <td>初始不缩放</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="note">
+          <b>为什么这行会影响媒体查询：</b>没有它时，浏览器认为自己有 980px 宽，
+          你的 <code>@media (max-width: 600px)</code> 永远不会触发——它以为屏幕有
+          980px 呢。<br />
+          <b>所以：媒体查询不生效，先检查这一行。</b>
+        </div>
+
+        <p class="hint">
+          你的站点已经有这一行了（第 1 天写的），所以可以直接进下一步。
+        </p>
+      </section>
+
+      <section id="mobile-first">
+        <h2>三、移动端优先：先写手机，再加宽屏</h2>
+
+        <p>两种写法，方向相反：</p>
+
+        <pre><code>/* 桌面优先：先写宽屏，再用 max-width 往回改 */
+.container { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 768px) { .container { grid-template-columns: 1fr; } }
+
+/* 移动端优先：先写手机，再用 min-width 往前加 */
+.container { grid-template-columns: 1fr; }
+@media (min-width: 768px) { .container { grid-template-columns: repeat(3, 1fr); } }</code></pre>
+
+        <p><b>推荐移动端优先，两个理由：</b></p>
+
+        <ul>
+          <li>
+            <b>手机是默认状态。</b
+            >手机屏幕更小、限制更多，先解决最难的情况，宽屏是"加分"。
+          </li>
+          <li>
+            <b>代码更少。</b
+            >手机版通常更简单（一列、纵向堆叠），桌面版是"增强"，用 min-width
+            一层层加上去，逻辑是叠加而不是覆盖。
+          </li>
+        </ul>
+
+        <p class="hint">
+          而且现在移动流量占比普遍高于桌面，先保证手机能用是更实际的策略。
+        </p>
+      </section>
+
+      <section id="mq">
+        <h2>四、媒体查询语法</h2>
+
+        <pre><code>@media (min-width: 600px) {
+  /* 屏幕宽度 ≥ 600px 时，这里面的规则生效 */
+}
+
+@media (max-width: 599px) {
+  /* 屏幕宽度 ≤ 599px 时生效 */
+}
+
+@media (min-width: 600px) and (max-width: 900px) {
+  /* 区间：600 到 900 之间 */
+}
+
+@media (prefers-color-scheme: dark) {
+  /* 用户系统开了深色模式 */
+}</code></pre>
+
+        <p><b>看得见的演示</b>（拖窄窗口，格子会变）：</p>
+
+        <div class="cap">
+          规则：默认一列（蓝）→ ≥600px 两列（绿）→ ≥800px 三列（橙）
+        </div>
+        <div class="demo">
+          <div class="mq-demo">
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+            <div>5</div>
+            <div>6</div>
+          </div>
+        </div>
+
+        <p class="hint">
+          注意三条规则都写在文件里，浏览器只执行<b>当前命中的</b>那些。
+          这不是"覆盖"，是"条件生效"。
+        </p>
+      </section>
+
+      <section id="breakpoints">
+        <h2>五、断点怎么选：按内容，不按设备</h2>
+
+        <p>新手最常见的做法是背设备宽度：</p>
+
+        <pre><code>@media (max-width: 375px) { }  /* iPhone SE */
+@media (max-width: 390px) { }  /* iPhone 14 */
+@media (max-width: 414px) { }  /* iPhone Plus */</code></pre>
+
+        <p>
+          <b>这是错的。</b>手机型号无穷无尽，你永远列不完，而且明年就过时了。
+        </p>
+
+        <p><b>正确做法：拖窄窗口，看到布局"开始难看"的那一刻，就是断点。</b></p>
+
+        <ol>
+          <li>把窗口从宽往窄慢慢拖</li>
+          <li>
+            盯住内容——什么时候文字挤成一团、卡片窄到放不下、两栏挤成一栏更舒服
+          </li>
+          <li>那个宽度就是你的断点，写进去</li>
+        </ol>
+
+        <p class="hint">
+          这叫<b>内容断点</b>。因为布局坏掉的原因是"内容放不下"，跟用户拿的是
+          iPhone 还是小米没关系。
+        </p>
+
+        <p>
+          如果实在没头绪，可以用这组常见值起步，但<b>一定要自己拖一遍验证</b>：
+        </p>
+
+        <pre><code>480px   大手机横屏
+768px   平板竖屏
+1024px  平板横屏 / 小笔记本
+1280px  笔记本</code></pre>
+      </section>
+
+      <section id="modern">
+        <h2>六、能不用媒体查询就别用</h2>
+
+        <p>
+          媒体查询是"补救"手段。很多需求用内在响应式（你已经学过）就能解决：
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">需求</th>
+              <th scope="col">更好的做法</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>卡片能并排也能堆叠</td>
+              <td><code>repeat(auto-fit, minmax(240px, 1fr))</code></td>
+            </tr>
+            <tr>
+              <td>一行元素放不下就换行</td>
+              <td><code>flex-wrap: wrap</code></td>
+            </tr>
+            <tr>
+              <td>字号随屏幕变化</td>
+              <td><code>clamp(20px, 4vw, 36px)</code></td>
+            </tr>
+            <tr>
+              <td>元素随容器宽度变化</td>
+              <td><code>clamp()</code> / 容器查询</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="cap">流体字号演示（拖窗口看标题大小）</div>
+        <div class="demo">
+          <p class="fluid-title">clamp(20px, 4vw, 36px)</p>
+        </div>
+
+        <p class="hint">
+          <code>clamp(最小值, 理想值, 最大值)</code>：字号跟着视口宽度
+          <code>vw</code> 走， 但不小于 20px、不大于 36px。<b
+            >一行代码替代三个断点。</b
+          >
+        </p>
+
+        <p>
+          <b>原则：能用内在响应式解决的，不要写断点。</b
+          >断点越少，维护成本越低，出 bug 的地方越少。
+        </p>
+      </section>
+
+      <section id="media">
+        <h2>七、图片也要响应式</h2>
+
+        <pre><code>img {
+  max-width: 100%;   /* 不超过容器宽度 */
+  height: auto;      /* 保持比例，不拉伸 */
+}</code></pre>
+
+        <p class="hint">
+          没这两条时，一张 2000px 宽的图会把整个页面撑出横向滚动条——
+          而图片本身的像素宽度是死的，不会自己缩。
+        </p>
+
+        <p>
+          再进一步，用 <code>srcset</code> 让浏览器按屏幕选图片（手机不用下载
+          2000px 的大图）——
+          这个等你做毕设上传封面图时再说，现在知道有这么回事就行。
+        </p>
+      </section>
+
+      <section id="test">
+        <h2>八、怎么测试</h2>
+
+        <ol>
+          <li>F12 打开 DevTools</li>
+          <li>点左上角的<b>设备图标</b>（或 Ctrl + Shift + M）</li>
+          <li>在顶部下拉里选机型，或者直接拖边框改宽度</li>
+          <li>
+            重点看三个宽度：<b>375px</b>（手机）、<b>768px</b>（平板）、<b>1280px</b>（笔记本）
+          </li>
+        </ol>
+
+        <p><b>每次都要检查的四件事：</b></p>
+
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">检查项</th>
+              <th scope="col">判断标准</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>横向滚动条</td>
+              <td>不该出现。出现了说明有元素超出视口</td>
+            </tr>
+            <tr>
+              <td>文字大小</td>
+              <td>不用放大就能读，正文不小于 14px</td>
+            </tr>
+            <tr>
+              <td>点击区域</td>
+              <td>按钮、链接不小于 44×44px（手指比鼠标粗）</td>
+            </tr>
+            <tr>
+              <td>内容重叠</td>
+              <td>没有元素互相压住</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercise">
+        <h2>九、作业</h2>
+
+        <p>在你的学习站点上做。改 <code>docs/css/main.css</code>。</p>
+
+        <ol>
+          <li>
+            <b>先看现状</b>：DevTools 切到 375px，截图看你的站点现在什么样。
+            <span class="hint"
+              >大概率：卡片挤成一列、导航挤在一起、字很小。</span
+            >
+          </li>
+          <li>
+            <b>两栏变一栏</b>：现在 <code>main</code> 是
+            <code>grid-template-areas: "posts side"</code>。
+            用移动端优先补一条——窄屏时改成
+            <code>"posts" "side"</code> 纵向堆叠。
+            <pre><code>@media (max-width: 767px) {
+  main { grid-template-columns: 1fr; grid-template-areas: "posts" "side"; }
+}</code></pre>
+            <p class="hint">
+              注意：如果你坚持移动端优先，这条应该反过来写——默认单列，min-width
+              时才两栏。选一种，别混用。
+            </p>
+          </li>
+          <li>
+            <b>导航适配</b>：窄屏时导航链接会挤成一团。用
+            <code>flex-wrap: wrap</code> 让它换行，
+            或者用媒体查询减小间距和字号。
+          </li>
+          <li>
+            <b>图片响应式</b>：给 <code>img</code> 加
+            <code>max-width: 100%; height: auto;</code>，
+            确认窄屏不出现横向滚动条。
+          </li>
+          <li>
+            <b>记录断点理由</b>：在 CSS
+            注释里写清楚——你选的每个断点，是因为什么内容放不下才定的。
+          </li>
+        </ol>
+
+        <div class="note">
+          <b>验收：</b>375px、768px、1280px 三个宽度下都不出现横向滚动条，
+          文字不用放大能读，没有元素重叠。
+        </div>
+      </section>
+    </main>
+
+    <footer
+      style="
+        border-top: 1px solid var(--c-border);
+        padding-top: 16px;
+        margin-top: 40px;
+      "
+    >
+      <p class="hint">W3 Day3 · 2026-11-04</p>
+    </footer>
+  </body>
+</html>
