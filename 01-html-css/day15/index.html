@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W3 Day4 · 个人主页 v1</title>
+  <style>
+    :root {
+      --c-text: #1f2328; --c-muted: #59636e; --c-border: #d1d9e0;
+      --c-surface: #f6f8fa;
+      --radius: 8px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px;
+    }
+    body { max-width: 880px; margin: 40px auto; padding: 0 20px;
+           font-family: system-ui, sans-serif; line-height: 1.85; color: var(--c-text); }
+    header { border-bottom: 2px solid var(--c-border); padding-bottom: var(--sp-4); }
+    section { margin: var(--sp-6) 0; }
+    pre { background: var(--c-surface); padding: 14px 16px; border-radius: var(--radius);
+          overflow-x: auto; border: 1px solid var(--c-border); line-height: 1.5; }
+    code { font-family: Consolas, monospace; font-size: 14px; }
+    table { border-collapse: collapse; margin: 12px 0; width: 100%; }
+    td, th { border: 1px solid var(--c-border); padding: 8px 12px; text-align: left; vertical-align: top; }
+    thead th { background: var(--c-surface); }
+    .hint { color: var(--c-muted); font-size: 14px; }
+    .note { background: #fffbe6; border-left: 3px solid #e0b400; padding: 10px 14px; margin: 14px 0; }
+    .bad { background: #ffebe9; border-left: 3px solid #d1242f; padding: 10px 14px; margin: 14px 0; }
+    ul li { margin: 6px 0; }
+    ol li { margin: 8px 0; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>W3 Day4 · 个人主页 v1</h1>
+    <p>今天不学新东西。把这一周的 Grid、CSS 变量、响应式，合成一个真正的作品。</p>
+  </header>
+
+  <main>
+
+    <section id="why">
+      <h2>一、为什么值得认真做</h2>
+
+      <p>
+        你现在有两个"作品"：学习站点（记录用）和毕设（还没开始）。
+        <b>而面试官第一眼看到的是你的 GitHub 头像和主页。</b>
+      </p>
+
+      <p>
+        个人主页的作用不是"好看"，是三件事：
+      </p>
+
+      <ul>
+        <li><b>三十秒内说清你是谁</b>——名字、方向、能做什么</li>
+        <li><b>给作品一个入口</b>——点一下就能看到你的项目</li>
+        <li><b>证明你会写前端</b>——页面本身就是证据</li>
+      </ul>
+
+      <div class="note">
+        最后一个最重要。<b>简历上写"熟悉 CSS 布局"，不如让对方打开一个你自己排的页面。</b>
+        这张页面会被反复看，值得花一天。
+      </div>
+    </section>
+
+    <section id="content">
+      <h2>二、要写的内容（五个区块）</h2>
+
+      <table>
+        <thead>
+          <tr><th scope="col">区块</th><th scope="col">写什么</th><th scope="col">长度</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>顶部导航</b></td>
+            <td>你的名字（左）+ 两三个链接（右）：GitHub、邮箱</td>
+            <td>一行</td>
+          </tr>
+          <tr>
+            <td><b>Hero</b></td>
+            <td>
+              一句主标题（你是谁）<br>
+              一句副标题（做什么方向）<br>
+              两个按钮：查看项目 / 联系我
+            </td>
+            <td>3 行以内</td>
+          </tr>
+          <tr>
+            <td><b>关于我</b></td>
+            <td>2–3 句：专业背景、正在学什么、想要什么样的工作</td>
+            <td>80–120 字</td>
+          </tr>
+          <tr>
+            <td><b>技能</b></td>
+            <td>分成"已掌握 / 学习中"两组，用标签列出</td>
+            <td>6–10 个标签</td>
+          </tr>
+          <tr>
+            <td><b>项目</b></td>
+            <td>2 张卡片：学习站点（线上地址）+ 毕设（一句话+技术栈）</td>
+            <td>每张 3 行</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>文案怎么写才不假</h3>
+
+      <div class="bad">
+        <b>别写这些：</b><br>
+        「热爱技术，善于沟通，具有较强的学习能力和团队协作精神」<br>
+        —— 每个应届生都这么写，等于没写。
+      </div>
+
+      <p><b>写这些：</b>具体、可验证、有数字。</p>
+
+      <table>
+        <thead><tr><th scope="col">❌ 空话</th><th scope="col">✅ 具体</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>热爱前端开发</td>
+            <td>2026 年 10 月起系统学习前端，每天 4–6 小时，已完成 15 天 CSS 学习并上线练习站点</td>
+          </tr>
+          <tr>
+            <td>熟悉 CSS 布局</td>
+            <td>能独立复刻真实站点组件，掌握 Flexbox、Grid、CSS 变量与响应式适配</td>
+          </tr>
+          <tr>
+            <td>有项目经验</td>
+            <td>毕业设计：校园活动报名管理系统（Vue 3 + FastAPI + MySQL），2027 年 1 月进入开发</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="hint">
+        一个判断标准：<b>这句话能不能被第三个人验证？</b>不能验证的，删掉。
+      </p>
+    </section>
+
+    <section id="wireframe">
+      <h2>三、线框图</h2>
+
+      <h3>桌面（≥ 900px）</h3>
+
+<pre><code>┌──────────────────────────────────────────────┐
+│  熙熙 · 前端开发              GitHub   邮箱   │  header
+├──────────────────────────────────────────────┤
+│                                              │
+│   你好，我是熙熙              ┌──────────┐   │  hero
+│   大三 · 软件工程             │          │   │
+│   目标：前端开发              │  头像/图形 │   │
+│                               │          │   │
+│   [ 查看项目 ]  [ 联系我 ]    └──────────┘   │
+│                                              │
+├──────────────────────────────────────────────┤
+│  关于我                                       │
+│  两到三句话……                                 │
+├──────────────────────────────────────────────┤
+│  技能                                         │
+│  [HTML] [CSS] [JavaScript] [Vue 3] [Git]     │
+├──────────────────────────────────────────────┤
+│  项目                                         │
+│  ┌────────────────┐  ┌────────────────┐      │
+│  │ 学习站点        │  │ 校园活动报名    │      │
+│  │ 一句话          │  │ 一句话          │      │
+│  │ HTML CSS        │  │ Vue FastAPI     │      │
+│  └────────────────┘  └────────────────┘      │
+├──────────────────────────────────────────────┤
+│  © 2026 熙熙                                  │  footer
+└──────────────────────────────────────────────┘</code></pre>
+
+      <h3>手机（≤ 767px）</h3>
+
+<pre><code>┌──────────────────┐
+│ 熙熙 · 前端开发   │   header（链接换行或缩小）
+├──────────────────┤
+│  你好，我是熙熙   │
+│  大三 · 软件工程  │   hero：先文字
+│  [查看项目]       │
+│  [联系我]         │   按钮变成整行
+│  ┌────────────┐  │
+│  │  头像/图形  │  │   头像移到下面
+│  └────────────┘  │
+├──────────────────┤
+│  关于我           │
+├──────────────────┤
+│  技能             │
+├──────────────────┤
+│  ┌────────────┐  │
+│  │ 项目卡片 1  │  │   单列
+│  └────────────┘  │
+│  ┌────────────┐  │
+│  │ 项目卡片 2  │  │
+│  └────────────┘  │
+├──────────────────┤
+│  © 2026          │
+└──────────────────┘</code></pre>
+    </section>
+
+    <section id="tech">
+      <h2>四、技术要求（四条硬指标）</h2>
+
+      <ol>
+        <li>
+          <b>用 CSS 变量</b>：颜色、间距、字号全部走 <code>:root</code> 令牌，
+          不许出现硬编码的 <code>#fff</code>、<code>16px</code>。
+          <span class="hint">验收：改 <code>:root</code> 里一个颜色，整页跟着变。</span>
+        </li>
+        <li>
+          <b>页面骨架用 Grid</b>：整页用 <code>grid-template-areas</code> 画出 header / hero / about / skills / projects / footer。
+        </li>
+        <li>
+          <b>移动端优先</b>：默认写手机布局，用 <code>min-width</code> 往宽屏加。
+          <span class="hint">最多两条媒体查询。</span>
+        </li>
+        <li>
+          <b>三个宽度无横向滚动条</b>：375px / 768px / 1280px。
+        </li>
+      </ol>
+
+      <div class="note">
+        <b>不许做的事：</b>不引入任何框架（Bootstrap、Tailwind 都不行）、不用 <code>position: absolute</code> 排主布局、
+        不复制别人的模板。<b>这页必须每一行都是你自己排出来的。</b>
+      </div>
+    </section>
+
+    <section id="order">
+      <h2>五、实现顺序（别跳步）</h2>
+
+      <ol>
+        <li>
+          <b>写文案</b>（30 分钟）：五个区块的文字先全部写在 HTML 里，不要样式。
+          <span class="hint">文案卡住会拖一整天，先解决它。</span>
+        </li>
+        <li>
+          <b>搭令牌</b>（15 分钟）：<code>:root</code> 定义颜色 5–6 个、间距 5 个、字号 4 个、圆角 2 个。
+          <span class="hint">选一套你喜欢的主色，整页只用它和它的深浅变化。</span>
+        </li>
+        <li>
+          <b>画骨架</b>（30 分钟）：整页 Grid + areas 图，先不写任何细节样式。
+          刷新看到六个方块排好就算过。
+        </li>
+        <li>
+          <b>填细节</b>（60–90 分钟）：逐个区块调整字号、间距、边框、按钮。
+          <span class="hint">一次只改一个区块，改完刷新看一眼。</span>
+        </li>
+        <li>
+          <b>适配</b>（30 分钟）：手机版对照线框图调整。
+        </li>
+        <li>
+          <b>自检</b>（15 分钟）：三个宽度、四项验收。
+        </li>
+      </ol>
+
+      <p class="hint">合计约 4 小时。做不完就到第 4 步停下，剩下的明天继续。</p>
+    </section>
+
+    <section id="accept">
+      <h2>六、验收标准</h2>
+
+      <table>
+        <thead><tr><th scope="col">项</th><th scope="col">标准</th></tr></thead>
+        <tbody>
+          <tr><td>结构</td><td>语义标签（header / main / section / footer），无多余的 div 套娃</td></tr>
+          <tr><td>令牌</td><td>全文没有硬编码颜色值</td></tr>
+          <tr><td>布局</td><td>整页由一张 grid-template-areas 图描述</td></tr>
+          <tr><td>响应式</td><td>375 / 768 / 1280 无横向滚动条、无重叠、字能直接读</td></tr>
+          <tr><td>文案</td><td>每句话都能被验证，没有"热爱""善于"这类空话</td></tr>
+          <tr><td>可访问性</td><td>图片有 alt、链接有可读文字、标题层级 h1 → h2 不跳级</td></tr>
+        </tbody>
+      </table>
+
+      <p><b>交付</b>：<code>personal/index.html</code>（样式写在文件内 <code>&lt;style&gt;</code> 里）。</p>
+    </section>
+
+    <section id="pitfalls">
+      <h2>七、预告三个坑</h2>
+
+      <ul>
+        <li>
+          <b>整页用 Grid 时，body 要不要当容器？</b>
+          可以，但要注意 <code>body</code> 上的 <code>max-width</code> 会限制整页宽度。
+          更常见的是给一个 <code>.page</code> 包裹层当容器。
+        </li>
+        <li>
+          <b>hero 区域两栏在手机上要换顺序</b>：桌面是"文字在左、头像在右"，手机是"文字在上、头像在下"。
+          用 <code>grid-template-areas</code> 换图就行，不用改 HTML。
+        </li>
+        <li>
+          <b>技能标签用 flex-wrap，不要用 grid</b>：标签宽度不一致，grid 会排成整齐的格子，反而难看。
+        </li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer style="border-top:1px solid var(--c-border);padding-top:16px;margin-top:36px">
+    <p class="hint">W3 Day4 · 2026-11-05</p>
+  </footer>
+
+</body>
+</html>

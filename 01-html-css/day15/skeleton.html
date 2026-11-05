@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>个人主页骨架示例</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --color-bg: #0d1117;
+        --color-surface: #161b22;
+        --color-text: #f0f6fc;
+        --color-muted: #9198a1;
+        --color-border: #30363d;
+        --color-accent: #4493f8;
+
+        --space-1: 4px;
+        --space-2: 8px;
+        --space-3: 12px;
+        --space-4: 16px;
+        --space-5: 24px;
+        --space-6: 40px;
+
+        --radius: 8px;
+        --text-base: 15px;
+      }
+
+      body {
+        font-family: system-ui, "Microsoft YaHei", sans-serif;
+        font-size: var(--text-base); /* 固定字号，不用 vw */
+        line-height: 1.8;
+        background: var(--color-bg);
+        color: var(--color-text);
+      }
+
+      /* ============================================
+       1. 页面容器：管宽度，不管布局
+       ============================================ */
+      .page {
+        max-width: 1080px; /* 桌面的上限，不是固定宽度 */
+        margin: 0 auto; /* 居中 */
+        padding: var(--space-5) var(--space-4);
+      }
+
+      /* ============================================
+       2. 整页骨架：一张 areas 图
+       默认（手机）= 一列到底
+       ============================================ */
+      .layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "header"
+          "hero"
+          "about"
+          "skills"
+          "projects"
+          "footer";
+        gap: var(--space-5);
+      }
+
+      .area-header {
+        grid-area: header;
+      }
+      .area-hero {
+        grid-area: hero;
+      }
+      .area-about {
+        grid-area: about;
+      }
+      .area-skills {
+        grid-area: skills;
+      }
+      .area-projects {
+        grid-area: projects;
+      }
+      .area-footer {
+        grid-area: footer;
+      }
+
+      /* ============================================
+       3. 宽屏：换一张 areas 图
+       只改网格定义，HTML 一个字都不用动
+       ============================================ */
+      @media (min-width: 768px) {
+        .layout {
+          grid-template-columns: 1fr 1fr;
+          grid-template-areas:
+            "header   header"
+            "hero     hero"
+            "about    skills"
+            "projects projects"
+            "footer   footer";
+          gap: var(--space-6) var(--space-5);
+        }
+      }
+
+      /* ============================================
+       4. hero 内部：自己再画一张图
+       手机文字在上，桌面文字在左
+       ============================================ */
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "text"
+          "avatar";
+        gap: var(--space-5);
+        align-items: center;
+      }
+      .hero-text {
+        grid-area: text;
+      }
+      .hero-avatar {
+        grid-area: avatar;
+        justify-self: start;
+      }
+
+      @media (min-width: 768px) {
+        .hero-grid {
+          grid-template-columns: 1fr 200px;
+          grid-template-areas: "text avatar";
+        }
+        .hero-avatar {
+          justify-self: end;
+        }
+      }
+
+      /* ============================================
+       5. 各区块的样式（只是让它能看，不是重点）
+       ============================================ */
+      .site-header {
+        display: flex;
+        flex-wrap: wrap; /* 放不下就换行，不需要断点 */
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--space-3);
+        padding-bottom: var(--space-4);
+        border-bottom: 1px solid var(--color-border);
+      }
+      .site-header h1 {
+        font-size: 18px;
+        margin: 0;
+      }
+      .site-header a {
+        color: var(--color-accent);
+        text-decoration: none;
+      }
+
+      .hero-text h2 {
+        font-size: clamp(24px, 3vw, 34px);
+        margin: 0 0 var(--space-3);
+      }
+      .hero-text p {
+        color: var(--color-muted);
+        margin: 0 0 var(--space-4);
+      }
+
+      .btn-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-3);
+      }
+      .btn {
+        display: inline-block;
+        padding: var(--space-2) var(--space-4);
+        border: 1px solid var(--color-accent);
+        border-radius: var(--radius);
+        color: var(--color-accent);
+        text-decoration: none;
+        font-size: 14px;
+      }
+      .btn.primary {
+        background: var(--color-accent);
+        color: #fff;
+      }
+
+      .avatar-box {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        display: grid;
+        place-items: center;
+        color: var(--color-muted);
+        font-size: 13px;
+      }
+
+      .card {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius);
+        padding: var(--space-4);
+      }
+      .card h2 {
+        font-size: 17px;
+        margin: 0 0 var(--space-3);
+      }
+      .card p {
+        color: var(--color-muted);
+        margin: 0;
+        font-size: 14px;
+      }
+
+      /* 技能标签：flex-wrap，不要 grid */
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .tags li {
+        padding: 2px var(--space-3);
+        border: 1px solid var(--color-border);
+        border-radius: 999px;
+        font-size: 13px;
+        color: var(--color-muted);
+      }
+
+      /* 项目卡片：宽屏两列，用 auto-fit 而不是断点 */
+      .project-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: var(--space-4);
+      }
+
+      .site-footer {
+        padding-top: var(--space-4);
+        border-top: 1px solid var(--color-border);
+        color: var(--color-muted);
+        font-size: 13px;
+      }
+
+      /* 临时：给每个区域描个边，方便看清网格。做完删掉 */
+      .debug .layout > * {
+        outline: 1px dashed rgba(68, 147, 248, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="layout debug">
+        <!-- header -->
+        <div class="area-header">
+          <header class="site-header">
+            <h1>熙熙 · 前端开发</h1>
+            <nav>
+              <a href="#">GitHub</a> &nbsp;
+              <a href="#">邮箱</a>
+            </nav>
+          </header>
+        </div>
+
+        <!-- hero -->
+        <div class="area-hero">
+          <div class="hero-grid">
+            <div class="hero-text">
+              <h2>你好，我是熙熙</h2>
+              <p>软件工程大四 · 目标前端开发 · 2027 年春招</p>
+              <div class="btn-row">
+                <a class="btn primary" href="#">查看项目</a>
+                <a class="btn" href="#">联系我</a>
+              </div>
+            </div>
+            <div class="hero-avatar">
+              <div class="avatar-box">头像 160×160</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- about -->
+        <div class="area-about">
+          <div class="card">
+            <h2>关于我</h2>
+            <p>
+              2026 年 10 月起系统学习前端，每天 4–6 小时，已完成 CSS
+              布局与响应式学习，
+              能独立复刻真实站点组件。毕业设计为校园活动报名管理系统，2027 年 1
+              月进入开发。
+            </p>
+          </div>
+        </div>
+
+        <!-- skills -->
+        <div class="area-skills">
+          <div class="card">
+            <h2>技能</h2>
+            <ul class="tags">
+              <li>HTML</li>
+              <li>CSS</li>
+              <li>Flexbox</li>
+              <li>Grid</li>
+              <li>JavaScript（学习中）</li>
+              <li>Vue 3（学习中）</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- projects -->
+        <div class="area-projects">
+          <div class="card">
+            <h2>我的项目</h2>
+            <div class="project-grid" style="margin-top: var(--space-4)">
+              <div class="card">
+                <h2>学习站点</h2>
+                <p>
+                  记录从零学前端的过程，已上线 GitHub Pages。技术栈：HTML /
+                  CSS。
+                </p>
+              </div>
+              <div class="card">
+                <h2>校园活动报名管理系统</h2>
+                <p>
+                  毕业设计，含动态二维码签到与名额并发控制。技术栈：Vue 3 /
+                  FastAPI / MySQL。
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- footer -->
+        <div class="area-footer">
+          <footer class="site-footer">
+            <p>© 2026 熙熙</p>
+          </footer>
+        </div>
+      </div>
+    </div>
+
+    <!--
+    ============ 这个骨架的四条要点 ============
+
+    1. 三层分工：
+       body  → 只管背景和字体
+       .page → 只管宽度和左右留白（max-width 是上限）
+       .layout → 只管网格（areas 图）
+
+    2. 默认一列，min-width: 768px 才换图。
+       手机布局是默认状态，这不是"额外适配"，是基准。
+
+    3. hero 内部自己也是一张 areas 图。
+       手机 "text" 上 "avatar" 下，桌面 "text avatar" 左右。
+       HTML 一个字没改，只换了两行字符串。
+
+    4. 项目卡片用 auto-fit + minmax，技能用 flex-wrap。
+       这两个地方都没写媒体查询——能自动就别写断点。
+
+    把 .debug 类删掉，虚线框就没了。
+  --></body>
+</html>

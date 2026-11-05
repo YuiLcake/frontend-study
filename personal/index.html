@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>我的网页</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --color-bg: #0d1117;
+        --color-text: #f0f6fc;
+        --color-solid: #bcbcbc;
+        --color-links: #4493f8;
+        --color-line: #30363d;
+        --color-bg-project: #161b22;
+
+        --space-1: 4px;
+        --space-2: 8px;
+        --space-3: 12px;
+        --space-4: 16px;
+        --space-5: 20px;
+        --space-6: 24px;
+
+        --radius-body: 4px;
+      }
+
+      body {
+        font-size: 15px;
+        font-family: Arial, sans-serif;
+        line-height: 1.7;
+        background-color: var(--color-bg);
+        color: var(--color-text);
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "header"
+          "hero"
+          "introduction"
+          "skills"
+          "projects"
+          "footer";
+        gap: var(--space-2);
+      }
+      @media (min-width: 768px) {
+        .layout {
+          grid-template-columns: 1fr 1fr;
+          grid-template-areas:
+            "header   header"
+            "hero     hero"
+            "introduction    skills"
+            "projects projects"
+            "footer   footer";
+          gap: var(--space-2);
+        }
+      }
+
+      .page {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 0 var(--space-4);
+      }
+
+      .opening {
+        grid-area: header;
+      }
+      .hero-1 {
+        grid-area: hero;
+      }
+      .hero-introduction {
+        grid-area: introduction;
+      }
+      .skill {
+        grid-area: skills;
+      }
+      .project {
+        grid-area: projects;
+      }
+      .footer {
+        grid-area: footer;
+      }
+
+      .hero-header-content {
+        grid-template-columns: 1fr;
+        grid-template-areas: "content1" "avatar";
+      }
+      @media (min-width: 768px) {
+        .hero-header-content {
+          grid-template-columns: 1fr 200px;
+          grid-template-areas: "content1 avatar";
+        }
+      }
+      .content1 {
+        grid-area: content1;
+        max-width: 46ch;
+      }
+      .hero-image {
+        grid-area: avatar;
+      }
+
+      /*header*/
+      .opening {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--space-2);
+        margin: var(--space-3);
+        border-bottom: 1px solid var(--color-line);
+      }
+      .opening-links {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--space-2);
+      }
+      .opening-links a {
+        color: var(--color-links);
+        text-decoration: none;
+        font-style: italic;
+      }
+      /*header*/
+
+      /*hero*/
+      .hero-1 {
+        padding: var(--space-2);
+        margin: var(--space-3);
+      }
+      .hero-header {
+        display: grid;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--space-2);
+      }
+      .hero-1 a {
+        color: var(--color-links);
+        text-decoration: none;
+      }
+      img {
+        flex: none;
+        max-width: 100%;
+        height: auto;
+      }
+      .skill-list {
+        display: flex;
+        list-style: none; /* 去掉前面的圆点 */
+        padding-left: 0;
+        gap: var(--space-2);
+      }
+      .skill-list li {
+        padding: 2px var(--space-3);
+        border: 1px solid var(--color-line);
+        border-radius: 999px;
+        font-size: 13px;
+      }
+
+      .project {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "title"
+          "project1"
+          "project1-1";
+        gap: var(--space-2);
+      }
+      @media (min-width: 768px) {
+        .project {
+          grid-template-columns: 1fr 1fr;
+          grid-template-areas:
+            "title      title"
+            "project1   project1-1";
+          gap: var(--space-2);
+        }
+      }
+      .title {
+        grid-area: title;
+      }
+      .project1 {
+        grid-area: project1;
+      }
+      .project1-1 {
+        grid-area: project1-1;
+      }
+      .project1 > .title {
+        grid-column: 1 / -1;
+      }
+      .project1,
+      .project1-1 {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2); /* 用 gap 统一，不要各自 margin */
+        padding: var(--space-4); /* 内边距加大，现在只有 4px */
+        border: 1px solid var(--color-line);
+        border-radius: var(--radius-body);
+      }
+      .project1 a {
+        display: flex;
+        color: var(--color-links);
+        padding: var(--space-1) var(--space-2);
+      }
+      .project1-1 a {
+        display: flex;
+        color: var(--color-links);
+        padding: var(--space-1) var(--space-2);
+      }
+      /*hero*/
+      .footer {
+        border-top: 1px solid var(--color-line);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="layout">
+        <header class="opening">
+          <h1>熙熙·前端开发</h1>
+          <div class="opening-links">
+            <a href="https://github.com/YuiLcake" target="_blank">GitHub</a>
+            <a href="mailto:maijunxi6@gmail.com">邮箱</a>
+          </div>
+        </header>
+
+        <main class="hero-1">
+          <header class="hero-header hero-header-content">
+            <div class="content1">
+              <p>你好，我是熙熙，就读于广州工商学院的软件工程大四学生。</p>
+              <a
+                href="https://github.com/YuiLcake?tab=repositories"
+                target="_blank"
+                >[查看项目]</a
+              >
+            </div>
+            <div class="hero-image">
+              <img
+                src="img/touxiang.jpg"
+                alt="熙熙的头像"
+                width="200"
+                height="200"
+              />
+            </div>
+          </header>
+        </main>
+        <article class="hero-introduction">
+          <h2>关于我</h2>
+          <p>
+            自2026年起，我系统地学习前端技术，每日4-6小时的学习让我掌握前端的知识和技能，已完成15天的学习。能够复刻真实网站的站点，掌握网页样式的设计布局。毕业设计：校园活动报名管理系统（Vue
+            3 + FastAPI + MySQL），2027 年 1 月进入开发。
+          </p>
+        </article>
+
+        <article class="skill">
+          <h2>技能</h2>
+          <ul class="skill-list">
+            <li>HTML</li>
+            <li>CSS</li>
+            <li>JavaScript</li>
+            <li>Vue 3</li>
+          </ul>
+        </article>
+
+        <article class="project">
+          <h2 class="title">我的项目</h2>
+          <div class="project1">
+            <h3>我的学习站点</h3>
+            <p>
+              记录从零开始学前端的过程，使用 HTML、CSS、JavaScript、Vue 3
+              技术栈开发，已完成15天的学习。
+            </p>
+            <a href="https://github.com/YuiLcake/frontend-study" target="_blank"
+              >[查看项目]</a
+            >
+
+            <p>HTML CSS</p>
+          </div>
+          <div class="project1-1">
+            <h3>校园活动报名</h3>
+            <p>我的毕业设计</p>
+            <a
+              href="https://github.com/YuiLcake/campus-activity-signin"
+              target="_blank"
+              >[查看项目]</a
+            >
+            <p>HTML CSS Vue 3 FastAPI</p>
+          </div>
+        </article>
+
+        <footer class="footer">
+          <p>&copy; 2026 xixi</p>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>
