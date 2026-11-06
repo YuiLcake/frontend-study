@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>第 16 天 · 过渡与变形</title>
+    <style>
+      :root {
+        --c-text: #1f2328;
+        --c-muted: #59636e;
+        --c-border: #d1d9e0;
+        --c-surface: #f6f8fa;
+        --c-accent: #0969da;
+        --radius: 8px;
+        --sp-2: 8px;
+        --sp-3: 12px;
+        --sp-4: 16px;
+        --sp-5: 24px;
+      }
+      body {
+        max-width: 880px;
+        margin: 40px auto;
+        padding: 0 20px;
+        font-family: system-ui, sans-serif;
+        line-height: 1.85;
+        color: var(--c-text);
+      }
+      header {
+        border-bottom: 2px solid var(--c-border);
+        padding-bottom: var(--sp-4);
+      }
+      section {
+        margin: 40px 0;
+      }
+      pre {
+        background: var(--c-surface);
+        padding: 14px 16px;
+        border-radius: var(--radius);
+        overflow-x: auto;
+        border: 1px solid var(--c-border);
+      }
+      code {
+        font-family: Consolas, monospace;
+        font-size: 14px;
+      }
+      table {
+        border-collapse: collapse;
+        margin: 12px 0;
+        width: 100%;
+      }
+      td,
+      th {
+        border: 1px solid var(--c-border);
+        padding: 8px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      thead th {
+        background: var(--c-surface);
+      }
+      .hint {
+        color: var(--c-muted);
+        font-size: 14px;
+      }
+      .note {
+        background: #fffbe6;
+        border-left: 3px solid #e0b400;
+        padding: 10px 14px;
+        margin: 14px 0;
+      }
+      .cap {
+        font-size: 13px;
+        color: var(--c-muted);
+        margin: 16px 0 4px;
+      }
+      .demo {
+        border: 1px dashed #8aa;
+        background: #f4f8ff;
+        padding: 16px;
+        margin: 8px 0 20px;
+      }
+      .row {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      /* ===== 演示 1：有过渡 vs 没过渡 ===== */
+      .sq {
+        width: 90px;
+        height: 90px;
+        border-radius: var(--radius);
+        background: #cfe0ff;
+        border: 1px solid #6a8fd8;
+        display: grid;
+        place-items: center;
+        font-size: 13px;
+        color: #0a3069;
+        cursor: pointer;
+      }
+      .sq:hover {
+        background: #6a8fd8;
+        color: #fff;
+      }
+      .sq.smooth {
+        transition:
+          background-color 0.3s ease,
+          color 0.3s ease;
+      }
+
+      /* ===== 演示 2：不同时长的缓动 ===== */
+      .timing {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #d8f5cf;
+        border: 1px solid #6aa86a;
+        display: grid;
+        place-items: center;
+        font-size: 11px;
+        cursor: pointer;
+      }
+      .t-linear {
+        transition: transform 0.6s linear;
+      }
+      .t-ease {
+        transition: transform 0.6s ease;
+      }
+      .t-inout {
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .t-bounce {
+        transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .timing:hover {
+        transform: translateX(180px);
+      }
+
+      /* ===== 演示 3：transform 的各种变换 ===== */
+      .tr-box {
+        width: 80px;
+        height: 80px;
+        background: #ffe0cf;
+        border: 1px solid #d88f6a;
+        border-radius: 6px;
+        display: grid;
+        place-items: center;
+        font-size: 12px;
+        transition: transform 0.35s ease;
+      }
+      .tr-move:hover {
+        transform: translate(20px, -10px);
+      }
+      .tr-scale:hover {
+        transform: scale(1.25);
+      }
+      .tr-rotate:hover {
+        transform: rotate(15deg);
+      }
+      .tr-combo:hover {
+        transform: translateY(-6px) scale(1.05);
+      }
+
+      /* ===== 演示 4：卡片浮起 ===== */
+      .card-demo {
+        background: #fff;
+        border: 1px solid var(--c-border);
+        border-radius: var(--radius);
+        padding: var(--sp-4);
+        width: 240px;
+        transition:
+          transform 0.25s ease,
+          box-shadow 0.25s ease,
+          border-color 0.25s ease;
+      }
+      .card-demo:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 8px 24px rgba(31, 35, 40, 0.12);
+        border-color: #a8c7fa;
+      }
+      .card-demo h3 {
+        margin: 0 0 6px;
+        font-size: 16px;
+      }
+      .card-demo p {
+        margin: 0;
+        font-size: 13px;
+        color: var(--c-muted);
+      }
+
+      /* ===== 演示 5：按钮按下去 ===== */
+      .btn-demo {
+        display: inline-block;
+        padding: 8px 18px;
+        border-radius: 6px;
+        background: var(--c-accent);
+        color: #fff;
+        text-decoration: none;
+        font-size: 14px;
+        transition:
+          transform 0.12s ease,
+          background-color 0.2s ease;
+      }
+      .btn-demo:hover {
+        background: #0550ae;
+      }
+      .btn-demo:active {
+        transform: scale(0.96);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .sq,
+        .timing,
+        .tr-box,
+        .card-demo,
+        .btn-demo {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>第 16 天：过渡与变形</h1>
+      <p>
+        把鼠标放上去试每一个演示。CSS 动效的全部秘密就两条：<code
+          >transition</code
+        >
+        和 <code>transform</code>。
+      </p>
+    </header>
+
+    <main>
+      <section id="why">
+        <h2>一、为什么需要过渡</h2>
+
+        <p>下面两个方块，鼠标移上去看看区别。</p>
+
+        <div class="demo">
+          <div class="row">
+            <div class="sq">瞬间变</div>
+            <div class="sq smooth">平滑变</div>
+          </div>
+        </div>
+
+        <p>左边那个是"跳"过去的，右边是"滑"过去的。区别只有一行：</p>
+
+        <pre><code>.smooth {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}</code></pre>
+
+        <p class="hint">
+          人眼对"突变"的感知是很差的——尤其是小而频繁的交互（悬停、点击）。
+          <b>过渡不改变功能，只改变感受。</b
+          >但它决定了一个页面"精致"还是"廉价"。
+        </p>
+      </section>
+
+      <section id="transition">
+        <h2>二、transition 的四个值</h2>
+
+        <pre><code>transition: 属性 时长 缓动 延迟;
+
+/* 例子 */
+transition: transform 0.3s ease 0s;
+
+/* 多个属性用逗号分开 */
+transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+/* 或者偷懒全都要（不推荐，会连你没想动的属性一起过渡） */
+transition: all 0.3s ease;</code></pre>
+
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">值</th>
+              <th scope="col">作用</th>
+              <th scope="col">常用</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>属性</td>
+              <td>要过渡哪个属性</td>
+              <td>
+                <code>transform</code>、<code>background-color</code>、<code
+                  >opacity</code
+                >
+              </td>
+            </tr>
+            <tr>
+              <td>时长</td>
+              <td>走完这个过程要多久</td>
+              <td>悬停 <code>0.2s</code>，大的位移 <code>0.4s</code></td>
+            </tr>
+            <tr>
+              <td>缓动</td>
+              <td>速度曲线</td>
+              <td>
+                <code>ease</code>（默认）、<code>ease-out</code>、<code
+                  >cubic-bezier()</code
+                >
+              </td>
+            </tr>
+            <tr>
+              <td>延迟</td>
+              <td>等多久再开始</td>
+              <td>大部分情况 <code>0s</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="note">
+          <b>最常见的坑：transition 写在了 :hover 里面。</b><br />
+          <code>.btn:hover { transition: ... }</code>
+          只在你移进去时生效，<b>移出来是瞬间跳回</b>。<br />
+          正确做法是写在基础状态上——两边都平滑。
+        </div>
+
+        <h3>缓动曲线有什么不同</h3>
+
+        <p class="cap">鼠标移到圆点上，看它们跑的方式</p>
+        <div class="demo">
+          <div
+            class="row"
+            style="flex-direction: column; gap: 14px; align-items: flex-start"
+          >
+            <div class="timing t-linear">linear</div>
+            <div class="timing t-ease">ease</div>
+            <div class="timing t-inout">ease-in-out</div>
+            <div class="timing t-bounce">bounce</div>
+          </div>
+        </div>
+
+        <p class="hint">
+          <code>linear</code> 匀速，机械感强；<code>ease</code>
+          两头慢中间快，最自然； 最后那个用了
+          <code>cubic-bezier(0.34, 1.56, 0.64, 1)</code>，超过 1
+          的控制点会产生"弹一下"的效果。
+        </p>
+      </section>
+
+      <section id="which">
+        <h2>三、哪些属性可以过渡</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">能过渡</th>
+              <th scope="col">不能</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                有中间值的：颜色、长度、透明度、<code>transform</code>、<code
+                  >box-shadow</code
+                >
+              </td>
+              <td>
+                没有中间值的：<code>display</code>、<code>visibility</code>（其实可以但很生硬）、<code
+                  >height: auto</code
+                >
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p class="hint">
+          <code>display: none</code> →
+          <code>block</code> 没法过渡，因为"不存在"和"存在"之间没有中间状态。
+          要做展开收起，得用 <code>max-height</code>、<code
+            >grid-template-rows: 0fr → 1fr</code
+          >
+          或 JS 量高度。
+        </p>
+      </section>
+
+      <section id="transform">
+        <h2>四、transform：四种变换</h2>
+
+        <pre><code>transform: translate(20px, -10px);   /* 位移：左右、上下 */
+transform: scale(1.2);                /* 缩放：1 是原始大小 */
+transform: rotate(45deg);             /* 旋转 */
+transform: skew(10deg);               /* 倾斜（很少用） */
+
+/* 可以连写，空格隔开，从右往左依次作用 */
+transform: translateY(-6px) scale(1.05);</code></pre>
+
+        <p class="cap">鼠标移上去</p>
+        <div class="demo">
+          <div class="row">
+            <div class="tr-box tr-move">位移</div>
+            <div class="tr-box tr-scale">放大</div>
+            <div class="tr-box tr-rotate">旋转</div>
+            <div class="tr-box tr-combo">组合</div>
+          </div>
+        </div>
+
+        <p class="hint">
+          <code>rotate</code> 默认绕中心转。想绕别的点转，用
+          <code>transform-origin: top left;</code> ——
+          下拉箭头、展开动画常用这个。
+        </p>
+      </section>
+
+      <section id="why-transform">
+        <h2>五、为什么动画要用 transform，而不是 top / left</h2>
+
+        <p>想让元素"上移 6px"，有两种写法：</p>
+
+        <pre><code>/* 写法 A */
+.box { position: relative; top: 0; transition: top 0.25s; }
+.box:hover { top: -6px; }
+
+/* 写法 B */
+.box { transition: transform 0.25s; }
+.box:hover { transform: translateY(-6px); }</code></pre>
+
+        <p>两种看起来一样，但底层完全不同：</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">改 top</th>
+              <th scope="col">改 transform</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>影响布局</td>
+              <td>会。浏览器要重新算周围元素的位置</td>
+              <td>不会。只影响自己怎么"画"</td>
+            </tr>
+            <tr>
+              <td>性能</td>
+              <td>涉及重排（reflow），容易掉帧</td>
+              <td>走合成层，通常由显卡处理</td>
+            </tr>
+            <tr>
+              <td>周围元素</td>
+              <td>会跟着动</td>
+              <td>纹丝不动</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="note">
+          <b
+            >一句话记住：<code>transform</code>
+            是"画的位置变了"，不是"占的位置变了"。</b
+          ><br />
+          所以它不触发重排，是动画的首选。同理，能用 <code>opacity</code> 就别用
+          <code>visibility</code> + <code>display</code>。
+        </div>
+      </section>
+
+      <section id="patterns">
+        <h2>六、三个最常用的组合</h2>
+
+        <h3>1. 卡片浮起</h3>
+
+        <p class="cap">鼠标移到卡片上</p>
+        <div class="demo">
+          <div class="card-demo">
+            <h3>校园活动报名管理系统</h3>
+            <p>Vue 3 · FastAPI · MySQL</p>
+          </div>
+        </div>
+
+        <pre><code>.card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 24px rgba(31, 35, 40, 0.12);
+  border-color: #a8c7fa;
+}</code></pre>
+
+        <p class="hint">
+          三个属性一起过渡，才有"浮起来"的感觉。只位移会显得轻飘，只加阴影会显得突兀。
+        </p>
+
+        <h3>2. 按钮按下去</h3>
+
+        <div class="demo">
+          <a href="#" class="btn-demo">点我试试</a>
+        </div>
+
+        <pre><code>.btn { transition: transform 0.12s ease, background-color 0.2s ease; }
+.btn:hover  { background: #0550ae; }
+.btn:active { transform: scale(0.96); }   /* 按下的瞬间缩小一点点 */</code></pre>
+
+        <p class="hint">
+          <code>:active</code> 是"按住不放"的状态。<code>0.12s</code>
+          要快——慢了会觉得按钮"粘手"。
+        </p>
+
+        <h3>3. 时长参考表</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">场景</th>
+              <th scope="col">建议时长</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>按钮、链接反馈</td>
+              <td>0.1 – 0.2s</td>
+            </tr>
+            <tr>
+              <td>卡片、菜单悬停</td>
+              <td>0.2 – 0.3s</td>
+            </tr>
+            <tr>
+              <td>弹窗、抽屉打开</td>
+              <td>0.3 – 0.4s</td>
+            </tr>
+            <tr>
+              <td>页面级转场</td>
+              <td>0.4 – 0.6s</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p class="hint">
+          <b>超过 0.5s 的微交互会让人觉得卡。</b>动画是调味料，不是主菜。
+        </p>
+      </section>
+
+      <section id="a11y">
+        <h2>七、必须加的一段：尊重"减少动效"</h2>
+
+        <pre><code>@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}</code></pre>
+
+        <p>
+          有些人对动效敏感——前庭功能障碍的人会因为页面元素移动而眩晕、恶心。
+          系统层面开了"减少动态效果"后，这个媒体查询就会命中。
+        </p>
+
+        <p class="hint">
+          这不是"加分项"，是基本素养。而且它只影响那些主动开了这个开关的用户，对其他人零影响。
+        </p>
+      </section>
+
+      <section id="exercise">
+        <h2>八、作业</h2>
+
+        <p>
+          在你的个人主页 <code>personal/index.html</code> 上加动效，改完刷新试。
+        </p>
+
+        <ol>
+          <li>
+            <b>项目卡片浮起</b>：参考「卡片浮起」那段，三个属性一起过渡。
+            <span class="hint"
+              >记得把 transition 写在基础状态，不是 :hover 里。</span
+            >
+          </li>
+          <li>
+            <b>按钮反馈</b>：hero 里的两个按钮（如果有）加 hover 变色 + active
+            缩小。
+          </li>
+          <li>
+            <b>链接下划线</b>：给导航里的链接加 hover
+            效果——可以只改颜色，也可以做下划线（下划线动画明天讲伪元素时再做）。
+          </li>
+          <li><b>技能标签</b>：hover 时边框变亮、背景微亮。</li>
+          <li><b>加 prefers-reduced-motion 兜底</b>：复制上面那段。</li>
+          <li>
+            <b>回答</b>（写在 CSS 注释里）：为什么 transition
+            要写在基础状态，而不是 :hover 里？
+          </li>
+        </ol>
+
+        <div class="note">
+          <b>自检：</b>鼠标快速扫过卡片和按钮，动效应该是"跟手"的——
+          没有延迟感、没有卡顿、移出时也是平滑回去的。
+        </div>
+      </section>
+    </main>
+
+    <footer
+      style="
+        border-top: 1px solid var(--c-border);
+        padding-top: 16px;
+        margin-top: 40px;
+      "
+    >
+      <p class="hint">第 16 天 · 2026-11-06</p>
+    </footer>
+  </body>
+</html>

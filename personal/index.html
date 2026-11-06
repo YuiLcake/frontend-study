@@ -14,9 +14,15 @@
         --color-bg: #0d1117;
         --color-text: #f0f6fc;
         --color-solid: #bcbcbc;
-        --color-links: #4493f8;
         --color-line: #30363d;
+        --color-links: #4493f8;
+        --color-bg-link-btn: #1f6feb;
+        --color-link-touch: #3c32c7;
+        --color-link-btn-touch: #edeeee;
         --color-bg-project: #161b22;
+        --color-bg-box: #16253e;
+        --color-box-solid: #a8c7fa;
+        --color-skill-card: #161b22;
 
         --space-1: 4px;
         --space-2: 8px;
@@ -45,7 +51,7 @@
           "skills"
           "projects"
           "footer";
-        gap: var(--space-2);
+        gap: var(--space-5);
       }
       @media (min-width: 768px) {
         .layout {
@@ -133,7 +139,7 @@
       .hero-header {
         display: grid;
         justify-content: space-between;
-        align-items: center;
+        align-items: start;
         gap: var(--space-2);
       }
       .hero-1 a {
@@ -196,20 +202,87 @@
         padding: var(--space-4); /* 内边距加大，现在只有 4px */
         border: 1px solid var(--color-line);
         border-radius: var(--radius-body);
+        background-color: var(--color-bg-project);
       }
-      .project1 a {
-        display: flex;
-        color: var(--color-links);
-        padding: var(--space-1) var(--space-2);
-      }
+      .project1 a,
       .project1-1 a {
         display: flex;
-        color: var(--color-links);
+        color: var(--color-text);
         padding: var(--space-1) var(--space-2);
+        text-decoration: none;
       }
       /*hero*/
       .footer {
         border-top: 1px solid var(--color-line);
+      }
+
+      .link {
+        transition: color 0.3s ease;
+      }
+      .link:hover {
+        color: var(--color-link-touch);
+      }
+
+      .link-btn {
+        transition: color 0.3s ease;
+      }
+      .link-btn:hover {
+        color: var(--color-link-btn-touch);
+      }
+      .btn {
+        align-self: start;
+        padding: var(--space-2) var(--space-4);
+        background: var(--color-bg-link-btn);
+        border-radius: var(--radius-body);
+        text-decoration: none;
+        transition:
+          background-color 0.2s ease,
+          transform 0.12s ease;
+      }
+      .btn:hover {
+        background: #054fb6;
+      }
+      .btn:active {
+        transform: scale(0.96);
+      }
+
+      .card {
+        transition:
+          transform 0.25s ease,
+          box-shadow 0.25s ease,
+          border-color 0.25s ease;
+      }
+      .card h3 {
+        margin: 0 0 var(--space-2);
+      }
+      .card p {
+        margin: 0;
+      }
+      .card > p:last-child {
+        margin-top: auto;
+      }
+
+      .card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 8px 24px var(--color-bg-box);
+        border-color: var(--color-box-solid);
+      }
+      .skill-card {
+        transition:
+          background-color 0.25s ease,
+          border-color 0.25s ease;
+      }
+      .skill-card:hover {
+        background-color: var(--color-skill-card);
+        border-color: var(--color-box-solid);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          transition: none !important;
+          animation: none !important;
+        }
       }
     </style>
   </head>
@@ -219,8 +292,10 @@
         <header class="opening">
           <h1>熙熙·前端开发</h1>
           <div class="opening-links">
-            <a href="https://github.com/YuiLcake" target="_blank">GitHub</a>
-            <a href="mailto:maijunxi6@gmail.com">邮箱</a>
+            <a href="https://github.com/YuiLcake" target="_blank" class="link"
+              >GitHub</a
+            >
+            <a href="mailto:maijunxi6@gmail.com" class="link">邮箱</a>
           </div>
         </header>
 
@@ -231,14 +306,15 @@
               <a
                 href="https://github.com/YuiLcake?tab=repositories"
                 target="_blank"
-                >[查看项目]</a
+                class="link"
+                >查看项目</a
               >
             </div>
             <div class="hero-image">
               <img
                 src="img/touxiang.jpg"
                 alt="熙熙的头像"
-                width="200"
+                width="160"
                 height="200"
               />
             </div>
@@ -255,34 +331,38 @@
         <article class="skill">
           <h2>技能</h2>
           <ul class="skill-list">
-            <li>HTML</li>
-            <li>CSS</li>
-            <li>JavaScript</li>
-            <li>Vue 3</li>
+            <li class="skill-card">HTML</li>
+            <li class="skill-card">CSS</li>
+            <li class="skill-card">JavaScript</li>
+            <li class="skill-card">Vue 3</li>
           </ul>
         </article>
 
         <article class="project">
           <h2 class="title">我的项目</h2>
-          <div class="project1">
+          <div class="project1 card">
             <h3>我的学习站点</h3>
             <p>
               记录从零开始学前端的过程，使用 HTML、CSS、JavaScript、Vue 3
               技术栈开发，已完成15天的学习。
             </p>
-            <a href="https://github.com/YuiLcake/frontend-study" target="_blank"
-              >[查看项目]</a
+            <a
+              href="https://github.com/YuiLcake/frontend-study"
+              target="_blank"
+              class="link-btn btn"
+              >查看项目</a
             >
 
             <p>HTML CSS</p>
           </div>
-          <div class="project1-1">
+          <div class="project1-1 card">
             <h3>校园活动报名</h3>
             <p>我的毕业设计</p>
             <a
               href="https://github.com/YuiLcake/campus-activity-signin"
               target="_blank"
-              >[查看项目]</a
+              class="link-btn btn"
+              >查看项目</a
             >
             <p>HTML CSS Vue 3 FastAPI</p>
           </div>
@@ -295,3 +375,4 @@
     </div>
   </body>
 </html>
+<!--如果只写在hover里的话就只有在鼠标在在按键上的时候才会触发，移开就会很突兀-->
