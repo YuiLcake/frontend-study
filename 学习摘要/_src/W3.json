@@ -1,243 +1,870 @@
 {
-  "page": {"width_mm": 210, "height_mm": 297,
-           "margins_mm": {"top": 22, "bottom": 22, "left": 20, "right": 20}},
+  "page": {
+    "width_mm": 210,
+    "height_mm": 297,
+    "margins_mm": {
+      "top": 22,
+      "bottom": 22,
+      "left": 20,
+      "right": 20
+    }
+  },
   "header": "前端学习摘要 · W3",
   "footer_page_numbers": true,
   "styles": [
-    {"name": "Note", "base": "Normal", "size_pt": 10, "color": "666666"}
+    {
+      "name": "Note",
+      "base": "Normal",
+      "size_pt": 10,
+      "color": "666666"
+    }
   ],
   "blocks": [
-    {"type": "heading", "text": "W3 学习摘要", "level": 1},
-    {"type": "paragraph", "style": "Note",
-     "text": "2026-11-02 至 2026-11-08 ｜ 熙熙 ｜ 前端转型计划第 3 周 · Grid、响应式、CSS 变量"},
-    {"type": "paragraph",
-     "text": "本周从「会写样式」走向「有系统」：Grid 布局、响应式适配、设计令牌。周内的产出目标是个人主页 v1（桌面与手机两套布局）。"},
-
-    {"type": "heading", "text": "第 12 天 · 2026-11-02", "level": 2},
-
-    {"type": "heading", "text": "一、今天犯的错误", "level": 3},
-    {"type": "table",
-     "header": ["错误", "发生了什么", "以后怎么办"],
-     "rows": [
-       ["W2 概念复述不牢（6 条里 3 条不达标）",
-        "box-sizing 说成「按页面宽高计算」；display 三种没说清 block；flex:1 说成「固定宽高」；min-width:0 完全答不出；position 只列出四个值，漏 sticky，也说不清 fixed 与 absolute 的区别。",
-        "盲写和复述要交替做。写得出来不等于讲得出来，讲不出来就是没懂。"],
-       ["算盒子宽度漏乘 2",
-        "width 200 + padding 20 + border 5 算成 225px。正确是 200 + 20×2 + 5×2 = 250px。",
-        "padding 和 border 是四条边，左右各一份。算完再验一遍：宽度 + 左侧 + 右侧。"],
-       ["把浅色变量嵌套进 [data-theme=\"light\"]",
-        ":root { [data-theme=\"light\"] { ... } } 这段按 CSS 嵌套规则编译成「html 内部带该属性的元素」，而 body 上写的是 dark，所以从来没生效。结果所有颜色变量都未定义，页面颜色全丢。",
-        "定义基准值就直接写在 :root 里，不要套条件选择器。变量必须有兜底定义，否则 var() 取不到会静默退回默认值。"],
-       ["属性挂在 body 上，选择器却写 :root",
-        ":root 指的是 <html>，属性写在 <body> 上，选择器匹配不到任何元素，深色主题完全不生效。",
-        "属性选择器要和属性所在的那个元素对上。要全站生效就把 data-theme 写在 <html> 上。"],
-       ["删掉 .theme 后 body 忘了加 background",
-        "原来背景色是 .theme 那条规则给的，删掉类之后 body 只剩文字色。即使变量全对，也只会得到白底浅字。",
-        "变量定义了还要有人真的用它。改结构时逐条确认「这条规则原来负责什么」。"],
-       ["变量名少了一个连字符",
-        "定义的是 --color-button-background，引用写成 var(--color-buttonbackground)，变量不存在，背景变透明，不报错。",
-        "写完用脚本核对「定义过的变量」与「引用过的变量」两张表，比肉眼找快得多。"],
-       ["引用了未定义的 --text-h3",
-        ".post h3 用了 var(--text-h3)，但这个变量从未定义。字号退回默认值。",
-        "引用变量前先确认它存在；必要时用 var(--text-content, 20px) 加兜底值。"]
-     ]},
-
-    {"type": "heading", "text": "二、新词与生词", "level": 3},
-    {"type": "table",
-     "header": ["英文", "中文", "用大白话说"],
-     "rows": [
-       ["custom property", "自定义属性", "CSS 变量的正式名称，以两个减号开头"],
-       ["var()", "取值函数", "把变量的值取出来放到这里"],
-       [":root", "根元素", "指 <html>，定义在这里的变量全页面可用"],
-       ["fallback", "回退值", "var(--x, 兜底值)，变量不存在时用它"],
-       ["design token", "设计令牌", "把颜色、间距、字号写成一组有名字的变量，构成设计系统"],
-       ["attribute selector", "属性选择器", "[属性名=\"值\"] 形式的写法，匹配带该属性的元素"],
-       ["data-* attribute", "自定义数据属性", "HTML5 允许自己起名的属性，用来存状态，不参与样式默认渲染"],
-       ["CSS nesting", "CSS 嵌套", "在选择器内部再写选择器，编译后变成后代选择器"],
-       ["theme switching", "主题切换", "通过改变同名变量的值，让同一套结构呈现不同皮肤"],
-       ["token naming", "令牌命名", "按用途命名（color-accent）而不是按样子命名（blue）"]
-     ]},
-
-    {"type": "heading", "text": "三、今天学到的新知识", "level": 3},
-    {"type": "bullet_list", "items": [
-      "CSS 变量（自定义属性）以 -- 开头，用 var() 取值。它解决的是「同一个值散落在几十个地方，改一处要改几十处」的问题。",
-      "定义在 :root 上的变量全页面可用，因为 :root 就是 <html>，所有元素都是它的后代。",
-      "变量是「往下传」的：定义在哪个元素上，只对它自己和后代生效。想给某个区域换主题，在那个容器上重新定义变量即可，不用逐个写类名。",
-      "主题切换的本质不是「重新定义」，而是「同名变量在更靠近它的元素上被重新赋值」。变量在使用它的元素上解析，一路向上找最近的声明。",
-      "所以覆盖必须同名。换一个名字就是新增变量，原来的值不变，覆盖失效。",
-      "变量必须有兜底定义。:root 里那一份是基准，取不到值时 var() 会静默退回默认值——页面不会报错，只是颜色没了。",
-      "设计令牌要按用途命名：--color-accent 而不是 --blue。按样子命名的令牌在换主题时会变成谎言（blue 变成了绿色）。",
-      "[data-theme=\"dark\"] 是属性选择器，含义是「任何带这个属性的元素」。前面的限定可以换成 body、:root、.card，也可以整个省掉。",
-      "data-theme 这个属性名可以自己起（data-mode、data-skin），值也可以随便定，只要 HTML 和 CSS 两边一致。",
-      "想全站切换主题，属性应该放在 <html>（:root）上，而不是 body 上——放在 body 上时，body 之外的元素看不到这些变量。",
-      "CSS 嵌套里，:root { [data-theme=\"light\"] { ... } } 会编译成 :root [data-theme=\"light\"]（后代选择器），不等于「根元素带这个属性」。后者要写成 :root[data-theme=\"light\"]，中间不能有空格。",
-      "变量名少一个连字符、拼错一个字母，都不会报错，只会静默失效。用脚本把「定义过的变量」和「引用过的变量」做差集，一秒就能查出来。",
-      "整理变量表的过程本身就是整理设计系统：你会被迫回答「这个颜色到底是什么用途」「这个间距为什么是 18px 而不是 16px」。"
-    ]},
-
-    {"type": "heading", "text": "四、今天的产出", "level": 3},
-    {"type": "bullet_list", "items": [
-      "学习站点完成令牌化改造：:root 定义 27 个变量（12 个颜色、7 个间距、3 个圆角、5 个字号），全文 23 处引用",
-      "新增深色主题：:root[data-theme=\"dark\"] 覆盖 12 个颜色令牌，三个页面的 <html> 均加上 data-theme=\"dark\"",
-      "自动校验：变量定义与引用做差集，确认无悬空引用；CSS 括号 28 对 28；三个页面均返回 HTTP 200",
-      "补漏：W2 六个概念的口头复述 + 六条标准表述，暴露并修正了 box-sizing、优先级、display、position、flex 五处模糊点"
-    ]},
-
-    {"type": "heading", "text": "五、明天要做的", "level": 3},
-    {"type": "paragraph",
-     "text": "Grid 布局基础：grid-template-columns / rows、fr 单位、gap、grid-area 命名区域、auto-fit 与 minmax。Grid 是二维布局，和 Flex 的一维形成互补——页面的整体骨架用 Grid，组件内部的排列用 Flex。"},
-
-    {"type": "page_break"},
-
-    {"type": "heading", "text": "第 13 天 · 2026-11-03", "level": 2},
-
-    {"type": "heading", "text": "一、今天犯的错误", "level": 3},
-    {"type": "table",
-     "header": ["错误", "发生了什么", "以后怎么办"],
-     "rows": [
-       ["grid-template-areas 画成了非矩形",
-        "写成 \"main main\" 换行 \"foot\"——第一行两格、第二行一格，而且和 grid-template-rows 的三行对不上。浏览器丢弃整条声明，后面所有 grid-area 都成了空指向。",
-        "每一行的格子数必须一样，行数要和 grid-template-rows 一致。写之前先在纸上把图画成矩形。"],
-       ["想让 footer 进 main 的网格",
-        "footer 是 main 的兄弟节点，不是子元素。grid-area 只对网格容器的直接子元素有效，所以写在 footer 上完全没作用，它按普通文档流排在 main 后面。",
-        "用网格前先确认「谁是谁的孩子」。要让 footer 参与，它必须和网格容器同层，或者让 body 当容器。"],
-       ["类名拼错 aerea-foot",
-        "HTML 写 aerea-foot，CSS 写 .area-foot，差两个字母，匹配不上。",
-        "类名拼错不会报错，只会静默失效。写完立刻刷新看效果。"],
-       ["把 flex: 1 0 100% 留在 grid 容器里",
-        "posts 已经从 flex 改成 grid，但标题那条规则还在用 flex 属性。flex 是弹性项目的属性，网格项目不看它，于是标题只占一格，跑到左上角和卡片并排。",
-        "换布局模型时，把原来那套属性全部检查一遍。Grid 里对应写法是 grid-column: 1 / -1。"],
-       [".fx2 与 .posts 的 display 冲突",
-        "posts 同时挂着 .fx2（display: flex）和 .posts（display: grid），两条规则打架；flex: 1 1 420px 在网格里也无意义。",
-        "一个元素上不要同时挂两套互相冲突的布局规则。换模型时把旧类和旧属性一起清掉。"]
-     ]},
-
-    {"type": "heading", "text": "二、新词与生词", "level": 3},
-    {"type": "table",
-     "header": ["英文", "中文", "用大白话说"],
-     "rows": [
-       ["grid container", "网格容器", "写了 display: grid 的那个元素"],
-       ["grid item", "网格项目", "容器的直接子元素，被放进格子里"],
-       ["grid-template-columns", "列定义", "有几列、每列多宽"],
-       ["grid-template-rows", "行定义", "有几行、每行多高"],
-       ["fr", "份", "fraction，按剩余空间的比例分配"],
-       ["grid line", "网格线", "格子的边界，n 列有 n+1 条线，编号从 1 开始"],
-       ["grid cell", "单元格", "两条列线和两条行线围出来的空间"],
-       ["span", "跨格", "grid-column: span 2 表示往右占两格"],
-       ["grid-area", "区域名", "给一块区域起名，或把项目放进某个区域"],
-       ["grid-template-areas", "区域图", "用字符串画出的布局示意图"],
-       ["auto-fit", "自动填充", "能塞几列就塞几列，数量由浏览器算"],
-       ["minmax()", "最小最大值", "minmax(180px, 1fr) 表示最窄 180、最宽一份"],
-       ["implicit grid", "隐式网格", "超出定义范围的自动新增行列"],
-       ["measure", "行长", "一行文字的长度，中文 30–40 字最舒适"]
-     ]},
-
-    {"type": "heading", "text": "三、今天学到的新知识", "level": 3},
-    {"type": "bullet_list", "items": [
-      "Flexbox 是一维的（一次管一个方向），Grid 是二维的（行列同时管）。整体页面骨架用 Grid，组件内部排列用 Flex。",
-      "fr 分的是扣掉固定尺寸和 gap 之后的剩余空间。3 列时先扣两段 gap，再按份数分；多个 fr 按比例。",
-      "1fr 实际等于 minmax(auto, 1fr)，最小值是内容宽度。长 URL、长单词会撑破网格——修法是 minmax(0, 1fr)，和 Flex 里的 min-width: 0 是同一个思路。",
-      "线永远比格多一条：3 列产生 4 条线。格是线夹出来的空间，不是线上的东西。",
-      "写在 grid-column 里的数字永远是线的编号，不是格的编号。1 / 3 表示从线 1 到线 3，占第 1、2 列，不含第 3 列。线号相减 = 占几格。",
-      "负数是倒数：-1 是最后一条线，1 / -1 表示占满所有列。列数动态变化（auto-fit）时只能用这种写法，写死数字会出错。",
-      "auto-fit 时列数不固定，所以不知道有几条线。这也是不要手数线号的理由。",
-      "隐式网格：只定义了 3 行但有 10 个元素时，Grid 会自动往下加行，行线要多少有多少。有 DevTools 的网格叠加显示比数数字可靠。",
-      "grid-template-areas 用一张字符串图描述整页布局，同一个词出现几次就跨几格。这张图的形状就是布局本身，改布局不用碰 HTML。",
-      "grid-template-areas 必须是矩形，且行数要和 grid-template-rows 一致，否则整条声明被丢弃。",
-      "grid-area 只对网格容器的直接子元素有效。兄弟节点、孙子节点都进不了这个网格。",
-      "auto-fit + minmax(180px, 1fr) 能自动决定列数，全程零媒体查询——这是「内在响应式」，比写断点更稳。",
-      "Grid 的对齐分两层：justify-content / align-content 调整整个网格在容器里的位置；justify-items / align-items 调整每个格子里的内容。place-items 是后两条的简写。",
-      "名字和 Flex 一样但含义有差别：Flex 的 justify-content 管主轴（可能横可能竖），Grid 的 justify 永远管横、align 永远管竖。",
-      "换布局模型（flex → grid）时，旧模型的属性会静默失效，不报错也不会提醒。这是 CSS 最危险的一类错误。"
-    ]},
-
-    {"type": "heading", "text": "四、今天的产出", "level": 3},
-    {"type": "bullet_list", "items": [
-      "卡片列表从 flex 改为 grid：repeat(auto-fit, minmax(240px, 1fr))，自动决定列数",
-      "页面骨架用 grid-template-areas: \"posts side\" 做两栏，替代原来的 flex 布局",
-      ".posts > .title 改用 grid-column: 1 / -1 独占一行，修复标题跑到左上角的问题",
-      "day13 课件：7 个实时演示（三列、fr 比例、混合单位、跨行列、命名区域、自动列数、对齐）",
-      "grid-lines.html：用带编号的红线图示讲清「线比格多一条」和 1 / 3 的真实含义",
-      "补记 进度.md 第 9–13 天，并修正第 8 天「今日提交」的复制粘贴错误"
-    ]},
-
-    {"type": "heading", "text": "五、明天要做的", "level": 3},
-    {"type": "paragraph",
-     "text": "响应式三件套：viewport meta 标签、移动端优先的写法、媒体查询断点。学完之后个人主页要同时适配桌面和手机，W3 的验收目标就是这个。"},
-
-    {"type": "page_break"},
-
-    {"type": "heading", "text": "第 14 天 · 2026-11-04", "level": 2},
-
-    {"type": "heading", "text": "一、今天犯的错误", "level": 3},
-    {"type": "table",
-     "header": ["错误", "发生了什么", "以后怎么办"],
-     "rows": [
-       ["两条 max-width 媒体查询顺序反了",
-        "先写 375px（一列）再写 876px（两列）。同优先级时后写的赢，所以窗口 320px 时两条都命中，最终用的是 876 那条——375 那条成了永远不生效的死代码。",
-        "max-width 从大到小写，min-width 从小到大写。或者干脆只用一种策略。"],
-       ["876px 那条内部自相矛盾",
-        "grid-template-columns 写了两列，但 grid-template-areas 只有一列（\"posts\" \"side\"）。结果是两块都落在第 1 列，第 2 列空着，内容挤在左半边。",
-        "列数和区域图的列数必须一致。要堆叠就写 1 列，要横跨就写 \"posts posts\"。"],
-       ["图片响应式没加在图片上",
-        ".self-introduction-img img 只有 flex: none，缺 max-width: 100% 和 height: auto。注释里写着「防止从右边溢出」，说明看到了问题，但改的是网格不是图片。",
-        "图片溢出是图片自己没设上限。max-width: 100% + height: auto 是所有图片的标配。"],
-       ["断点 375px 是照机型选的",
-        "拿 iPhone SE 的屏幕宽当断点，没有验证过导航真正开始挤的宽度。",
-        "断点按内容定：拖窄窗口，看到布局开始难看的那一刻记下宽度。"],
-       ["混用 max-width 与 min-width 两种策略",
-        "导航用 max-width，main 用 min-width，两套思路混在一个文件里。",
-        "一套项目只用一种。移动端优先（min-width）更简单：默认状态就是手机。"],
-       ["注释放错了位置",
-        "「防止图片溢出」这句注释写在了 @media (min-width: 768px) 块里面，但它描述的是 img 规则。",
-        "注释要贴着它解释的那条规则放，否则三个月后它会误导人。"]
-     ]},
-
-    {"type": "heading", "text": "二、新词与生词", "level": 3},
-    {"type": "table",
-     "header": ["英文", "中文", "用大白话说"],
-     "rows": [
-       ["viewport", "视口", "浏览器用来显示页面的那块区域"],
-       ["device-width", "设备宽度", "页面宽度等于设备宽度，不再按 980px 虚拟渲染"],
-       ["initial-scale", "初始缩放", "1.0 表示不放大不缩小"],
-       ["CSS width", "CSS 宽度", "布局时用的宽度，手机是 360–430，不是物理分辨率"],
-       ["mobile first", "移动端优先", "先写手机布局，再用 min-width 往宽屏加"],
-       ["desktop first", "桌面优先", "先写宽屏布局，再用 max-width 往窄屏改"],
-       ["breakpoint", "断点", "媒体查询生效的那个宽度"],
-       ["content breakpoint", "内容断点", "按「布局开始难看」定的断点，不是按机型"],
-       ["media query", "媒体查询", "@media (条件) { 满足时才生效的规则 }"],
-       ["clamp()", "区间函数", "clamp(最小, 理想, 最大)，一行替代多个断点"],
-       ["vw", "视口宽度单位", "1vw = 视口宽度的 1%"],
-       ["srcset", "图片源集合", "给浏览器几档尺寸的图，让它按屏幕挑"]
-     ]},
-
-    {"type": "heading", "text": "三、今天学到的新知识", "level": 3},
-    {"type": "bullet_list", "items": [
-      "手机物理分辨率有 1080、1440，但 CSS 宽度只有 360–430。这两者不是一回事，响应式说的是 CSS 宽度。",
-      "没有 viewport meta 时，手机按 980px 虚拟宽度渲染再缩小，字小到要放大——更糟的是媒体查询也会失效，因为浏览器以为自己有 980px。",
-      "媒体查询不生效，第一个要检查的就是 viewport meta。",
-      "移动端优先：默认状态写成手机布局，用 min-width 一层层往宽屏加。逻辑是叠加，代码更少。",
-      "桌面优先：默认写宽屏，用 max-width 往回改。逻辑是覆盖，容易漏。",
-      "max-width 必须从大到小写，min-width 必须从小到大写。反了的话，窄屏规则会被宽屏规则覆盖，变成死代码。",
-      "grid-template-columns 的列数必须和 grid-template-areas 的列数一致，否则区域图占不满，出现空白列。",
-      "断点按内容定，不按设备定。拖窄窗口，看到布局开始难看的那一刻就是断点。背 iPhone 型号永远背不完。",
-      "媒体查询是补救手段。能用内在响应式解决的不要写断点：auto-fit + minmax 管列数，flex-wrap 管换行，clamp 管字号。",
-      "clamp(最小值, 理想值, 最大值) 可以让字号跟着视口宽度平滑变化，一行替代三个断点。",
-      "图片必须加 max-width: 100% + height: auto，否则大图会把页面撑出横向滚动条。图片溢出是图片自己的问题，不是容器的问题。",
-      "验收响应式看四件事：有没有横向滚动条、字能不能直接读、点击区域够不够大（44×44px）、有没有元素重叠。"
-    ]},
-
-    {"type": "heading", "text": "四、今天的产出", "level": 3},
-    {"type": "bullet_list", "items": [
-      "main 改为移动端优先：默认一列堆叠，min-width: 768px 时才两栏（1fr + 240px）",
-      "导航窄屏适配：flex-wrap: wrap",
-      "图片响应式：.self-introduction-img img 加 max-width: 100% + height: auto",
-      "三个宽度验证：375px / 768px / 1280px 均无横向滚动条、无元素重叠",
-      "CSS 括号 30 对 30，三个页面均返回 200"
-    ]},
-
-    {"type": "heading", "text": "五、明天要做的", "level": 3},
-    {"type": "paragraph",
-     "text": "个人主页 v1：把这一周学的 Grid、CSS 变量、响应式整合起来，做一个桌面和手机两套布局的个人主页。这是 W3 的验收产出，也是第一个可以放进 GitHub 的作品页。"}
+    {
+      "type": "heading",
+      "text": "W3 学习摘要",
+      "level": 1
+    },
+    {
+      "type": "paragraph",
+      "style": "Note",
+      "text": "2026-11-02 至 2026-11-08 ｜ 熙熙 ｜ 前端转型计划第 3 周 · Grid、响应式、CSS 变量"
+    },
+    {
+      "type": "paragraph",
+      "text": "本周从「会写样式」走向「有系统」：Grid 布局、响应式适配、设计令牌。周内的产出目标是个人主页 v1（桌面与手机两套布局）。"
+    },
+    {
+      "type": "heading",
+      "text": "第 12 天 · 2026-11-02",
+      "level": 2
+    },
+    {
+      "type": "heading",
+      "text": "一、今天犯的错误",
+      "level": 3
+    },
+    {
+      "type": "table",
+      "header": [
+        "错误",
+        "发生了什么",
+        "以后怎么办"
+      ],
+      "rows": [
+        [
+          "W2 概念复述不牢（6 条里 3 条不达标）",
+          "box-sizing 说成「按页面宽高计算」；display 三种没说清 block；flex:1 说成「固定宽高」；min-width:0 完全答不出；position 只列出四个值，漏 sticky，也说不清 fixed 与 absolute 的区别。",
+          "盲写和复述要交替做。写得出来不等于讲得出来，讲不出来就是没懂。"
+        ],
+        [
+          "算盒子宽度漏乘 2",
+          "width 200 + padding 20 + border 5 算成 225px。正确是 200 + 20×2 + 5×2 = 250px。",
+          "padding 和 border 是四条边，左右各一份。算完再验一遍：宽度 + 左侧 + 右侧。"
+        ],
+        [
+          "把浅色变量嵌套进 [data-theme=\"light\"]",
+          ":root { [data-theme=\"light\"] { ... } } 这段按 CSS 嵌套规则编译成「html 内部带该属性的元素」，而 body 上写的是 dark，所以从来没生效。结果所有颜色变量都未定义，页面颜色全丢。",
+          "定义基准值就直接写在 :root 里，不要套条件选择器。变量必须有兜底定义，否则 var() 取不到会静默退回默认值。"
+        ],
+        [
+          "属性挂在 body 上，选择器却写 :root",
+          ":root 指的是 <html>，属性写在 <body> 上，选择器匹配不到任何元素，深色主题完全不生效。",
+          "属性选择器要和属性所在的那个元素对上。要全站生效就把 data-theme 写在 <html> 上。"
+        ],
+        [
+          "删掉 .theme 后 body 忘了加 background",
+          "原来背景色是 .theme 那条规则给的，删掉类之后 body 只剩文字色。即使变量全对，也只会得到白底浅字。",
+          "变量定义了还要有人真的用它。改结构时逐条确认「这条规则原来负责什么」。"
+        ],
+        [
+          "变量名少了一个连字符",
+          "定义的是 --color-button-background，引用写成 var(--color-buttonbackground)，变量不存在，背景变透明，不报错。",
+          "写完用脚本核对「定义过的变量」与「引用过的变量」两张表，比肉眼找快得多。"
+        ],
+        [
+          "引用了未定义的 --text-h3",
+          ".post h3 用了 var(--text-h3)，但这个变量从未定义。字号退回默认值。",
+          "引用变量前先确认它存在；必要时用 var(--text-content, 20px) 加兜底值。"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "二、新词与生词",
+      "level": 3
+    },
+    {
+      "type": "table",
+      "header": [
+        "英文",
+        "中文",
+        "用大白话说"
+      ],
+      "rows": [
+        [
+          "custom property",
+          "自定义属性",
+          "CSS 变量的正式名称，以两个减号开头"
+        ],
+        [
+          "var()",
+          "取值函数",
+          "把变量的值取出来放到这里"
+        ],
+        [
+          ":root",
+          "根元素",
+          "指 <html>，定义在这里的变量全页面可用"
+        ],
+        [
+          "fallback",
+          "回退值",
+          "var(--x, 兜底值)，变量不存在时用它"
+        ],
+        [
+          "design token",
+          "设计令牌",
+          "把颜色、间距、字号写成一组有名字的变量，构成设计系统"
+        ],
+        [
+          "attribute selector",
+          "属性选择器",
+          "[属性名=\"值\"] 形式的写法，匹配带该属性的元素"
+        ],
+        [
+          "data-* attribute",
+          "自定义数据属性",
+          "HTML5 允许自己起名的属性，用来存状态，不参与样式默认渲染"
+        ],
+        [
+          "CSS nesting",
+          "CSS 嵌套",
+          "在选择器内部再写选择器，编译后变成后代选择器"
+        ],
+        [
+          "theme switching",
+          "主题切换",
+          "通过改变同名变量的值，让同一套结构呈现不同皮肤"
+        ],
+        [
+          "token naming",
+          "令牌命名",
+          "按用途命名（color-accent）而不是按样子命名（blue）"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "三、今天学到的新知识",
+      "level": 3
+    },
+    {
+      "type": "bullet_list",
+      "items": [
+        "CSS 变量（自定义属性）以 -- 开头，用 var() 取值。它解决的是「同一个值散落在几十个地方，改一处要改几十处」的问题。",
+        "定义在 :root 上的变量全页面可用，因为 :root 就是 <html>，所有元素都是它的后代。",
+        "变量是「往下传」的：定义在哪个元素上，只对它自己和后代生效。想给某个区域换主题，在那个容器上重新定义变量即可，不用逐个写类名。",
+        "主题切换的本质不是「重新定义」，而是「同名变量在更靠近它的元素上被重新赋值」。变量在使用它的元素上解析，一路向上找最近的声明。",
+        "所以覆盖必须同名。换一个名字就是新增变量，原来的值不变，覆盖失效。",
+        "变量必须有兜底定义。:root 里那一份是基准，取不到值时 var() 会静默退回默认值——页面不会报错，只是颜色没了。",
+        "设计令牌要按用途命名：--color-accent 而不是 --blue。按样子命名的令牌在换主题时会变成谎言（blue 变成了绿色）。",
+        "[data-theme=\"dark\"] 是属性选择器，含义是「任何带这个属性的元素」。前面的限定可以换成 body、:root、.card，也可以整个省掉。",
+        "data-theme 这个属性名可以自己起（data-mode、data-skin），值也可以随便定，只要 HTML 和 CSS 两边一致。",
+        "想全站切换主题，属性应该放在 <html>（:root）上，而不是 body 上——放在 body 上时，body 之外的元素看不到这些变量。",
+        "CSS 嵌套里，:root { [data-theme=\"light\"] { ... } } 会编译成 :root [data-theme=\"light\"]（后代选择器），不等于「根元素带这个属性」。后者要写成 :root[data-theme=\"light\"]，中间不能有空格。",
+        "变量名少一个连字符、拼错一个字母，都不会报错，只会静默失效。用脚本把「定义过的变量」和「引用过的变量」做差集，一秒就能查出来。",
+        "整理变量表的过程本身就是整理设计系统：你会被迫回答「这个颜色到底是什么用途」「这个间距为什么是 18px 而不是 16px」。"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "四、今天的产出",
+      "level": 3
+    },
+    {
+      "type": "bullet_list",
+      "items": [
+        "学习站点完成令牌化改造：:root 定义 27 个变量（12 个颜色、7 个间距、3 个圆角、5 个字号），全文 23 处引用",
+        "新增深色主题：:root[data-theme=\"dark\"] 覆盖 12 个颜色令牌，三个页面的 <html> 均加上 data-theme=\"dark\"",
+        "自动校验：变量定义与引用做差集，确认无悬空引用；CSS 括号 28 对 28；三个页面均返回 HTTP 200",
+        "补漏：W2 六个概念的口头复述 + 六条标准表述，暴露并修正了 box-sizing、优先级、display、position、flex 五处模糊点"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "五、明天要做的",
+      "level": 3
+    },
+    {
+      "type": "paragraph",
+      "text": "Grid 布局基础：grid-template-columns / rows、fr 单位、gap、grid-area 命名区域、auto-fit 与 minmax。Grid 是二维布局，和 Flex 的一维形成互补——页面的整体骨架用 Grid，组件内部的排列用 Flex。"
+    },
+    {
+      "type": "page_break"
+    },
+    {
+      "type": "heading",
+      "text": "第 13 天 · 2026-11-03",
+      "level": 2
+    },
+    {
+      "type": "heading",
+      "text": "一、今天犯的错误",
+      "level": 3
+    },
+    {
+      "type": "table",
+      "header": [
+        "错误",
+        "发生了什么",
+        "以后怎么办"
+      ],
+      "rows": [
+        [
+          "grid-template-areas 画成了非矩形",
+          "写成 \"main main\" 换行 \"foot\"——第一行两格、第二行一格，而且和 grid-template-rows 的三行对不上。浏览器丢弃整条声明，后面所有 grid-area 都成了空指向。",
+          "每一行的格子数必须一样，行数要和 grid-template-rows 一致。写之前先在纸上把图画成矩形。"
+        ],
+        [
+          "想让 footer 进 main 的网格",
+          "footer 是 main 的兄弟节点，不是子元素。grid-area 只对网格容器的直接子元素有效，所以写在 footer 上完全没作用，它按普通文档流排在 main 后面。",
+          "用网格前先确认「谁是谁的孩子」。要让 footer 参与，它必须和网格容器同层，或者让 body 当容器。"
+        ],
+        [
+          "类名拼错 aerea-foot",
+          "HTML 写 aerea-foot，CSS 写 .area-foot，差两个字母，匹配不上。",
+          "类名拼错不会报错，只会静默失效。写完立刻刷新看效果。"
+        ],
+        [
+          "把 flex: 1 0 100% 留在 grid 容器里",
+          "posts 已经从 flex 改成 grid，但标题那条规则还在用 flex 属性。flex 是弹性项目的属性，网格项目不看它，于是标题只占一格，跑到左上角和卡片并排。",
+          "换布局模型时，把原来那套属性全部检查一遍。Grid 里对应写法是 grid-column: 1 / -1。"
+        ],
+        [
+          ".fx2 与 .posts 的 display 冲突",
+          "posts 同时挂着 .fx2（display: flex）和 .posts（display: grid），两条规则打架；flex: 1 1 420px 在网格里也无意义。",
+          "一个元素上不要同时挂两套互相冲突的布局规则。换模型时把旧类和旧属性一起清掉。"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "二、新词与生词",
+      "level": 3
+    },
+    {
+      "type": "table",
+      "header": [
+        "英文",
+        "中文",
+        "用大白话说"
+      ],
+      "rows": [
+        [
+          "grid container",
+          "网格容器",
+          "写了 display: grid 的那个元素"
+        ],
+        [
+          "grid item",
+          "网格项目",
+          "容器的直接子元素，被放进格子里"
+        ],
+        [
+          "grid-template-columns",
+          "列定义",
+          "有几列、每列多宽"
+        ],
+        [
+          "grid-template-rows",
+          "行定义",
+          "有几行、每行多高"
+        ],
+        [
+          "fr",
+          "份",
+          "fraction，按剩余空间的比例分配"
+        ],
+        [
+          "grid line",
+          "网格线",
+          "格子的边界，n 列有 n+1 条线，编号从 1 开始"
+        ],
+        [
+          "grid cell",
+          "单元格",
+          "两条列线和两条行线围出来的空间"
+        ],
+        [
+          "span",
+          "跨格",
+          "grid-column: span 2 表示往右占两格"
+        ],
+        [
+          "grid-area",
+          "区域名",
+          "给一块区域起名，或把项目放进某个区域"
+        ],
+        [
+          "grid-template-areas",
+          "区域图",
+          "用字符串画出的布局示意图"
+        ],
+        [
+          "auto-fit",
+          "自动填充",
+          "能塞几列就塞几列，数量由浏览器算"
+        ],
+        [
+          "minmax()",
+          "最小最大值",
+          "minmax(180px, 1fr) 表示最窄 180、最宽一份"
+        ],
+        [
+          "implicit grid",
+          "隐式网格",
+          "超出定义范围的自动新增行列"
+        ],
+        [
+          "measure",
+          "行长",
+          "一行文字的长度，中文 30–40 字最舒适"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "三、今天学到的新知识",
+      "level": 3
+    },
+    {
+      "type": "bullet_list",
+      "items": [
+        "Flexbox 是一维的（一次管一个方向），Grid 是二维的（行列同时管）。整体页面骨架用 Grid，组件内部排列用 Flex。",
+        "fr 分的是扣掉固定尺寸和 gap 之后的剩余空间。3 列时先扣两段 gap，再按份数分；多个 fr 按比例。",
+        "1fr 实际等于 minmax(auto, 1fr)，最小值是内容宽度。长 URL、长单词会撑破网格——修法是 minmax(0, 1fr)，和 Flex 里的 min-width: 0 是同一个思路。",
+        "线永远比格多一条：3 列产生 4 条线。格是线夹出来的空间，不是线上的东西。",
+        "写在 grid-column 里的数字永远是线的编号，不是格的编号。1 / 3 表示从线 1 到线 3，占第 1、2 列，不含第 3 列。线号相减 = 占几格。",
+        "负数是倒数：-1 是最后一条线，1 / -1 表示占满所有列。列数动态变化（auto-fit）时只能用这种写法，写死数字会出错。",
+        "auto-fit 时列数不固定，所以不知道有几条线。这也是不要手数线号的理由。",
+        "隐式网格：只定义了 3 行但有 10 个元素时，Grid 会自动往下加行，行线要多少有多少。有 DevTools 的网格叠加显示比数数字可靠。",
+        "grid-template-areas 用一张字符串图描述整页布局，同一个词出现几次就跨几格。这张图的形状就是布局本身，改布局不用碰 HTML。",
+        "grid-template-areas 必须是矩形，且行数要和 grid-template-rows 一致，否则整条声明被丢弃。",
+        "grid-area 只对网格容器的直接子元素有效。兄弟节点、孙子节点都进不了这个网格。",
+        "auto-fit + minmax(180px, 1fr) 能自动决定列数，全程零媒体查询——这是「内在响应式」，比写断点更稳。",
+        "Grid 的对齐分两层：justify-content / align-content 调整整个网格在容器里的位置；justify-items / align-items 调整每个格子里的内容。place-items 是后两条的简写。",
+        "名字和 Flex 一样但含义有差别：Flex 的 justify-content 管主轴（可能横可能竖），Grid 的 justify 永远管横、align 永远管竖。",
+        "换布局模型（flex → grid）时，旧模型的属性会静默失效，不报错也不会提醒。这是 CSS 最危险的一类错误。"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "四、今天的产出",
+      "level": 3
+    },
+    {
+      "type": "bullet_list",
+      "items": [
+        "卡片列表从 flex 改为 grid：repeat(auto-fit, minmax(240px, 1fr))，自动决定列数",
+        "页面骨架用 grid-template-areas: \"posts side\" 做两栏，替代原来的 flex 布局",
+        ".posts > .title 改用 grid-column: 1 / -1 独占一行，修复标题跑到左上角的问题",
+        "day13 课件：7 个实时演示（三列、fr 比例、混合单位、跨行列、命名区域、自动列数、对齐）",
+        "grid-lines.html：用带编号的红线图示讲清「线比格多一条」和 1 / 3 的真实含义",
+        "补记 进度.md 第 9–13 天，并修正第 8 天「今日提交」的复制粘贴错误"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "五、明天要做的",
+      "level": 3
+    },
+    {
+      "type": "paragraph",
+      "text": "响应式三件套：viewport meta 标签、移动端优先的写法、媒体查询断点。学完之后个人主页要同时适配桌面和手机，W3 的验收目标就是这个。"
+    },
+    {
+      "type": "page_break"
+    },
+    {
+      "type": "heading",
+      "text": "第 14 天 · 2026-11-04",
+      "level": 2
+    },
+    {
+      "type": "heading",
+      "text": "一、今天犯的错误",
+      "level": 3
+    },
+    {
+      "type": "table",
+      "header": [
+        "错误",
+        "发生了什么",
+        "以后怎么办"
+      ],
+      "rows": [
+        [
+          "两条 max-width 媒体查询顺序反了",
+          "先写 375px（一列）再写 876px（两列）。同优先级时后写的赢，所以窗口 320px 时两条都命中，最终用的是 876 那条——375 那条成了永远不生效的死代码。",
+          "max-width 从大到小写，min-width 从小到大写。或者干脆只用一种策略。"
+        ],
+        [
+          "876px 那条内部自相矛盾",
+          "grid-template-columns 写了两列，但 grid-template-areas 只有一列（\"posts\" \"side\"）。结果是两块都落在第 1 列，第 2 列空着，内容挤在左半边。",
+          "列数和区域图的列数必须一致。要堆叠就写 1 列，要横跨就写 \"posts posts\"。"
+        ],
+        [
+          "图片响应式没加在图片上",
+          ".self-introduction-img img 只有 flex: none，缺 max-width: 100% 和 height: auto。注释里写着「防止从右边溢出」，说明看到了问题，但改的是网格不是图片。",
+          "图片溢出是图片自己没设上限。max-width: 100% + height: auto 是所有图片的标配。"
+        ],
+        [
+          "断点 375px 是照机型选的",
+          "拿 iPhone SE 的屏幕宽当断点，没有验证过导航真正开始挤的宽度。",
+          "断点按内容定：拖窄窗口，看到布局开始难看的那一刻记下宽度。"
+        ],
+        [
+          "混用 max-width 与 min-width 两种策略",
+          "导航用 max-width，main 用 min-width，两套思路混在一个文件里。",
+          "一套项目只用一种。移动端优先（min-width）更简单：默认状态就是手机。"
+        ],
+        [
+          "注释放错了位置",
+          "「防止图片溢出」这句注释写在了 @media (min-width: 768px) 块里面，但它描述的是 img 规则。",
+          "注释要贴着它解释的那条规则放，否则三个月后它会误导人。"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "二、新词与生词",
+      "level": 3
+    },
+    {
+      "type": "table",
+      "header": [
+        "英文",
+        "中文",
+        "用大白话说"
+      ],
+      "rows": [
+        [
+          "viewport",
+          "视口",
+          "浏览器用来显示页面的那块区域"
+        ],
+        [
+          "device-width",
+          "设备宽度",
+          "页面宽度等于设备宽度，不再按 980px 虚拟渲染"
+        ],
+        [
+          "initial-scale",
+          "初始缩放",
+          "1.0 表示不放大不缩小"
+        ],
+        [
+          "CSS width",
+          "CSS 宽度",
+          "布局时用的宽度，手机是 360–430，不是物理分辨率"
+        ],
+        [
+          "mobile first",
+          "移动端优先",
+          "先写手机布局，再用 min-width 往宽屏加"
+        ],
+        [
+          "desktop first",
+          "桌面优先",
+          "先写宽屏布局，再用 max-width 往窄屏改"
+        ],
+        [
+          "breakpoint",
+          "断点",
+          "媒体查询生效的那个宽度"
+        ],
+        [
+          "content breakpoint",
+          "内容断点",
+          "按「布局开始难看」定的断点，不是按机型"
+        ],
+        [
+          "media query",
+          "媒体查询",
+          "@media (条件) { 满足时才生效的规则 }"
+        ],
+        [
+          "clamp()",
+          "区间函数",
+          "clamp(最小, 理想, 最大)，一行替代多个断点"
+        ],
+        [
+          "vw",
+          "视口宽度单位",
+          "1vw = 视口宽度的 1%"
+        ],
+        [
+          "srcset",
+          "图片源集合",
+          "给浏览器几档尺寸的图，让它按屏幕挑"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "三、今天学到的新知识",
+      "level": 3
+    },
+    {
+      "type": "bullet_list",
+      "items": [
+        "手机物理分辨率有 1080、1440，但 CSS 宽度只有 360–430。这两者不是一回事，响应式说的是 CSS 宽度。",
+        "没有 viewport meta 时，手机按 980px 虚拟宽度渲染再缩小，字小到要放大——更糟的是媒体查询也会失效，因为浏览器以为自己有 980px。",
+        "媒体查询不生效，第一个要检查的就是 viewport meta。",
+        "移动端优先：默认状态写成手机布局，用 min-width 一层层往宽屏加。逻辑是叠加，代码更少。",
+        "桌面优先：默认写宽屏，用 max-width 往回改。逻辑是覆盖，容易漏。",
+        "max-width 必须从大到小写，min-width 必须从小到大写。反了的话，窄屏规则会被宽屏规则覆盖，变成死代码。",
+        "grid-template-columns 的列数必须和 grid-template-areas 的列数一致，否则区域图占不满，出现空白列。",
+        "断点按内容定，不按设备定。拖窄窗口，看到布局开始难看的那一刻就是断点。背 iPhone 型号永远背不完。",
+        "媒体查询是补救手段。能用内在响应式解决的不要写断点：auto-fit + minmax 管列数，flex-wrap 管换行，clamp 管字号。",
+        "clamp(最小值, 理想值, 最大值) 可以让字号跟着视口宽度平滑变化，一行替代三个断点。",
+        "图片必须加 max-width: 100% + height: auto，否则大图会把页面撑出横向滚动条。图片溢出是图片自己的问题，不是容器的问题。",
+        "验收响应式看四件事：有没有横向滚动条、字能不能直接读、点击区域够不够大（44×44px）、有没有元素重叠。"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "四、今天的产出",
+      "level": 3
+    },
+    {
+      "type": "bullet_list",
+      "items": [
+        "main 改为移动端优先：默认一列堆叠，min-width: 768px 时才两栏（1fr + 240px）",
+        "导航窄屏适配：flex-wrap: wrap",
+        "图片响应式：.self-introduction-img img 加 max-width: 100% + height: auto",
+        "三个宽度验证：375px / 768px / 1280px 均无横向滚动条、无元素重叠",
+        "CSS 括号 30 对 30，三个页面均返回 200"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "五、明天要做的",
+      "level": 3
+    },
+    {
+      "type": "paragraph",
+      "text": "个人主页 v1：把这一周学的 Grid、CSS 变量、响应式整合起来，做一个桌面和手机两套布局的个人主页。这是 W3 的验收产出，也是第一个可以放进 GitHub 的作品页。"
+    },
+    {
+      "type": "page_break"
+    },
+    {
+      "type": "heading",
+      "text": "第 15 天 · 2026-11-05 · 个人主页 v1",
+      "level": 2
+    },
+    {
+      "type": "heading",
+      "text": "一、今天犯的错误",
+      "level": 3
+    },
+    {
+      "type": "table",
+      "header": [
+        "错误",
+        "发生了什么",
+        "以后怎么办"
+      ],
+      "rows": [
+        [
+          "把 max-width: 374px 写在 body 上",
+          "整页被锁死在手机宽度，桌面打开也是一条 374px 的窄条。这不是响应式，是只有手机版。",
+          "max-width 是上限不是目标宽度。宽度归容器管，body 只管背景和字体。"
+        ],
+        [
+          "整页没有 Grid 骨架",
+          "五个区块各自用 flex 堆叠，没有一张 grid-template-areas 图；更关键的是 .layout 和 .page 这两个类根本没挂到任何 HTML 元素上，写了等于没写。",
+          "写完 CSS 要确认类名真的出现在 HTML 里。用 DevTools 选中元素看计算样式，比读代码可靠。"
+        ],
+        [
+          "两张区域图的区域名不一致",
+          "手机图写 introduction，桌面图写 about，元素上写的却是 grid-area: introduction。名字对不上时浏览器把未知名字当作命名网格线去找，找不到就新建隐式轨道——整页从 2 列变成 4 列，正文被挤进 16px 宽的窄列。",
+          "同一个区域名在所有媒体查询里必须完全一致。命名统一用 HTML 里真实的语义名。"
+        ],
+        [
+          "删代码时把 display: grid 一起删了",
+          ".project 只剩 grid-template-columns 和 grid-template-areas，没有 display: grid，计算样式是 block，两张卡片堆成整行宽。",
+          "grid-template-* 在没有 display: grid 的元素上完全不生效，也不报错。改 areas 图时别动 display。"
+        ],
+        [
+          "用 hero 当标签",
+          "自定义标签浏览器不认识，会被当成未知行内元素，没有默认样式，也不参与文档大纲。",
+          "未知标签并不是自定义元素，真正的自定义元素需要 JS 注册。语义结构用 header / main / section / article / footer。"
+        ],
+        [
+          "class 属性里带了点号",
+          "写成 class=\".title\"，类名就真的叫 .title（含点），CSS 里的 .title 匹配不到。",
+          "类名不带点号。点号只出现在 CSS 选择器里。"
+        ],
+        [
+          "margin: auto 让网格项目缩成内容宽",
+          "两张项目卡写了 margin: auto，结果各自缩到刚好包住内容、居中显示。",
+          "网格或 flex 项目上的 auto 边距会吃掉剩余空间，元素不再拉伸。想让卡片撑满格子就删掉 margin: auto。"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "二、新词与生词",
+      "level": 3
+    },
+    {
+      "type": "table",
+      "header": [
+        "英文",
+        "中文",
+        "用大白话说"
+      ],
+      "rows": [
+        [
+          "page container",
+          "页面容器",
+          "只管宽度和左右留白的那一层"
+        ],
+        [
+          "grid-template-areas",
+          "区域图",
+          "用字符串画出整页布局，同名格子连成一块区域"
+        ],
+        [
+          "grid-area",
+          "区域座位号",
+          "元素自报名字，和区域图里的名字对上就坐进去"
+        ],
+        [
+          "implicit grid",
+          "隐式网格",
+          "超出定义范围时浏览器自动新建的行列"
+        ],
+        [
+          "max-width",
+          "最大宽度",
+          "上限，不是固定宽度"
+        ],
+        [
+          "ch",
+          "字符单位",
+          "一个字符的宽度，46ch 约等于舒适的行长"
+        ],
+        [
+          "pill",
+          "胶囊标签",
+          "两端完全圆角的小标签，border-radius 给很大值"
+        ],
+        [
+          "blockify",
+          "块化",
+          "行内元素变成 flex 或 grid 项目后，行内特性消失、宽高生效"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "三、今天学到的新知识",
+      "level": 3
+    },
+    {
+      "type": "bullet_list",
+      "items": [
+        "页面分成三层职责：body 管背景和字体，.page 管宽度和留白，.layout 管网格。混在一起就会互相打架。",
+        "max-width 是上限。写 1080px 时，窗口 1400 显示 1080 居中，窗口 500 就显示 500。",
+        "grid-template-areas 里的名字是自己起的代号，和 HTML 标签、类名都没有关系。图给格子命名，元素的 grid-area 报名字，同名就连上。",
+        "同一个区域名在所有媒体查询里必须完全一致。名字对不上时浏览器不会忽略，而是把它当作命名网格线去找，找不到就新建隐式轨道——布局会莫名其妙多出列。",
+        "只有网格容器的直接子元素能填进区域。孙子元素要么提升层级，要么让父元素自己也变成网格。",
+        "grid-template-columns / rows / areas 在没有 display: grid 的元素上完全无效，且不报错。这是 CSS 静默失效的又一次实例。",
+        "网格或 flex 项目上的 margin: auto 会把剩余空间全部吃掉，元素缩到内容大小再居中——和块级元素上的 margin: auto 行为完全不同。",
+        "flex 容器的 align-items 默认是 stretch，所有子元素会被拉满交叉轴。想让某个子元素只占自己需要的宽度，用 align-self: start。",
+        "布局容器会给所有子元素施加默认待遇（拉伸、间距、对齐）。写子元素样式之前，先知道默认值是什么。"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "四、今天的产出",
+      "level": 3
+    },
+    {
+      "type": "bullet_list",
+      "items": [
+        "personal/index.html：个人主页 v1，含 header / hero / about / skills / projects / footer 六个区块",
+        "整页 grid-template-areas 骨架，hero 内部再嵌套一张图（手机上下、桌面左右）",
+        "全部走 CSS 变量：颜色 7 个、间距 6 个、圆角 1 个",
+        "三个宽度验证：375px / 768px / 1280px 均无横向滚动条",
+        "代码自检：CSS 括号 38 对 38、零硬编码颜色、标签全部配对、标题层级 h1→h2→h3 不跳级"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "五、明天要做的",
+      "level": 3
+    },
+    {
+      "type": "paragraph",
+      "text": "过渡与变形：transition、transform、缓动曲线，以及 prefers-reduced-motion。动效不改变功能，只改变感受，但它决定一个页面是精致还是廉价。"
+    },
+    {
+      "type": "page_break"
+    },
+    {
+      "type": "heading",
+      "text": "第 16 天 · 2026-11-06",
+      "level": 2
+    },
+    {
+      "type": "heading",
+      "text": "一、今天犯的错误",
+      "level": 3
+    },
+    {
+      "type": "table",
+      "header": [
+        "错误",
+        "发生了什么",
+        "以后怎么办"
+      ],
+      "rows": [
+        [
+          "h3 到正文之间空了 31px",
+          "清掉了 h3 的外边距（8px）并给了卡片 gap 8px，但 p 元素自己还有浏览器默认的 margin-top: 1em（约 15px），三份叠起来变成 31px。",
+          "重置样式时要成组清：h1–h6 和 p 的默认 margin 一起清，别只清一半。"
+        ],
+        [
+          "按钮被拉满整行（486px）",
+          ".card 是 flex column，align-items 默认 stretch，所有子元素被拉满宽度；按钮自己也设了 display: flex，于是老实撑满。",
+          "子元素不想被拉伸时写 align-self: start。这是布局容器的默认待遇之一。"
+        ],
+        [
+          "按钮文字带着方括号",
+          "文案仍写成 [查看项目]。方括号是纯文本时代的兜底写法，有了按钮外形之后就是多余符号。",
+          "按钮文案只写动作本身：查看项目、联系我。"
+        ],
+        [
+          "按钮背景色对比度不足",
+          "rgb(64,132,177) 配浅色文字，对比度约 3.6:1，低于小字要求的 4.5:1。",
+          "按钮底色用 #1f6feb 这类深一档的蓝，对比度约 5.2:1。"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "二、新词与生词",
+      "level": 3
+    },
+    {
+      "type": "table",
+      "header": [
+        "英文",
+        "中文",
+        "用大白话说"
+      ],
+      "rows": [
+        [
+          "transition",
+          "过渡",
+          "属性变化时自动补间，让它慢慢变"
+        ],
+        [
+          "transform",
+          "变形",
+          "位移、缩放、旋转、倾斜，不影响布局"
+        ],
+        [
+          "translate",
+          "位移",
+          "translateY(-6px) 表示向上移动 6 像素"
+        ],
+        [
+          "scale",
+          "缩放",
+          "1 是原大小，1.05 是放大 5%"
+        ],
+        [
+          "easing",
+          "缓动",
+          "速度曲线，决定过程是匀速还是先快后慢"
+        ],
+        [
+          "cubic-bezier",
+          "贝塞尔曲线",
+          "自定义缓动的四个控制数"
+        ],
+        [
+          "active",
+          "激活态",
+          ":active 是按住不放的状态"
+        ],
+        [
+          "reflow",
+          "重排",
+          "浏览器重新计算元素位置，代价高"
+        ],
+        [
+          "compositing",
+          "合成",
+          "由显卡把图层拼起来，代价低"
+        ],
+        [
+          "prefers-reduced-motion",
+          "减少动效偏好",
+          "用户在系统里开了减少动画，媒体查询可以检测到"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "三、今天学到的新知识",
+      "level": 3
+    },
+    {
+      "type": "bullet_list",
+      "items": [
+        "CSS 动效只需要两条属性：transition 决定怎么变，transform 决定变成什么样。",
+        "transition 必须写在基础状态，不能写在 :hover 里。写在 :hover 里只有进入时平滑，移出时瞬间跳回。",
+        "transition 的四个值：属性、时长、缓动、延迟。多个属性用逗号分开，尽量别用 all。",
+        "有中间值的属性才能过渡（颜色、长度、透明度、transform）；display 和 height: auto 没有中间值，不能过渡。",
+        "transform 不改变元素在文档流里占的位置，只改变它被画在哪里。所以周围元素不会被挤动。",
+        "改 top 或 left 会触发重排，改 transform 走显卡合成。动画优先用 transform 和 opacity。",
+        "时长参考：按钮反馈 0.1–0.2s，卡片悬停 0.2–0.3s，弹窗 0.3–0.4s。超过 0.5s 的微交互会让人觉得卡。",
+        "prefers-reduced-motion: reduce 命中时关掉动画，是对前庭功能障碍者的基本尊重，对其他人零影响。",
+        "flex 容器默认 align-items: stretch，子元素会被拉满交叉轴；不想被拉伸就写 align-self: start。",
+        "浏览器给 h1–h6 和 p 都有默认 margin。做精确间距时要么成组重置，要么用 gap 统一管。"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "四、今天的产出",
+      "level": 3
+    },
+    {
+      "type": "bullet_list",
+      "items": [
+        "项目卡片动效：translateY(-6px) + box-shadow + border-color 三属性同时过渡（0.25s）",
+        "技能标签 hover：背景与边框色变化",
+        "链接 hover：颜色过渡 0.3s",
+        "按钮：hover 变色 + active 缩放到 0.96，transition 0.12s",
+        "加入 prefers-reduced-motion 兜底",
+        "浏览器实测：hover 时 transform 矩阵为 matrix(1,0,0,1,0,-6)，transition 全部写在基础状态"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "五、明天要做的",
+      "level": 3
+    },
+    {
+      "type": "paragraph",
+      "text": "伪类与伪元素：:focus-visible、:nth-child、::before、::after。重点是用伪元素做下划线动画和装饰图形——纯装饰不需要多写一个 DOM 节点。"
+    }
   ]
 }
