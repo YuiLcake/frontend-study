@@ -10,6 +10,16 @@
       *::after {
         box-sizing: border-box;
       }
+      ::selection {
+        background: var(--color-bg-link-btn); /* 和你按钮同一个蓝 */
+        color: var(--color-text);
+      }
+      a:focus-visible,
+      button:focus-visible {
+        outline: 2px solid var(--color-links);
+        outline-offset: 2px;
+        border-radius: 4px;
+      }
       :root {
         --color-bg: #0d1117;
         --color-text: #f0f6fc;
@@ -103,7 +113,7 @@
       }
       .content1 {
         grid-area: content1;
-        max-width: 46ch;
+        max-width: 50ch;
       }
       .hero-image {
         grid-area: avatar;
@@ -126,7 +136,7 @@
       }
       .opening-links a {
         color: var(--color-links);
-        text-decoration: none;
+
         font-style: italic;
       }
       /*header*/
@@ -158,7 +168,7 @@
         gap: var(--space-2);
       }
       .skill-list li {
-        padding: 2px var(--space-3);
+        padding: 2px var(--space-3) 1px;
         border: 1px solid var(--color-line);
         border-radius: 999px;
         font-size: 13px;
@@ -222,13 +232,33 @@
       .link:hover {
         color: var(--color-link-touch);
       }
-
       .link-btn {
         transition: color 0.3s ease;
       }
       .link-btn:hover {
         color: var(--color-link-btn-touch);
       }
+      .u-link {
+        position: relative;
+        text-decoration: none;
+      }
+      .u-link::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 2px;
+        background: currentColor;
+        transform: scaleX(0);
+        transform-origin: right;
+        transition: transform 0.25s ease;
+      }
+      .u-link:hover::after {
+        transform: scaleX(1);
+        transform-origin: left;
+      }
+
       .btn {
         align-self: start;
         padding: var(--space-2) var(--space-4);
@@ -252,6 +282,24 @@
           box-shadow 0.25s ease,
           border-color 0.25s ease;
       }
+      .card-arrow {
+        position: relative;
+      }
+      .card-arrow::after {
+        content: "↗";
+        position: absolute;
+        top: var(--space-2);
+        right: 10px;
+        opacity: 0;
+        transform: translate(-4px, 4px);
+        transition:
+          opacity 0.2s ease,
+          transform 0.2s ease;
+      }
+      .card-arrow:hover::after {
+        opacity: 1;
+        transform: translate(0, 0);
+      }
       .card h3 {
         margin: 0 0 var(--space-2);
       }
@@ -261,16 +309,30 @@
       .card > p:last-child {
         margin-top: auto;
       }
-
       .card:hover {
         transform: translateY(-6px);
         box-shadow: 0 8px 24px var(--color-bg-box);
         border-color: var(--color-box-solid);
       }
+
       .skill-card {
         transition:
           background-color 0.25s ease,
           border-color 0.25s ease;
+      }
+      .dot-skill-card {
+        position: relative;
+        padding-left: 10px;
+      }
+      .dot-skill-card::before {
+        content: "";
+        position: absolute;
+        left: 3px;
+        top: 0.9em;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: var(--color-text);
       }
       .skill-card:hover {
         background-color: var(--color-skill-card);
@@ -292,10 +354,13 @@
         <header class="opening">
           <h1>熙熙·前端开发</h1>
           <div class="opening-links">
-            <a href="https://github.com/YuiLcake" target="_blank" class="link"
+            <a
+              href="https://github.com/YuiLcake"
+              target="_blank"
+              class="link u-link"
               >GitHub</a
             >
-            <a href="mailto:maijunxi6@gmail.com" class="link">邮箱</a>
+            <a href="mailto:maijunxi6@gmail.com" class="link u-link">邮箱</a>
           </div>
         </header>
 
@@ -331,16 +396,16 @@
         <article class="skill">
           <h2>技能</h2>
           <ul class="skill-list">
-            <li class="skill-card">HTML</li>
-            <li class="skill-card">CSS</li>
-            <li class="skill-card">JavaScript</li>
-            <li class="skill-card">Vue 3</li>
+            <li class="skill-card dot-skill-card">HTML</li>
+            <li class="skill-card dot-skill-card">CSS</li>
+            <li class="skill-card dot-skill-card">JavaScript</li>
+            <li class="skill-card dot-skill-card">Vue 3</li>
           </ul>
         </article>
 
         <article class="project">
           <h2 class="title">我的项目</h2>
-          <div class="project1 card">
+          <div class="project1 card card-arrow">
             <h3>我的学习站点</h3>
             <p>
               记录从零开始学前端的过程，使用 HTML、CSS、JavaScript、Vue 3
@@ -355,7 +420,7 @@
 
             <p>HTML CSS</p>
           </div>
-          <div class="project1-1 card">
+          <div class="project1-1 card card-arrow">
             <h3>校园活动报名</h3>
             <p>我的毕业设计</p>
             <a
@@ -376,3 +441,4 @@
   </body>
 </html>
 <!--如果只写在hover里的话就只有在鼠标在在按键上的时候才会触发，移开就会很突兀-->
+<!--不写content:"";的话就默认是none，就是没有这个元素了，不显示-->

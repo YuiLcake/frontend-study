@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>第 17 天 · 伪类与伪元素</title>
+    <style>
+      :root {
+        --c-text: #1f2328;
+        --c-muted: #59636e;
+        --c-border: #d1d9e0;
+        --c-surface: #f6f8fa;
+        --c-accent: #0969da;
+        --radius: 8px;
+        --sp-2: 8px;
+        --sp-3: 12px;
+        --sp-4: 16px;
+        --sp-5: 24px;
+      }
+      body {
+        max-width: 880px;
+        margin: 40px auto;
+        padding: 0 20px;
+        font-family: system-ui, sans-serif;
+        line-height: 1.85;
+        color: var(--c-text);
+      }
+      header {
+        border-bottom: 2px solid var(--c-border);
+        padding-bottom: var(--sp-4);
+      }
+      section {
+        margin: 40px 0;
+      }
+      pre {
+        background: var(--c-surface);
+        padding: 14px 16px;
+        border-radius: var(--radius);
+        overflow-x: auto;
+        border: 1px solid var(--c-border);
+      }
+      code {
+        font-family: Consolas, monospace;
+        font-size: 14px;
+      }
+      table {
+        border-collapse: collapse;
+        margin: 12px 0;
+        width: 100%;
+      }
+      td,
+      th {
+        border: 1px solid var(--c-border);
+        padding: 8px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      thead th {
+        background: var(--c-surface);
+      }
+      .hint {
+        color: var(--c-muted);
+        font-size: 14px;
+      }
+      .note {
+        background: #fffbe6;
+        border-left: 3px solid #e0b400;
+        padding: 10px 14px;
+        margin: 14px 0;
+      }
+      .bad {
+        background: #ffebe9;
+        border-left: 3px solid #d1242f;
+        padding: 10px 14px;
+        margin: 14px 0;
+      }
+      .cap {
+        font-size: 13px;
+        color: var(--c-muted);
+        margin: 16px 0 4px;
+      }
+      .demo {
+        border: 1px dashed #8aa;
+        background: #f4f8ff;
+        padding: 16px;
+        margin: 8px 0 20px;
+      }
+
+      /* ===== 演示 1：下划线滑入 ===== */
+      .u-link {
+        position: relative;
+        color: var(--c-accent);
+        text-decoration: none;
+        padding-bottom: 2px;
+      }
+      .u-link::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 2px;
+        background: currentColor;
+        transform: scaleX(0);
+        transform-origin: right; /* 从右往左收起 */
+        transition: transform 0.25s ease;
+      }
+      .u-link:hover::after {
+        transform: scaleX(1);
+        transform-origin: left; /* 从左往右展开 */
+      }
+
+      /* ===== 演示 2：::after 箭头 ===== */
+      .arrow-card {
+        position: relative;
+        display: inline-block;
+        padding: var(--sp-3) var(--sp-4);
+        border: 1px solid var(--c-border);
+        border-radius: var(--radius);
+        background: #fff;
+        transition: border-color 0.2s ease;
+      }
+      .arrow-card::after {
+        content: "↗";
+        position: absolute;
+        top: 8px;
+        right: 10px;
+        color: var(--c-accent);
+        opacity: 0;
+        transform: translate(-4px, 4px);
+        transition:
+          opacity 0.2s ease,
+          transform 0.2s ease;
+      }
+      .arrow-card:hover {
+        border-color: #a8c7fa;
+      }
+      .arrow-card:hover::after {
+        opacity: 1;
+        transform: translate(0, 0);
+      }
+
+      /* ===== 演示 3：nth-child 斑马纹 ===== */
+      .zebra {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        border: 1px solid var(--c-border);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      .zebra li {
+        padding: 8px 14px;
+      }
+      .zebra li:nth-child(odd) {
+        background: var(--c-surface);
+      }
+      .zebra li:nth-child(even) {
+        background: #fff;
+      }
+
+      /* ===== 演示 4：焦点可见 ===== */
+      .focus-demo a {
+        display: inline-block;
+        margin-right: 12px;
+        padding: 6px 12px;
+        border: 1px solid var(--c-border);
+        border-radius: 6px;
+        color: var(--c-text);
+        text-decoration: none;
+      }
+      .focus-demo a:focus-visible {
+        outline: 2px solid var(--c-accent);
+        outline-offset: 2px;
+      }
+
+      /* ===== 演示 5：选中色 ===== */
+      .select-demo::selection {
+        background: #ffd7a8;
+        color: #5c3b00;
+      }
+
+      /* ===== 演示 6：装饰圆点 ===== */
+      .dot-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .dot-list li {
+        position: relative;
+        padding-left: 18px;
+        margin: 6px 0;
+      }
+      .dot-list li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.65em;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--c-accent);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .u-link::after,
+        .arrow-card,
+        .arrow-card::after {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>第 17 天：伪类与伪元素</h1>
+      <p>
+        一个冒号和两个冒号的区别，决定了你是在"选中某个状态"还是"凭空造一个元素"。
+      </p>
+    </header>
+
+    <main>
+      <section id="what">
+        <h2>一、伪类 vs 伪元素</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">伪类（一个冒号）</th>
+              <th scope="col">伪元素（两个冒号）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>作用</td>
+              <td>选中元素的<b>某种状态</b></td>
+              <td>凭空造一个<b>不存在的元素</b></td>
+            </tr>
+            <tr>
+              <td>例子</td>
+              <td>
+                <code>:hover</code> <code>:focus</code>
+                <code>:first-child</code> <code>:nth-child(2)</code>
+              </td>
+              <td>
+                <code>::before</code> <code>::after</code>
+                <code>::selection</code> <code>::placeholder</code>
+              </td>
+            </tr>
+            <tr>
+              <td>类比</td>
+              <td>"鼠标按在上面时的那个按钮"</td>
+              <td>"这个按钮前面多出一个小圆点"</td>
+            </tr>
+            <tr>
+              <td>DOM 里有没有</td>
+              <td>本来就有，只是状态不同</td>
+              <td>本来没有，样式生成的</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p class="hint">
+          写法上：伪类 1 个冒号，伪元素 2 个。浏览器对 <code>:before</code>（1
+          个冒号）也兼容， 但那是老写法，新代码一律用双冒号。
+        </p>
+      </section>
+
+      <section id="pseudo-class">
+        <h2>二、常用的伪类</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">写法</th>
+              <th scope="col">选中什么</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>:hover</code></td>
+              <td>鼠标移上去时</td>
+            </tr>
+            <tr>
+              <td><code>:active</code></td>
+              <td>按住不放时</td>
+            </tr>
+            <tr>
+              <td><code>:focus</code></td>
+              <td>获得焦点时（点击输入框、用 Tab 移动到链接）</td>
+            </tr>
+            <tr>
+              <td><code>:focus-visible</code></td>
+              <td>只有键盘操作获得焦点时才生效</td>
+            </tr>
+            <tr>
+              <td><code>:first-child</code> / <code>:last-child</code></td>
+              <td>父元素里的第一个 / 最后一个子元素</td>
+            </tr>
+            <tr>
+              <td><code>:nth-child(2n)</code></td>
+              <td>第偶数个（2n = 2,4,6…；odd/even 是简写）</td>
+            </tr>
+            <tr>
+              <td><code>:not(.active)</code></td>
+              <td>排除某类</td>
+            </tr>
+            <tr>
+              <td><code>:disabled</code></td>
+              <td>被禁用的表单控件</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>:focus-visible 比 :focus 好用的原因</h3>
+
+        <p class="cap">用 Tab 键在下面三个链接之间移动（不要用鼠标点）</p>
+        <div class="demo focus-demo">
+          <a href="#">链接一</a>
+          <a href="#">链接二</a>
+          <a href="#">链接三</a>
+        </div>
+
+        <p class="hint">
+          <code>:focus</code>
+          在鼠标点击时也会触发，于是"点一下出现一个框"很难看， 很多人干脆把
+          outline 全删了——那是无障碍灾难。用 <code>:focus-visible</code>
+          只在键盘操作时显示焦点框，两边都照顾到。
+        </p>
+
+        <p><b>斑马纹：</b></p>
+
+        <div class="demo">
+          <ul class="zebra">
+            <li>第一行（odd）</li>
+            <li>第二行（even）</li>
+            <li>第三行（odd）</li>
+            <li>第四行（even）</li>
+          </ul>
+        </div>
+
+        <pre><code>.zebra li:nth-child(odd)  { background: #f6f8fa; }
+.zebra li:nth-child(even) { background: #fff; }</code></pre>
+      </section>
+
+      <section id="pseudo-element">
+        <h2>三、伪元素：凭空造一个元素</h2>
+
+        <p>
+          <code>::before</code> 和 <code>::after</code> 会在元素内容的前面 /
+          后面插入一个 <b>不在 HTML 里</b>的盒子。必须写
+          <code>content</code> 属性，哪怕是空字符串。
+        </p>
+
+        <pre><code>.box::before {
+  content: "";          /* 没有这一行，整个伪元素不显示 */
+  width: 8px;
+  height: 8px;
+  background: red;
+}</code></pre>
+
+        <div class="bad">
+          <b>最常见的错：忘了 content。</b><br />
+          伪元素的默认 <code>content</code> 是
+          <code>none</code>，等于这个元素不存在。 写了 <code>width</code>、<code
+            >background</code
+          >
+          全部无效，页面上什么都没有，也不报错。
+        </div>
+
+        <p><b>装饰圆点：</b></p>
+
+        <div class="demo">
+          <ul class="dot-list">
+            <li>不用在 HTML 里多加 span</li>
+            <li>不改变文本内容（复制时不会带走圆点）</li>
+            <li>换颜色只改一处</li>
+          </ul>
+        </div>
+
+        <pre><code>.dot-list li { position: relative; padding-left: 18px; }
+.dot-list li::before {
+  content: "";
+  position: absolute; left: 0; top: 0.65em;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--c-accent);
+}</code></pre>
+      </section>
+
+      <section id="underline">
+        <h2>四、招牌效果：下划线滑入</h2>
+
+        <p class="cap">鼠标移到下面的链接上</p>
+        <div class="demo">
+          <a href="#" class="u-link">这就是滑入的下划线</a>
+        </div>
+
+        <pre><code>.u-link {
+  position: relative;
+  text-decoration: none;
+}
+.u-link::after {
+  content: "";
+  position: absolute; left: 0; bottom: 0;
+  width: 100%; height: 2px;
+  background: currentColor;
+  transform: scaleX(0);          /* 先压扁成 0 宽 */
+  transform-origin: right;       /* 从右边开始收起 */
+  transition: transform 0.25s ease;
+}
+.u-link:hover::after {
+  transform: scaleX(1);          /* 展开到完整宽度 */
+  transform-origin: left;        /* 从左边开始展开 */
+}</code></pre>
+
+        <p><b>三个要点：</b></p>
+
+        <ol>
+          <li>
+            <code>transform: scaleX(0)</code> 而不是改
+            <code>width</code>——省一次重排
+          </li>
+          <li>
+            <code>transform-origin</code> 决定"从哪一头长出来"。悬停时设
+            <code>left</code>（从左展开），离开时设
+            <code>right</code>（往右收回），所以两条规则各写一次
+          </li>
+          <li><code>background: currentColor</code> 让下划线跟着文字颜色走</li>
+        </ol>
+      </section>
+
+      <section id="arrow">
+        <h2>五、卡片右上角的箭头</h2>
+
+        <p class="cap">鼠标移到卡片上</p>
+        <div class="demo">
+          <div class="arrow-card">
+            <b>校园活动报名管理系统</b><br />
+            <span class="hint">Vue 3 · FastAPI · MySQL</span>
+          </div>
+        </div>
+
+        <pre><code>.card { position: relative; }
+.card::after {
+  content: "↗";
+  position: absolute; top: 8px; right: 10px;
+  opacity: 0;
+  transform: translate(-4px, 4px);      /* 从内往外淡入 */
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.card:hover::after { opacity: 1; transform: translate(0, 0); }</code></pre>
+
+        <p class="hint">
+          用伪元素做这个的好处：<b
+            >HTML 里只有标题和副标题，没有多余的图标标签</b
+          >。 装饰性内容进 CSS，语义内容才进 HTML。
+        </p>
+      </section>
+
+      <section id="selection">
+        <h2>六、两个小细节</h2>
+
+        <h3>选区颜色</h3>
+        <p class="select-demo">用鼠标选中这句话，颜色会变成定制的高亮色。</p>
+
+        <pre><code>::selection { background: #ffd7a8; color: #5c3b00; }</code></pre>
+
+        <h3>placeholder 的颜色</h3>
+
+        <pre><code>input::placeholder { color: #9198a1; }</code></pre>
+
+        <p class="hint">
+          <code>::placeholder</code>
+          只能改部分属性（颜色、字号可以，布局不行），
+          因为它是浏览器原生绘制的占位提示。
+        </p>
+      </section>
+
+      <section id="rules">
+        <h2>七、三条纪律</h2>
+
+        <ol>
+          <li>
+            <b>伪元素不放真实内容。</b>
+            <code>::before</code>
+            里的文字<b>不会被屏幕阅读器朗读，也无法被选中复制</b>。
+            图标、装饰、符号可以；"报名"这种有意义的信息必须写在 HTML 里。
+          </li>
+          <li>
+            <b>伪元素需要 <code>position: relative</code> 的父级。</b>
+            因为 <code>::before</code> / <code>::after</code> 常配
+            <code>position: absolute</code>， 而绝对定位找的是最近的定位祖先。
+          </li>
+          <li>
+            <b
+              >同一个元素只有一对 <code>::before</code> /
+              <code>::after</code>。</b
+            >
+            需要第三个装饰时，得在 HTML 里加元素，或者换个思路。
+          </li>
+        </ol>
+      </section>
+
+      <section id="exercise">
+        <h2>八、作业</h2>
+
+        <p>改 <code>personal/index.html</code>。</p>
+
+        <ol>
+          <li>
+            <b>导航链接下划线滑入</b>：把页头的 GitHub / 邮箱链接换成这个效果。
+            <span class="hint"
+              >注意别把 <code>text-decoration: none</code> 落掉。</span
+            >
+          </li>
+          <li>
+            <b>项目卡片右上角箭头</b>：两张项目卡都在 hover 时出现 ↗。
+            <span class="hint"
+              >需要给卡片加 <code>position: relative</code>。</span
+            >
+          </li>
+          <li>
+            <b>技能标签加装饰</b>：给技能列表项加一个
+            <code>::before</code> 小色块或圆点， 不新增 DOM 节点。
+          </li>
+          <li>
+            <b>改写焦点样式</b>：如果页面里有 <code>:focus</code> 相关规则，换成
+            <code>:focus-visible</code>；没有就新增一条，确保 Tab
+            键能看到焦点框。
+          </li>
+          <li>
+            <b>定制选区颜色</b>：给
+            <code>body::selection</code> 换成和深色主题协调的颜色。
+          </li>
+          <li>
+            <b>回答</b>（写在 CSS 注释里）：为什么 <code>::before</code> 忘了写
+            <code>content</code> 时，页面上什么都不会出现？
+          </li>
+        </ol>
+
+        <div class="note">
+          <b>自检：</b>用 <b>Tab 键</b>从头到尾走一遍页面，焦点框是否清楚可见；
+          鼠标划过每个链接和卡片，动效是否都在该出现的地方出现。
+        </div>
+      </section>
+    </main>
+
+    <footer
+      style="
+        border-top: 1px solid var(--c-border);
+        padding-top: 16px;
+        margin-top: 40px;
+      "
+    >
+      <p class="hint">第 17 天 · 2026-11-09</p>
+    </footer>
+  </body>
+</html>
