@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第 18 天 · BEM 命名</title>
+  <style>
+    :root {
+      --c-text: #1f2328; --c-muted: #59636e; --c-border: #d1d9e0;
+      --c-surface: #f6f8fa; --c-accent: #0969da;
+      --radius: 8px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px;
+    }
+    body { max-width: 880px; margin: 40px auto; padding: 0 20px;
+           font-family: system-ui, sans-serif; line-height: 1.85; color: var(--c-text); }
+    header { border-bottom: 2px solid var(--c-border); padding-bottom: var(--sp-4); }
+    section { margin: 40px 0; }
+    pre { background: var(--c-surface); padding: 14px 16px; border-radius: var(--radius);
+          overflow-x: auto; border: 1px solid var(--c-border); }
+    code { font-family: Consolas, monospace; font-size: 14px; }
+    table { border-collapse: collapse; margin: 12px 0; width: 100%; }
+    td, th { border: 1px solid var(--c-border); padding: 8px 12px; text-align: left; vertical-align: top; }
+    thead th { background: var(--c-surface); }
+    .hint { color: var(--c-muted); font-size: 14px; }
+    .note { background: #fffbe6; border-left: 3px solid #e0b400; padding: 10px 14px; margin: 14px 0; }
+    .bad  { background: #ffebe9; border-left: 3px solid #d1242f; padding: 10px 14px; margin: 14px 0; }
+    .good { background: #dafbe1; border-left: 3px solid #1a7f37; padding: 10px 14px; margin: 14px 0; }
+    .cap { font-size: 13px; color: var(--c-muted); margin: 16px 0 4px; }
+
+    /* BEM 演示：卡片 */
+    .card {
+      background: #fff; border: 1px solid var(--c-border);
+      border-radius: var(--radius); padding: var(--sp-4);
+      max-width: 320px;
+      transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .card:hover { box-shadow: 0 4px 16px rgba(31,35,40,.1); border-color: #a8c7fa; }
+    .card__title { margin: 0 0 var(--sp-2); font-size: 17px; }
+    .card__desc { margin: 0 0 var(--sp-3); font-size: 14px; color: var(--c-muted); }
+    .card__tags { display: flex; flex-wrap: wrap; gap: var(--sp-2); list-style: none; padding: 0; margin: 0; }
+    .card__tag {
+      font-size: 12px; padding: 2px var(--sp-2);
+      border: 1px solid var(--c-border); border-radius: 999px; color: var(--c-muted);
+    }
+    /* 修饰符：强调版 */
+    .card--featured { border-color: var(--c-accent); border-width: 2px; }
+    .card--featured .card__title { color: var(--c-accent); }
+
+    .demo-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>第 18 天：BEM 命名</h1>
+    <p>今天不学新属性，学一件影响更久的事：给东西起名字。</p>
+  </header>
+
+  <main>
+
+    <section id="why">
+      <h2>一、先看看你现在的类名</h2>
+
+      <p>这是从你的 <code>personal/index.html</code> 里抓出来的：</p>
+
+<pre><code>class="project1 card card-arrow"
+class="project1-1 card card-arrow"
+class="content1"
+class="hero-1"
+class="hero-header hero-header-content"
+class="link-btn btn"
+class="link u-link"
+class="skill-card dot-skill-card"
+class="title"</code></pre>
+
+      <p>现在你还记得它们是什么。<b>三个月后呢？</b></p>
+
+      <table>
+        <thead><tr><th scope="col">类名</th><th scope="col">问题</th></tr></thead>
+        <tbody>
+          <tr><td><code>project1</code> / <code>project1-1</code></td><td>数字后缀，说不清关系和身份</td></tr>
+          <tr><td><code>content1</code> / <code>hero-1</code></td><td>同上，而且"content"太笼统</td></tr>
+          <tr><td><code>title</code></td><td>太通用——页面上任何标题都可能被它命中</td></tr>
+          <tr><td><code>link-btn btn</code></td><td>两个类都表示"按钮"，职责重复</td></tr>
+          <tr><td><code>link u-link</code></td><td>同上</td></tr>
+          <tr><td><code>hero-header hero-header-content</code></td><td>第二个名字说不清它比第一个多什么</td></tr>
+          <tr><td><code>skill-card dot-skill-card</code></td><td>这个最接近正确：一个管外观，一个管变体</td></tr>
+        </tbody>
+      </table>
+
+      <p>
+        <b>你现在这个页面只有 6 个区块、300 行。</b>等到毕设的 18 个页面、
+        每个页面十几个组件时，<code>content1</code> 这种名字会让你每周多花两小时找代码。
+      </p>
+    </section>
+
+    <section id="bem">
+      <h2>二、BEM 是什么</h2>
+
+      <p>
+        BEM = <b>B</b>lock（块）+ <b>E</b>lement（元素）+ <b>M</b>odifier（修饰符）。
+        一种类名命名约定，核心目的只有一个：<b>看着类名就知道它属于谁。</b>
+      </p>
+
+      <table>
+        <thead>
+          <tr><th scope="col">概念</th><th scope="col">是什么</th><th scope="col">写法</th><th scope="col">例子</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>块 Block</b></td>
+            <td>独立组件，能单独拿出去用</td>
+            <td>普通单词</td>
+            <td><code>card</code>、<code>btn</code>、<code>hero</code></td>
+          </tr>
+          <tr>
+            <td><b>元素 Element</b></td>
+            <td>块的一部分，离开块没有意义</td>
+            <td>块名 + <code>__</code> + 元素名</td>
+            <td><code>card__title</code>、<code>card__desc</code></td>
+          </tr>
+          <tr>
+            <td><b>修饰符 Modifier</b></td>
+            <td>同一个块的变体</td>
+            <td>块名 + <code>--</code> + 变体名</td>
+            <td><code>card--featured</code>、<code>btn--primary</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        <b>记法：</b>双下划线 <code>__</code> 表示"里面的一部分"，双连字符 <code>--</code> 表示"另一种样子"。<br>
+        一个连字符 <code>-</code> 是单词连接符，比如 <code>project-card</code> 是一个名字，不是层级。
+      </div>
+    </section>
+
+    <section id="example">
+      <h2>三、一张卡片长什么样</h2>
+
+      <div class="demo-row">
+        <div class="card">
+          <h3 class="card__title">学习站点</h3>
+          <p class="card__desc">记录从零开始学前端的过程。</p>
+          <ul class="card__tags">
+            <li class="card__tag">HTML</li>
+            <li class="card__tag">CSS</li>
+          </ul>
+        </div>
+        <div class="card card--featured">
+          <h3 class="card__title">校园活动报名</h3>
+          <p class="card__desc">毕业设计，含动态二维码签到。</p>
+          <ul class="card__tags">
+            <li class="card__tag">Vue 3</li>
+            <li class="card__tag">FastAPI</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="cap">左边普通卡，右边加了 <code>card--featured</code> 修饰符</p>
+
+<pre><code>&lt;div class="card"&gt;
+  &lt;h3 class="card__title"&gt;学习站点&lt;/h3&gt;
+  &lt;p class="card__desc"&gt;...&lt;/p&gt;
+  &lt;ul class="card__tags"&gt;
+    &lt;li class="card__tag"&gt;HTML&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;
+
+&lt;!-- 变体：加一个修饰符类，不动结构 --&gt;
+&lt;div class="card card--featured"&gt; ... &lt;/div&gt;</code></pre>
+
+      <p class="hint">
+        注意：元素类名里<b>重复了块名</b>（<code>card__title</code> 而不是 <code>title</code>）。
+        看起来啰嗦，但这正是它的价值——<b>在任何文件里看到 <code>card__title</code>，你立刻知道它属于卡片。</b>
+      </p>
+    </section>
+
+    <section id="rules">
+      <h2>四、七条规则</h2>
+
+      <ol>
+        <li>
+          <b>块名说"是什么"，不说"在哪"。</b><br>
+          ✅ <code>nav</code>、<code>hero</code>、<code>project-card</code><br>
+          ❌ <code>top-left</code>、<code>left-column</code>（位置会变）
+        </li>
+        <li>
+          <b>元素只用一层。</b><br>
+          ✅ <code>card__title</code><br>
+          ❌ <code>card__header__title</code>（第二层没有意义，BEM 不允许）
+        </li>
+        <li>
+          <b>元素不能脱离块单独用。</b><br>
+          <code>card__title</code> 必须出现在 <code>.card</code> 里面。如果某块内容能独立存在，它应该是一个新的块。
+        </li>
+        <li>
+          <b>修饰符只改变外观或状态，不改变结构。</b><br>
+          ✅ <code>btn--primary</code>、<code>card--featured</code><br>
+          ❌ <code>card--has-three-columns</code>（那是结构调整，该换组件）
+        </li>
+        <li>
+          <b>全小写 + 连字符。</b><br>
+          不用下划线（和 <code>__</code> 冲突）、不用驼峰、不用中文。
+        </li>
+        <li>
+          <b>不用数字后缀。</b><br>
+          <code>project1</code> / <code>project2</code> 如果只是"两个不同的项目"，
+          那它们根本就是同一个块的两个实例，都叫 <code>card</code> 就行。
+        </li>
+        <li>
+          <b>CSS 里不用写父子选择器。</b><br>
+          ❌ <code>.card .card__title { }</code>（多余，类名已经说清了归属）<br>
+          ✅ <code>.card__title { }</code>
+        </li>
+      </ol>
+    </section>
+
+    <section id="bad">
+      <h2>五、三种常见反例</h2>
+
+      <div class="bad">
+        <b>反例 1：用修饰符描述样式</b><br>
+        <code>card--blue-background</code>、<code>text--big-red</code><br>
+        换主题时"blue"变成绿色，名字就成了谎话。修饰符要描述<b>用途</b>：
+        <code>card--featured</code>（推荐）、<code>card--disabled</code>（已禁用）。
+      </div>
+
+      <div class="bad">
+        <b>反例 2：三层嵌套</b><br>
+        <code>card__header__title</code>、<code>nav__list__item__link</code><br>
+        BEM 规定元素只有一层。真实场景的处理办法：
+        <code>nav__link</code>（跳过中间的 list/item），或者把 item 提升成独立的块。
+      </div>
+
+      <div class="bad">
+        <b>反例 3：块名带位置或标签名</b><br>
+        <code>div-wrapper</code>、<code>left-side</code>、<code>p-text</code><br>
+        标签会换（div 改 section），位置会变（响应式重排）。
+      </div>
+    </section>
+
+    <section id="map">
+      <h2>六、把你这页的类名重写一遍</h2>
+
+      <table>
+        <thead><tr><th scope="col">现在</th><th scope="col">BEM</th><th scope="col">为什么</th></tr></thead>
+        <tbody>
+          <tr><td><code>opening</code></td><td><code>site-header</code></td><td>块，说明"站点页头"</td></tr>
+          <tr><td><code>opening-links</code></td><td><code>site-header__links</code></td><td>它是页头的一部分</td></tr>
+          <tr><td><code>hero-1</code></td><td><code>hero</code></td><td>去掉无意义的数字</td></tr>
+          <tr><td><code>hero-header-content</code></td><td><code>hero__inner</code></td><td>"内容容器"叫 inner 更常见</td></tr>
+          <tr><td><code>content1</code></td><td><code>hero__text</code></td><td>说清它是文字区</td></tr>
+          <tr><td><code>hero-image</code></td><td><code>hero__avatar</code></td><td>它是头像，不是任意图片</td></tr>
+          <tr><td><code>hero-introduction</code></td><td><code>about</code></td><td>独立区块，应该是块</td></tr>
+          <tr><td><code>skill</code> / <code>skill-list</code></td><td><code>skills</code> / <code>skills__list</code></td><td>区块 + 元素</td></tr>
+          <tr><td><code>skill-card dot-skill-card</code></td><td><code>skill-tag</code> / <code>skill-tag--dot</code></td><td>变体用修饰符</td></tr>
+          <tr><td><code>project</code></td><td><code>projects</code></td><td>区块名用复数表示"一组"</td></tr>
+          <tr><td><code>project1 card card-arrow</code></td><td><code>project-card</code> + <code>project-card--link</code></td><td>它是项目卡，不是通用 card</td></tr>
+          <tr><td><code>project1-1 card card-arrow</code></td><td><code>project-card</code>（同样）</td><td>两个实例用同一个类</td></tr>
+          <tr><td><code>link u-link</code></td><td><code>u-link</code> 或 <code>link-underline</code></td><td>一个类够用，不重复</td></tr>
+          <tr><td><code>link-btn btn</code></td><td><code>btn</code> / <code>btn--primary</code></td><td>变体用修饰符</td></tr>
+          <tr><td><code>title</code></td><td><code>projects__title</code></td><td>太通用，必须限定归属</td></tr>
+        </tbody>
+      </table>
+
+      <p class="hint">
+        里面有两处是"判断"而不是"规则"：<code>hero-introduction</code> 该不该独立成块、
+        <code>project-card</code> 该不该复用 <code>card</code>。BEM 不替你做这些决定，
+        它只要求你<b>决定了之后，名字要能表达出来</b>。
+      </p>
+    </section>
+
+    <section id="cost">
+      <h2>七、BEM 的代价，以及现在还要不要学</h2>
+
+      <p><b>代价很实在：</b></p>
+
+      <ul>
+        <li>类名变长（<code>project-card__title</code> vs <code>title</code>）</li>
+        <li>写 HTML 时要反复敲块名</li>
+        <li>改块名等于全文件重命名</li>
+      </ul>
+
+      <p><b>现在的替代方案：</b></p>
+
+      <table>
+        <thead><tr><th scope="col">方案</th><th scope="col">怎么解决命名冲突</th></tr></thead>
+        <tbody>
+          <tr><td>Vue <code>&lt;style scoped&gt;</code></td><td>编译时自动加唯一属性，样式只作用在本组件</td></tr>
+          <tr><td>CSS Modules</td><td>类名编译成哈希，如 <code>card__title_a3f9</code></td></tr>
+          <tr><td>Tailwind</td><td>不要类名，直接堆原子类</td></tr>
+        </tbody>
+      </table>
+
+      <p><b>那 BEM 还要学吗？要，但要分清学的是什么：</b></p>
+
+      <ol>
+        <li>
+          <b>学的是"命名要表意"这个习惯。</b>
+          这个习惯在 Vue 里一样适用——<code>scoped</code> 只解决冲突，不解决"<code>content1</code> 到底指什么"。
+        </li>
+        <li>
+          <b>你要能看懂别人的代码。</b>大量开源项目和公司老项目用 BEM，
+          看到 <code>site-header__links--compact</code> 得能立刻读懂。
+        </li>
+        <li>
+          <b>你的毕设会用到 Element Plus + Vue。</b>组件库自己有命名体系，
+          但你写的业务组件仍然要起名字，<code>el-table</code> 的样式覆盖也需要精确的选择器。
+        </li>
+      </ol>
+
+      <div class="note">
+        <b>所以这一课的真实目标不是"以后都写 BEM"，而是：</b><br>
+        看到 <code>project1-1</code> 这类名字时，能意识到<b>它三个月后是个麻烦</b>，
+        并且知道有成熟的办法避免。
+      </div>
+    </section>
+
+    <section id="exercise">
+      <h2>八、作业</h2>
+
+      <p>重构 <code>personal/index.html</code> 的类名。改 HTML，同步改 CSS。</p>
+
+      <ol>
+        <li>
+          <b>先列清单</b>：把现在所有类名写下来，对着上面的对照表决定每个改成什么。
+          <span class="hint">改之前先决定，不要边改边想。</span>
+        </li>
+        <li>
+          <b>按块分组改</b>：一次改一个块（先 header，再 hero，再 skills，最后 projects），
+          改完刷新确认不变形，再进行下一个。
+        </li>
+        <li>
+          <b>删掉重复的类</b>：<code>link-btn btn</code> 只留一个；<code>link u-link</code> 只留一个。
+        </li>
+        <li>
+          <b>数字后缀全部消失</b>：<code>project1</code>、<code>project1-1</code>、<code>content1</code>、
+          <code>hero-1</code> 不能再出现。
+        </li>
+        <li>
+          <b>检查 CSS 里有没有多余的父子选择器</b>：比如 <code>.card .card__title</code>，
+          有就删成 <code>.card__title</code>。
+        </li>
+        <li>
+          <b>回答</b>（写在文件末尾注释里）：为什么 <code>card__title</code> 要在类名里
+          重复一次 <code>card</code>？不重复（直接叫 <code>title</code>）会有什么问题？
+        </li>
+      </ol>
+
+      <div class="note">
+        <b>验收标准：页面外观零变化。</b><br>
+        和 CSS 变量那一课一样——重构的唯一合格证明是"看起来一模一样"。
+        我用浏览器对比改前改后的关键尺寸，你不用自己截图。
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="border-top:1px solid var(--c-border);padding-top:16px;margin-top:40px">
+    <p class="hint">第 18 天 · 2026-11-10</p>
+  </footer>
+
+</body>
+</html>

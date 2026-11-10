@@ -29,10 +29,10 @@
         --color-bg-link-btn: #1f6feb;
         --color-link-touch: #3c32c7;
         --color-link-btn-touch: #edeeee;
-        --color-bg-project: #161b22;
+        --color-bg-projects: #161b22;
         --color-bg-box: #16253e;
         --color-box-solid: #a8c7fa;
-        --color-skill-card: #161b22;
+        --color-skills-card: #161b22;
 
         --space-1: 4px;
         --space-2: 8px;
@@ -82,45 +82,46 @@
         padding: 0 var(--space-4);
       }
 
-      .opening {
+      .site-header {
         grid-area: header;
       }
-      .hero-1 {
+      .hero {
         grid-area: hero;
       }
-      .hero-introduction {
+      .about {
         grid-area: introduction;
       }
-      .skill {
+      .skills {
         grid-area: skills;
       }
-      .project {
+      .projects {
         grid-area: projects;
       }
       .footer {
         grid-area: footer;
       }
 
-      .hero-header-content {
+      .hero__inner {
+        display: grid;
         grid-template-columns: 1fr;
-        grid-template-areas: "content1" "avatar";
+        grid-template-areas: "hero__text" "avatar";
       }
       @media (min-width: 768px) {
-        .hero-header-content {
+        .hero__inner {
           grid-template-columns: 1fr 200px;
-          grid-template-areas: "content1 avatar";
+          grid-template-areas: "hero__text avatar";
         }
       }
-      .content1 {
-        grid-area: content1;
+      .hero__text {
+        grid-area: hero__text;
         max-width: 50ch;
       }
-      .hero-image {
+      .hero__avatar {
         grid-area: avatar;
       }
 
       /*header*/
-      .opening {
+      .site-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -128,13 +129,13 @@
         margin: var(--space-3);
         border-bottom: 1px solid var(--color-line);
       }
-      .opening-links {
+      .site-header__links {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         gap: var(--space-2);
       }
-      .opening-links a {
+      .site-header__links a {
         color: var(--color-links);
 
         font-style: italic;
@@ -142,17 +143,12 @@
       /*header*/
 
       /*hero*/
-      .hero-1 {
+      .hero {
         padding: var(--space-2);
         margin: var(--space-3);
       }
-      .hero-header {
-        display: grid;
-        justify-content: space-between;
-        align-items: start;
-        gap: var(--space-2);
-      }
-      .hero-1 a {
+
+      .hero a {
         color: var(--color-links);
         text-decoration: none;
       }
@@ -161,61 +157,47 @@
         max-width: 100%;
         height: auto;
       }
-      .skill-list {
+      .skills__list {
         display: flex;
         list-style: none; /* 去掉前面的圆点 */
         padding-left: 0;
         gap: var(--space-2);
       }
-      .skill-list li {
+      .skills__list li {
         padding: 2px var(--space-3) 1px;
         border: 1px solid var(--color-line);
         border-radius: 999px;
         font-size: 13px;
       }
 
-      .project {
+      .projects {
         display: grid;
         grid-template-columns: 1fr;
-        grid-template-areas:
-          "title"
-          "project1"
-          "project1-1";
         gap: var(--space-2);
       }
       @media (min-width: 768px) {
-        .project {
+        .projects {
           grid-template-columns: 1fr 1fr;
-          grid-template-areas:
-            "title      title"
-            "project1   project1-1";
+
           gap: var(--space-2);
         }
       }
-      .title {
-        grid-area: title;
+      .project-card {
+        /* 这里什么都不要写，让它自动落位 */
       }
-      .project1 {
-        grid-area: project1;
-      }
-      .project1-1 {
-        grid-area: project1-1;
-      }
-      .project1 > .title {
+      .projects__title {
         grid-column: 1 / -1;
       }
-      .project1,
-      .project1-1 {
+      .project-card {
         display: flex;
         flex-direction: column;
         gap: var(--space-2); /* 用 gap 统一，不要各自 margin */
         padding: var(--space-4); /* 内边距加大，现在只有 4px */
         border: 1px solid var(--color-line);
         border-radius: var(--radius-body);
-        background-color: var(--color-bg-project);
+        background-color: var(--color-bg-projects);
       }
-      .project1 a,
-      .project1-1 a {
+      .project-card a {
         display: flex;
         color: var(--color-text);
         padding: var(--space-1) var(--space-2);
@@ -226,23 +208,23 @@
         border-top: 1px solid var(--color-line);
       }
 
-      .link {
+      .link-underline {
         transition: color 0.3s ease;
       }
-      .link:hover {
+      .link-underline:hover {
         color: var(--color-link-touch);
       }
-      .link-btn {
+      .btn {
         transition: color 0.3s ease;
       }
-      .link-btn:hover {
+      .btn:hover {
         color: var(--color-link-btn-touch);
       }
-      .u-link {
+      .link-underline {
         position: relative;
         text-decoration: none;
       }
-      .u-link::after {
+      .link-underline::after {
         content: "";
         position: absolute;
         left: 0;
@@ -254,12 +236,12 @@
         transform-origin: right;
         transition: transform 0.25s ease;
       }
-      .u-link:hover::after {
+      .link-underline:hover::after {
         transform: scaleX(1);
         transform-origin: left;
       }
 
-      .btn {
+      .btn--primary {
         align-self: start;
         padding: var(--space-2) var(--space-4);
         background: var(--color-bg-link-btn);
@@ -269,23 +251,21 @@
           background-color 0.2s ease,
           transform 0.12s ease;
       }
-      .btn:hover {
+      .btn--primary:hover {
         background: #054fb6;
       }
-      .btn:active {
+      .btn--primary:active {
         transform: scale(0.96);
       }
 
-      .card {
+      .project-card--link {
+        position: relative;
         transition:
           transform 0.25s ease,
           box-shadow 0.25s ease,
           border-color 0.25s ease;
       }
-      .card-arrow {
-        position: relative;
-      }
-      .card-arrow::after {
+      .project-card--link::after {
         content: "↗";
         position: absolute;
         top: var(--space-2);
@@ -296,38 +276,38 @@
           opacity 0.2s ease,
           transform 0.2s ease;
       }
-      .card-arrow:hover::after {
+      .project-card--link:hover::after {
         opacity: 1;
         transform: translate(0, 0);
       }
-      .card h3 {
+      .project-card--link h3 {
         margin: 0 0 var(--space-2);
       }
-      .card p {
+      .project-card--link p {
         margin: 0;
       }
-      .card > p:last-child {
+      .project-card--link > p:last-child {
         margin-top: auto;
       }
-      .card:hover {
+      .project-card--link:hover {
         transform: translateY(-6px);
         box-shadow: 0 8px 24px var(--color-bg-box);
         border-color: var(--color-box-solid);
       }
 
-      .skill-card {
+      .skill-tag {
         transition:
           background-color 0.25s ease,
           border-color 0.25s ease;
       }
-      .dot-skill-card {
+      .skill-tag--dot {
         display: flex;
         align-items: center; /* 垂直居中，圆的、方的、文字都对齐 */
         gap: 6px; /* 圆点到文字的距离 */
         padding: 3px var(--space-3); /* 上下左右对称，不用再算 */
       }
 
-      .dot-skill-card::before {
+      .skill-tag--dot::before {
         content: "";
         flex: none; /* 别让圆点被压扁 */
         width: 5px;
@@ -337,8 +317,8 @@
         /* position / left / top 全部删掉 */
       }
 
-      .skill-card:hover {
-        background-color: var(--color-skill-card);
+      .skill-tag:hover {
+        background-color: var(--color-skill-tag);
         border-color: var(--color-box-solid);
       }
       @media (prefers-reduced-motion: reduce) {
@@ -354,31 +334,31 @@
   <body>
     <div class="page">
       <div class="layout">
-        <header class="opening">
+        <header class="site-header">
           <h1>熙熙·前端开发</h1>
-          <div class="opening-links">
+          <div class="site-header__links">
             <a
               href="https://github.com/YuiLcake"
               target="_blank"
-              class="link u-link"
+              class="link-underline"
               >GitHub</a
             >
-            <a href="mailto:maijunxi6@gmail.com" class="link u-link">邮箱</a>
+            <a href="mailto:maijunxi6@gmail.com" class="link-underline">邮箱</a>
           </div>
         </header>
 
-        <main class="hero-1">
-          <header class="hero-header hero-header-content">
-            <div class="content1">
+        <main class="hero">
+          <header class="hero__inner">
+            <div class="hero__text">
               <p>你好，我是熙熙，就读于广州工商学院的软件工程大四学生。</p>
               <a
                 href="https://github.com/YuiLcake?tab=repositories"
                 target="_blank"
-                class="link"
+                class="link-underline"
                 >查看项目</a
               >
             </div>
-            <div class="hero-image">
+            <div class="hero__avatar">
               <img
                 src="img/touxiang.jpg"
                 alt="熙熙的头像"
@@ -388,7 +368,7 @@
             </div>
           </header>
         </main>
-        <article class="hero-introduction">
+        <article class="about">
           <h2>关于我</h2>
           <p>
             自2026年起，我系统地学习前端技术，每日4-6小时的学习让我掌握前端的知识和技能，已完成15天的学习。能够复刻真实网站的站点，掌握网页样式的设计布局。毕业设计：校园活动报名管理系统（Vue
@@ -396,19 +376,19 @@
           </p>
         </article>
 
-        <article class="skill">
+        <article class="skills">
           <h2>技能</h2>
-          <ul class="skill-list">
-            <li class="skill-card dot-skill-card">HTML</li>
-            <li class="skill-card dot-skill-card">CSS</li>
-            <li class="skill-card dot-skill-card">JavaScript</li>
-            <li class="skill-card dot-skill-card">Vue 3</li>
+          <ul class="skills__list">
+            <li class="skill-tag skill-tag--dot">HTML</li>
+            <li class="skill-tag skill-tag--dot">CSS</li>
+            <li class="skill-tag skill-tag--dot">JavaScript</li>
+            <li class="skill-tag skill-tag--dot">Vue 3</li>
           </ul>
         </article>
 
-        <article class="project">
-          <h2 class="title">我的项目</h2>
-          <div class="project1 card card-arrow">
+        <article class="projects">
+          <h2 class="projects__title">我的项目</h2>
+          <div class="project-card project-card--link">
             <h3>我的学习站点</h3>
             <p>
               记录从零开始学前端的过程，使用 HTML、CSS、JavaScript、Vue 3
@@ -417,19 +397,18 @@
             <a
               href="https://github.com/YuiLcake/frontend-study"
               target="_blank"
-              class="link-btn btn"
+              class="btn btn--primary"
               >查看项目</a
             >
-
             <p>HTML CSS</p>
           </div>
-          <div class="project1-1 card card-arrow">
+          <div class="project-card project-card--link">
             <h3>校园活动报名</h3>
             <p>我的毕业设计</p>
             <a
               href="https://github.com/YuiLcake/campus-activity-signin"
               target="_blank"
-              class="link-btn btn"
+              class="btn btn--primary"
               >查看项目</a
             >
             <p>HTML CSS Vue 3 FastAPI</p>
@@ -445,3 +424,4 @@
 </html>
 <!--如果只写在hover里的话就只有在鼠标在在按键上的时候才会触发，移开就会很突兀-->
 <!--不写content:"";的话就默认是none，就是没有这个元素了，不显示-->
+<!--重复一次card是因为title是在card下的独特的title,不是普通的title,要是更改普通的title的话card下的title也会跟着改-->
