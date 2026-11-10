@@ -189,6 +189,150 @@
     {
       "type": "paragraph",
       "text": "BEM 命名：Block__Element--Modifier。目标是把个人主页里 limao、project1、project1-1 这类随手起的类名，重构成能一眼看出归属关系的命名，为后面多人协作和组件化做准备。"
+    },
+    {
+      "type": "page_break"
+    },
+    {
+      "type": "heading",
+      "text": "第 18 天 · 2026-11-10",
+      "level": 2
+    },
+    {
+      "type": "heading",
+      "text": "一、今天犯的错误",
+      "level": 3
+    },
+    {
+      "type": "table",
+      "header": [
+        "错误",
+        "发生了什么",
+        "以后怎么办"
+      ],
+      "rows": [
+        [
+          "把组件名当成网格区域名，两张卡片完全重叠",
+          "重构后把区域图改成 projects__title / project-card，并且让两张卡都写 grid-area: project-card。区域图里那个名字只占一格（跨两列），两个元素抢同一个座位，结果坐标完全相同（实测两张卡都是 x=109、y=648、1048×180），页面上只看得见一张。",
+          "一个格子只能放一个元素。同类并排的东西不要指定区域名，让它们自动放置。"
+        ],
+        [
+          "区域名和组件名的职责混了",
+          "grid-template-areas 里写的是组件名（project-card），而它本来应该描述版面位置（header / hero / about / skills / projects / footer）。组件名可以重复使用，位置名不行。",
+          "区域名回答「放在哪」，类名回答「是什么」。两者不能交换。"
+        ],
+        [
+          "在网格里不写位置的元素会被自动放置挤走",
+          "标题如果不写 grid-column，会排队坐第一个格子，把卡片挤到下一行或第二列，布局顺序全乱。",
+          "标题这类要独占一行的元素，写 grid-column: 1 / -1 明确占位。"
+        ],
+        [
+          "继承上一课的错法：以为删掉 grid-area 就够了",
+          "先只删了 cards 的 grid-area，标题的 grid-area: projects__title 还留着；区域图被删掉后这个名字不存在，标题被当成命名线解析，跑到了卡片下面。",
+          "删区域图时要连带清掉所有子元素的 grid-area，一处不留。"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "二、新词与生词",
+      "level": 3
+    },
+    {
+      "type": "table",
+      "header": [
+        "英文",
+        "中文",
+        "用大白话说"
+      ],
+      "rows": [
+        [
+          "BEM",
+          "块元素修饰符命名法",
+          "Block__Element--Modifier，一种给类名定规矩的方法"
+        ],
+        [
+          "block",
+          "块",
+          "能独立使用的组件，命名用单词，如 card、hero"
+        ],
+        [
+          "element",
+          "元素",
+          "块的一部分，写成 block__element，如 card__title"
+        ],
+        [
+          "modifier",
+          "修饰符",
+          "同一块的变体，写成 block--modifier，如 btn--primary"
+        ],
+        [
+          "auto placement",
+          "自动放置",
+          "元素不写位置时，浏览器按顺序找空格子"
+        ],
+        [
+          "explicit placement",
+          "显式放置",
+          "用 grid-area 或线号明确指定坐哪一格"
+        ],
+        [
+          "refactor",
+          "重构",
+          "不改行为、只改内部结构（这里指改类名）"
+        ],
+        [
+          "baseline",
+          "基线版本",
+          "重构前的那一版，用于对比确认没改坏"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "三、今天学到的新知识",
+      "level": 3
+    },
+    {
+      "type": "bullet_list",
+      "items": [
+        "BEM 三段：块（独立组件）、元素（块的一部分）、修饰符（变体）。记法：双下划线表示「里面的一部分」，双连字符表示「另一种样子」，单连字符只是单词连接符。",
+        "元素类名要重复块名（card__title 而不是 title）。啰嗦是刻意的——在任何文件里看到它，都能立刻知道归属。",
+        "元素只能有一层：card__title 可以，card__header__title 不行。",
+        "元素不能脱离块单独存在。能独立存在的内容应该是一个新的块。",
+        "修饰符描述用途或状态（--featured、--disabled、--primary），不描述样式（--blue-background），否则换主题时名字就变成谎话。",
+        "CSS 里不用写父子选择器：.card__title 已经说清归属，再加 .card 前缀是多余的，只会让优先级虚高。",
+        "网格元素的放置只有两种：显式（grid-area 或线号）和自动（什么都不写）。显式的两个元素可能抢同一格，自动的永远不会重叠。",
+        "一个网格格子只能放一个元素。两个元素写同一个 grid-area 名字，第二张会被压在下面，页面上看起来「少了一个」。",
+        "区域名是地址，不是类型。它回答「放在哪一格」，所以应该用版面位置命名（header / hero / about / skills / projects / footer）。",
+        "同类并排的内容（卡片列表、文章列表、图片墙）不要用 grid-template-areas，用 grid-template-columns 或 repeat(auto-fit, minmax()) 让它们排队。",
+        "标题要在网格里独占一行，写 grid-column: 1 / -1，而不是靠 DOM 顺序碰运气。",
+        "重构的验收标准是「行为零变化」。这次用 git show HEAD:文件 导出旧版，在同一窗口尺寸下量 header 位置、卡片位置尺寸、页面总高，两次结果完全一致（910px 对 910px），才算重构成功。"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "四、今天的产出",
+      "level": 3
+    },
+    {
+      "type": "bullet_list",
+      "items": [
+        "personal/index.html 类名全面 BEM 化：21 个类名，零数字后缀，多类元素全部是「块 + 修饰符」组合",
+        "CSS 里已无多余的后代选择器，括号 59 对 59",
+        "修复两张项目卡重叠：去掉 projects 的区域图，改为 grid-template-columns: 1fr / 1fr 1fr，标题用 grid-column: 1 / -1",
+        "零变化验证：新旧两版在 1280px 下 header 位置、两张卡片位置与尺寸、页面总高（910px）逐项一致",
+        "提交：refactor: 个人主页按 BEM 重命名（页面外观零变化）"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "五、明天要做的",
+      "level": 3
+    },
+    {
+      "type": "paragraph",
+      "text": "部署上线：把个人主页发布到 Vercel 或 Netlify，拿到一个公开链接。会涉及 Git 仓库连接、构建配置、自定义域名与本地文件路径（相对路径 vs 绝对路径）的差异。"
     }
   ]
 }
