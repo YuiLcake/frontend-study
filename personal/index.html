@@ -321,19 +321,22 @@
           border-color 0.25s ease;
       }
       .dot-skill-card {
-        position: relative;
-        padding-left: 10px;
+        display: flex;
+        align-items: center; /* 垂直居中，圆的、方的、文字都对齐 */
+        gap: 6px; /* 圆点到文字的距离 */
+        padding: 3px var(--space-3); /* 上下左右对称，不用再算 */
       }
+
       .dot-skill-card::before {
         content: "";
-        position: absolute;
-        left: 3px;
-        top: 0.9em;
-        width: 4px;
-        height: 4px;
+        flex: none; /* 别让圆点被压扁 */
+        width: 5px;
+        height: 5px;
         border-radius: 50%;
-        background: var(--color-text);
+        background: currentColor;
+        /* position / left / top 全部删掉 */
       }
+
       .skill-card:hover {
         background-color: var(--color-skill-card);
         border-color: var(--color-box-solid);

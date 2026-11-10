@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>伪元素是怎么工作的</title>
+  <style>
+    body { max-width: 820px; margin: 40px auto; padding: 0 20px;
+           font-family: system-ui, sans-serif; line-height: 1.85; color: #1f2328; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 17px; margin-top: 40px; }
+    pre { background: #f6f8fa; padding: 12px 14px; border-radius: 8px;
+          border: 1px solid #d1d9e0; overflow-x: auto; }
+    code { font-family: Consolas, monospace; font-size: 14px; }
+    .hint { color: #59636e; font-size: 14px; }
+    .note { background: #fffbe6; border-left: 3px solid #e0b400; padding: 10px 14px; margin: 14px 0; }
+    .box { border: 1px dashed #8aa; background: #f4f8ff; padding: 12px; margin: 10px 0; }
+
+    /* 实验 1：伪元素在 DOM 里查不到 */
+    .demo-a { padding: 10px; background: #fff; border: 1px solid #d1d9e0; border-radius: 6px; }
+    .demo-a::before { content: "[before]"; color: #d1242f; }
+    .demo-a::after  { content: "[after]"; color: #0969da; }
+
+    /* 实验 2：默认是 inline，宽高无效 */
+    .demo-b { background: #fff; border: 1px solid #d1d9e0; border-radius: 6px; padding: 10px; }
+    .demo-b::before {
+      content: "";
+      width: 40px; height: 40px;      /* 写了，但 inline 不接受 */
+      background: #d1242f;
+    }
+
+    /* 实验 3：加 display: inline-block 就有效了 */
+    .demo-c { background: #fff; border: 1px solid #d1d9e0; border-radius: 6px; padding: 10px; }
+    .demo-c::before {
+      content: "";
+      display: inline-block;          /* 加这一行 */
+      width: 40px; height: 40px;
+      background: #1a7f37;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    /* 实验 4：position: absolute 会自动块化 */
+    .demo-d { position: relative; background: #fff; border: 1px solid #d1d9e0;
+              border-radius: 6px; padding: 10px 10px 10px 60px; }
+    .demo-d::before {
+      content: "";
+      position: absolute;             /* 不用写 display，自动变成块级 */
+      left: 10px; top: 50%;
+      width: 40px; height: 40px;
+      margin-top: -20px;
+      border-radius: 50%;
+      background: #8250df;
+    }
+
+    /* 实验 5：真实元素 vs 伪元素 */
+    .demo-e { background: #fff; border: 1px solid #d1d9e0; border-radius: 6px; padding: 10px; }
+    .real-dot { display: inline-block; width: 40px; height: 40px;
+                background: #bf8700; margin-right: 8px; vertical-align: middle; }
+  </style>
+</head>
+<body>
+
+  <h1>伪元素到底是怎么工作的</h1>
+
+  <h2>一、它们不在 DOM 里</h2>
+
+  <p>下面这一块，红字和蓝字都是 CSS 生成的：</p>
+
+  <div class="box">
+    <div class="demo-a" id="demoA">我是 .demo-a 的正文</div>
+  </div>
+
+<pre><code>.demo-a::before { content: "[before]"; color: #d1242f; }
+.demo-a::after  { content: "[after]";  color: #0963da; }</code></pre>
+
+  <p class="hint">
+    打开 DevTools 看这个元素，会看到 <code>::before</code> 和 <code>::after</code> 两个子节点。
+    但在 JS 里查不到它们——页面右下角有实测结果。
+  </p>
+
+  <h2>二、它们的位置是固定的</h2>
+
+  <p>
+    <code>::before</code> 永远是宿主元素的<b>第一个子元素</b>，
+    <code>::after</code> 永远是<b>最后一个子元素</b>。
+  </p>
+
+  <p>
+    所以上面那块的实际渲染顺序是：<br>
+    <code>::before</code> → 正文「我是 .demo-a 的正文」→ <code>::after</code>
+  </p>
+
+  <div class="note">
+    名字容易误导：<code>::after</code> 不是"之后"，是"内容之后"。它仍然在宿主元素的内部。
+  </div>
+
+  <h2>三、默认是 inline，所以宽高无效</h2>
+
+  <p>下面写了 40×40，但你看不到——因为默认 <code>display: inline</code>：</p>
+
+  <div class="box">
+    <div class="demo-b">我前面应该有个 40×40 的红方块（看不到）</div>
+  </div>
+
+  <h2>四、三种让它显出宽高的办法</h2>
+
+  <p><b>办法 1：display: inline-block</b></p>
+  <div class="box">
+    <div class="demo-c">我前面有个 40×40 的绿方块</div>
+  </div>
+
+  <p><b>办法 2：position: absolute</b>（你页面里两个例子用的就是这个）</p>
+  <div class="box">
+    <div class="demo-d">左边有个紫色圆点，绝对定位到左侧</div>
+  </div>
+
+<pre><code>.demo-d { position: relative; }        /* 宿主当参照物 */
+.demo-d::before {
+  content: "";
+  position: absolute;                   /* 自动变成块级，宽高生效 */
+  left: 10px; top: 50%;
+}</code></pre>
+
+  <p><b>办法 3：给宿主设 flex / grid</b>，伪元素会变成项目，同样接受宽高。</p>
+
+  <h2>五、和真实元素的唯一区别</h2>
+
+  <p>左边是伪元素（CSS 生成），右边是真实 <code>&lt;span&gt;</code>，外观一样：</p>
+
+  <div class="box">
+    <div class="demo-e demo-c">
+      伪元素
+      <span class="real-dot"></span>真实 span
+    </div>
+  </div>
+
+  <table style="border-collapse:collapse;width:100%;margin:12px 0">
+    <thead>
+      <tr>
+        <th style="border:1px solid #d1d9e0;padding:8px 12px;text-align:left;background:#f6f8fa"></th>
+        <th style="border:1px solid #d1d9e0;padding:8px 12px;text-align:left;background:#f6f8fa">伪元素</th>
+        <th style="border:1px solid #d1d9e0;padding:8px 12px;text-align:left;background:#f6f8fa">真实 span</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td style="border:1px solid #d1d9e0;padding:8px 12px">DOM 里有</td><td style="border:1px solid #d1d9e0;padding:8px 12px">没有</td><td style="border:1px solid #d1d9e0;padding:8px 12px">有</td></tr>
+      <tr><td style="border:1px solid #d1d9e0;padding:8px 12px">JS 能选中</td><td style="border:1px solid #d1d9e0;padding:8px 12px">不能</td><td style="border:1px solid #d1d9e0;padding:8px 12px">能</td></tr>
+      <tr><td style="border:1px solid #d1d9e0;padding:8px 12px">屏幕阅读器读到</td><td style="border:1px solid #d1d9e0;padding:8px 12px">读不到</td><td style="border:1px solid #d1d9e0;padding:8px 12px">读得到</td></tr>
+      <tr><td style="border:1px solid #d1d9e0;padding:8px 12px">能被复制</td><td style="border:1px solid #d1d9e0;padding:8px 12px">不能</td><td style="border:1px solid #d1d9e0;padding:8px 12px">能</td></tr>
+      <tr><td style="border:1px solid #d1d9e0;padding:8px 12px">一个元素能有几个</td><td style="border:1px solid #d1d9e0;padding:8px 12px">各一个</td><td style="border:1px solid #d1d9e0;padding:8px 12px">任意多个</td></tr>
+    </tbody>
+  </table>
+
+  <h2>六、放进 DevTools 里看</h2>
+
+  <p>选中页面上任何一个伪元素，Computed 面板里能看到它的完整样式，就像普通元素一样。</p>
+
+  <p class="hint">
+    这一步很值：伪元素出问题时，先看它在 Computed 里的 <code>content</code> 是不是 <code>none</code>，
+    再看 <code>display</code> 是 <code>inline</code> 还是别的。
+  </p>
+
+  <h2>七、页面右下角的实测结果</h2>
+
+  <div id="out" style="position:fixed;right:12px;bottom:12px;max-width:300px;
+       font-family:Consolas,monospace;font-size:12px;background:#0d1117;color:#f0f6fc;
+       padding:10px 12px;border-radius:8px;line-height:1.6"></div>
+
+  <script>
+    const el = document.getElementById('demoA');
+    const before = getComputedStyle(el, '::before');
+    const after = getComputedStyle(el, '::after');
+    const lines = [
+      'querySelectorAll("::before") → ' + document.querySelectorAll('::before').length,
+      'el.children.length → ' + el.children.length,
+      'getComputedStyle(el,"::before").content → ' + before.content,
+      'getComputedStyle(el,"::after").content → ' + after.content,
+      'el.innerText → ' + JSON.stringify(el.innerText)
+    ];
+    document.getElementById('out').textContent = lines.join('\n');
+  </script>
+
+</body>
+</html>
