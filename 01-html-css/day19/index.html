@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第 19 天 · 部署上线</title>
+  <style>
+    :root {
+      --c-text: #1f2328; --c-muted: #59636e; --c-border: #d1d9e0;
+      --c-surface: #f6f8fa; --c-accent: #0969da;
+      --radius: 8px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px;
+    }
+    body { max-width: 880px; margin: 40px auto; padding: 0 20px;
+           font-family: system-ui, sans-serif; line-height: 1.85; color: var(--c-text); }
+    header { border-bottom: 2px solid var(--c-border); padding-bottom: var(--sp-4); }
+    section { margin: 40px 0; }
+    pre { background: var(--c-surface); padding: 14px 16px; border-radius: var(--radius);
+          overflow-x: auto; border: 1px solid var(--c-border); }
+    code { font-family: Consolas, monospace; font-size: 14px; }
+    table { border-collapse: collapse; margin: 12px 0; width: 100%; }
+    td, th { border: 1px solid var(--c-border); padding: 8px 12px; text-align: left; vertical-align: top; }
+    thead th { background: var(--c-surface); }
+    .hint { color: var(--c-muted); font-size: 14px; }
+    .note { background: #fffbe6; border-left: 3px solid #e0b400; padding: 10px 14px; margin: 14px 0; }
+    .bad  { background: #ffebe9; border-left: 3px solid #d1242f; padding: 10px 14px; margin: 14px 0; }
+    .good { background: #dafbe1; border-left: 3px solid #1a7f37; padding: 10px 14px; margin: 14px 0; }
+    ol li, ul li { margin: 6px 0; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>第 19 天：部署上线</h1>
+    <p>本地能跑不算完，别人能打开才算。</p>
+  </header>
+
+  <main>
+
+    <section id="what">
+      <h2>一、部署到底是什么</h2>
+
+      <p>
+        你现在双击 <code>personal/index.html</code> 能看到页面，是因为<b>浏览器读了你硬盘上的文件</b>。
+        别人打不开，因为那是你的硬盘。
+      </p>
+
+      <p>
+        部署就是：<b>把这些文件放到一台连在公网上的服务器里，让别人也能访问。</b>
+      </p>
+
+      <table>
+        <thead><tr><th scope="col">阶段</th><th scope="col">文件在哪</th><th scope="col">谁能看</th></tr></thead>
+        <tbody>
+          <tr><td>本地开发</td><td>你的电脑</td><td>只有你</td></tr>
+          <tr><td>已推送</td><td>GitHub 仓库</td><td>能看代码，<b>但看不到渲染效果</b></td></tr>
+          <tr><td>已部署</td><td>托管服务的服务器</td><td><b>任何人打开链接都能看到</b></td></tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        <b>一个常见误解：</b>以为"推到 GitHub 就等于上线了"。<br>
+        不对。GitHub 存的是源码，它默认只给你看代码。
+        想让它当网站服务器用，必须单独开启 <b>GitHub Pages</b> 这个功能。
+      </div>
+    </section>
+
+    <section id="options">
+      <h2>二、三种免费静态托管</h2>
+
+      <table>
+        <thead>
+          <tr><th scope="col">服务</th><th scope="col">网址形式</th><th scope="col">特点</th><th scope="col">国内访问</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>GitHub Pages</b></td>
+            <td><code>yuilcake.github.io</code></td>
+            <td>和 GitHub 仓库绑定，无需注册新账号</td>
+            <td>一般可用，偶尔慢</td>
+          </tr>
+          <tr>
+            <td><b>Vercel</b></td>
+            <td><code>项目名.vercel.app</code></td>
+            <td>连接 GitHub 自动部署，支持构建和自定义域名</td>
+            <td>需要代理</td>
+          </tr>
+          <tr>
+            <td><b>Netlify</b></td>
+            <td><code>项目名.netlify.app</code></td>
+            <td>拖拽文件夹就能发布，也可以连 Git</td>
+            <td>需要代理</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>
+        三者都是免费的，都能满足"作品页能被打开"的需求。
+        <b>选哪个不重要，重要的是理解部署这件事本身</b>——文件从哪来、放到哪、用什么地址访问。
+      </p>
+
+      <h3>今天用 GitHub Pages 的用户站点</h3>
+
+      <p>
+        GitHub Pages 有两种：
+      </p>
+
+      <table>
+        <thead><tr><th scope="col">类型</th><th scope="col">仓库名要求</th><th scope="col">网址</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><b>用户站点</b></td>
+            <td>必须是 <code>你的用户名.github.io</code></td>
+            <td><code>https://你的用户名.github.io/</code>（根路径）</td>
+          </tr>
+          <tr>
+            <td>项目站点</td>
+            <td>任意仓库名</td>
+            <td><code>https://你的用户名.github.io/仓库名/</code>（子路径）</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="hint">
+        个人主页适合用<b>用户站点</b>：地址干净，就是 <code>https://yuilcake.github.io/</code>，
+        写在简历上比 <code>/frontend-study/personal/</code> 好看得多，而且不用注册新账号。
+      </p>
+    </section>
+
+    <section id="path">
+      <h2>三、部署后最容易坏的东西：路径</h2>
+
+      <p>这是"本地打开一切正常，线上打开图片全裂、样式全丢"的头号原因。</p>
+
+      <h3>三种写法，三种命运</h3>
+
+      <table>
+        <thead><tr><th scope="col">写法</th><th scope="col">浏览器理解为</th><th scope="col">用户站点能用吗</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>&lt;img src="img/a.jpg"&gt;</code></td>
+            <td>当前页面所在目录 + img/a.jpg</td>
+            <td><b>能用</b>（相对路径）</td>
+          </tr>
+          <tr>
+            <td><code>&lt;img src="./img/a.jpg"&gt;</code></td>
+            <td>同上，<code>./</code> 表示"当前目录"</td>
+            <td><b>能用</b></td>
+          </tr>
+          <tr>
+            <td><code>&lt;img src="/img/a.jpg"&gt;</code></td>
+            <td><b>域名根目录</b> + img/a.jpg</td>
+            <td>用户站点能用；<b>项目站点会裂</b></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="bad">
+        <b>为什么 <code>/</code> 开头会裂：</b><br>
+        <code>/img/a.jpg</code> 里的 <code>/</code> 指的是<b>域名的根</b>，不是"当前文件夹"。<br>
+        用户站点：<code>yuilcake.github.io/img/a.jpg</code> ✓<br>
+        项目站点：<code>yuilcake.github.io/frontend-study/img/a.jpg</code> ← 但你的文件在
+        <code>.../frontend-study/personal/img/a.jpg</code>，路径少了一层 → 404
+      </div>
+
+      <div class="good">
+        <b>结论：站内资源一律用相对路径。</b><br>
+        <code>img/a.jpg</code>、<code>./index.html</code>、<code>../about.html</code>——
+        不管部署到哪个地址、哪个子目录，都不会错。
+      </div>
+
+      <h3>顺便检查大小写</h3>
+
+      <p>
+        Windows 的文件系统<b>不区分大小写</b>（<code>Img</code> 和 <code>img</code> 是同一个文件夹），
+        但 Linux 服务器<b>区分</b>。本地能加载、线上 404，很多时候就是这个原因。
+      </p>
+
+      <p class="hint">
+        规则：文件名和路径<b>全部小写</b>，用连字符不用空格。你现在 <code>img/touxiang.jpg</code> 是对的。
+      </p>
+    </section>
+
+    <section id="steps">
+      <h2>四、今天的操作步骤</h2>
+
+      <ol>
+        <li>
+          <b>新建仓库</b>，名字必须是 <code>YuiLcake.github.io</code>（大小写不敏感，但习惯这样写），
+          选 Public，<b>不要</b>勾选 README / .gitignore / license。
+          <span class="hint">勾了会让第一次推送失败，因为远端已经有提交了。</span>
+        </li>
+        <li>
+          <b>把个人主页的文件放进去</b>：<code>index.html</code> 和 <code>img/</code> 目录。
+          <span class="hint">用 <code>git clone</code> 下来，复制进去，再提交推送。不要用网页上传，那样学不到东西。</span>
+        </li>
+        <li>
+          <b>开启 Pages</b>：仓库 → Settings → Pages → Source 选 <code>main</code> 分支、<code>/ (root)</code> 目录。
+        </li>
+        <li>
+          <b>等 1–3 分钟</b>，然后访问 <code>https://yuilcake.github.io/</code>。
+          <span class="hint">第一次可能显示 404，是构建还没完成，等一会儿刷新。</span>
+        </li>
+        <li>
+          <b>验证</b>：图片能显示吗？样式对吗？手机尺寸下正常吗？
+        </li>
+      </ol>
+    </section>
+
+    <section id="verify">
+      <h2>五、上线后要验的五件事</h2>
+
+      <table>
+        <thead><tr><th scope="col">检查</th><th scope="col">怎么验</th></tr></thead>
+        <tbody>
+          <tr><td>页面能打开</td><td>访问根网址，看到内容而不是 404</td></tr>
+          <tr><td>样式正常</td><td>深色背景出来了 = CSS 加载成功</td></tr>
+          <tr><td>图片显示</td><td>头像没裂开 = 路径正确</td></tr>
+          <tr><td>链接可点</td><td>GitHub / 邮箱链接能跳转</td></tr>
+          <tr><td>手机可用</td><td>DevTools 切 375px，或直接用手机打开</td></tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        <b>用手机亲自打开一次。</b>这是唯一能验证"真的上线了"的方式——
+        用电脑访问可能读到缓存，而手机没访问过，一定是新鲜的。
+      </div>
+    </section>
+
+    <section id="trouble">
+      <h2>六、四种常见故障</h2>
+
+      <table>
+        <thead><tr><th scope="col">现象</th><th scope="col">原因</th><th scope="col">怎么修</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>打开是 404</td>
+            <td>Pages 还没构建完，或 Source 没选对</td>
+            <td>等 3 分钟；检查 Settings → Pages 的分支和目录</td>
+          </tr>
+          <tr>
+            <td>页面一片白，没有样式</td>
+            <td>CSS 用了 <code>/</code> 开头的绝对路径</td>
+            <td>改成相对路径</td>
+          </tr>
+          <tr>
+            <td>图片裂开</td>
+            <td>路径错、大小写不一致、文件没推上去</td>
+            <td>F12 看 Network 里图片请求是不是 404</td>
+          </tr>
+          <tr>
+            <td>改了代码线上没变</td>
+            <td>浏览器缓存，或还没重新构建</td>
+            <td>Ctrl+F5 强刷；去 Actions 看部署状态</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="hint">
+        排查顺序固定：<b>F12 → Network → 看哪个请求是红色的</b>。
+        红色的那个就是问题所在，比猜快得多。
+      </p>
+    </section>
+
+    <section id="next">
+      <h2>七、这一步的意义</h2>
+
+      <p>
+        做完之后你会有一样以前没有的东西：<b>一个能被任何人打开的网址，里面是你自己写的页面。</b>
+      </p>
+
+      <p>
+        这意味着：
+      </p>
+
+      <ul>
+        <li>简历上可以写"个人主页：yuilcake.github.io"</li>
+        <li>面试时可以直接发链接，不用发压缩包</li>
+        <li>毕设演示可以给别人一个网址，而不是"我电脑上能跑"</li>
+      </ul>
+
+      <div class="note">
+        <b>"我电脑上能跑"</b>是学生项目的典型状态。<br>
+        <b>"打开这个链接"</b>是交付的状态。今天这一步跨过去，你的东西性质就不一样了。
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="border-top:1px solid var(--c-border);padding-top:16px;margin-top:40px">
+    <p class="hint">第 19 天 · 2026-11-11</p>
+  </footer>
+
+</body>
+</html>
