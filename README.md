@@ -3,6 +3,7 @@
 > 从零到前端开发的 110 天。记录计划、代码和踩过的坑。
 
 **线上站点：https://yuilcake.github.io/frontend-study/**
+**个人主页（独立仓库）：https://yuilcake.github.io/**
 
 ## 这是什么
 

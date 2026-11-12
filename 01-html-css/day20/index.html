@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第 20 天 · W4 复盘与个人主页 v2</title>
+  <style>
+    :root {
+      --c-text: #1f2328; --c-muted: #59636e; --c-border: #d1d9e0;
+      --c-surface: #f6f8fa; --c-accent: #0969da;
+      --radius: 8px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px;
+    }
+    body { max-width: 880px; margin: 40px auto; padding: 0 20px;
+           font-family: system-ui, sans-serif; line-height: 1.85; color: var(--c-text); }
+    header { border-bottom: 2px solid var(--c-border); padding-bottom: var(--sp-4); }
+    section { margin: 40px 0; }
+    pre { background: var(--c-surface); padding: 14px 16px; border-radius: var(--radius);
+          overflow-x: auto; border: 1px solid var(--c-border); }
+    code { font-family: Consolas, monospace; font-size: 14px; }
+    table { border-collapse: collapse; margin: 12px 0; width: 100%; }
+    td, th { border: 1px solid var(--c-border); padding: 8px 12px; text-align: left; vertical-align: top; }
+    thead th { background: var(--c-surface); }
+    .hint { color: var(--c-muted); font-size: 14px; }
+    .note { background: #fffbe6; border-left: 3px solid #e0b400; padding: 10px 14px; margin: 14px 0; }
+    .bad  { background: #ffebe9; border-left: 3px solid #d1242f; padding: 10px 14px; margin: 14px 0; }
+    .good { background: #dafbe1; border-left: 3px solid #1a7f37; padding: 10px 14px; margin: 14px 0; }
+    ol li, ul li { margin: 6px 0; }
+    .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 12px 0; }
+    .flow span { background: var(--c-surface); border: 1px solid var(--c-border);
+                 border-radius: 6px; padding: 4px 10px; font-size: 14px; }
+    .flow b { color: var(--c-muted); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>第 20 天：W4 复盘与个人主页 v2</h1>
+    <p>这一周从"页面能看"做到"网站能打开"。今天收尾，然后进入 JavaScript。</p>
+  </header>
+
+  <main>
+
+    <section id="review">
+      <h2>一、W4 复盘</h2>
+
+      <table>
+        <thead><tr><th scope="col">天</th><th scope="col">主题</th><th scope="col">核心收获</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>第 16 天</td>
+            <td>过渡与变形</td>
+            <td>transition 写在基础状态；transform 不改布局只改绘制；微交互 0.1–0.3s</td>
+          </tr>
+          <tr>
+            <td>第 17 天</td>
+            <td>伪类与伪元素</td>
+            <td>::before / ::after 必须写 content；默认 inline 不接受宽高；伪元素不能承载语义内容</td>
+          </tr>
+          <tr>
+            <td>第 18 天</td>
+            <td>BEM 命名</td>
+            <td>块可重复、区域名不可重复；显式放置会撞车，自动放置会排队</td>
+          </tr>
+          <tr>
+            <td>第 19 天</td>
+            <td>部署上线</td>
+            <td>推到 GitHub ≠ 上线；用户站点自动启用 Pages；相对路径</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p><b>本周硬性产出：</b>个人主页上线 → <code>https://yuilcake.github.io/</code></p>
+
+      <p class="hint">
+        这是计划里 W4 的验收目标，提前一天达成。你现在有 2 个线上地址
+        （学习站点 + 个人主页）、2 个仓库。
+      </p>
+    </section>
+
+    <section id="dup">
+      <h2>二、一个昨天留下的问题：你有了两份一样的文件</h2>
+
+      <p>实测两份文件的内容哈希完全相同：</p>
+
+<pre><code>frontend-study/personal/index.html      b160b562...
+YuiLcake.github.io/index.html           b160b562...   ← 一模一样</code></pre>
+
+      <p><b>现在改哪一份？</b></p>
+
+      <table>
+        <thead><tr><th scope="col">你改的地方</th><th scope="col">线上会变吗</th><th scope="col">学习仓库会变吗</th></tr></thead>
+        <tbody>
+          <tr><td><code>frontend-study/personal/</code></td><td><b>不会</b>（线上部署的是另一个仓库）</td><td>会</td></tr>
+          <tr><td><code>YuiLcake.github.io/</code></td><td>会（推送后）</td><td><b>不会</b>，那份逐渐变旧</td></tr>
+        </tbody>
+      </table>
+
+      <div class="bad">
+        <b>这就是"两份副本"的必然结局：分叉。</b><br>
+        今天你改了一边，明天忘了另一边，一个月后你就分不清哪份是新的。
+        更糟的是——<b>你改错地方时会以为自己在改线上，等半天发现没变化，白白浪费时间。</b>
+      </div>
+
+      <div class="good">
+        <b>解决原则：单一数据源（single source of truth）。</b><br>
+        同一个东西只保留一份，其他位置<b>指向</b>它，而不是复制它。
+      </div>
+    </section>
+
+    <section id="fix">
+      <h2>三、今天怎么处理</h2>
+
+      <p>
+        个人主页已经独立成一个仓库了，它自己就有版本历史、有部署。
+        所以<b>以 <code>YuiLcake.github.io</code> 为唯一源</b>，学习仓库里那一份删掉。
+      </p>
+
+      <p><b>步骤：</b></p>
+
+      <ol>
+        <li>
+          先确认两份完全一致（已经在上面验过，md5 相同）
+        </li>
+        <li>
+          删掉学习仓库里的副本：
+          <pre><code>cd ~/Desktop/frontend-study
+git rm -r personal
+git commit -m "chore: 个人主页已独立成仓库，删除重复副本"</code></pre>
+          <p class="hint">
+            <code>git rm</code> 而不是直接删文件夹：它会把"删除"这个动作也记进版本历史，
+            以后想找回还能找回。
+          </p>
+        </li>
+        <li>
+          在学习仓库的 README 里加一行，告诉未来的自己主页在哪：
+          <pre><code>个人主页（独立仓库）：https://yuilcake.github.io/</code></pre>
+        </li>
+      </ol>
+
+      <p class="hint">
+        为什么不删 <code>YuiLcake.github.io</code> 而删学习仓库那份？
+        因为前者是<b>线上正在用的</b>，它还有部署配置。删部署源等于下线网站。
+      </p>
+    </section>
+
+    <section id="workflow">
+      <h2>四、你的工作流从今天开始变了</h2>
+
+      <p><b>以前：</b></p>
+      <div class="flow">
+        <span>改文件</span><b>→</b><span>刷新浏览器</span>
+      </div>
+
+      <p><b>现在：</b></p>
+      <div class="flow">
+        <span>改文件</span><b>→</b><span>本地预览</span><b>→</b><span>git commit</span><b>→</b><span>git push</span><b>→</b><span>等 1–2 分钟</span><b>→</b><span>线上验证</span>
+      </div>
+
+      <p>
+        多出来的环节是为了让别人也能看到。但它带来一个新问题：
+        <b>每次看效果都要等部署</b>，改一个 4px 的间距也等两分钟，效率太低。
+      </p>
+
+      <p><b>所以要做两段验证：</b></p>
+
+      <table>
+        <thead><tr><th scope="col">阶段</th><th scope="col">在哪看</th><th scope="col">看什么</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>开发中</td>
+            <td>本地 <code>python -m http.server</code></td>
+            <td>像素级细节：间距、对齐、颜色</td>
+          </tr>
+          <tr>
+            <td>推送后</td>
+            <td>线上网址</td>
+            <td>只验"有没有坏"：能打开、样式在、图片在</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        <b>本地起服务的命令（在 <code>YuiLcake.github.io</code> 目录里执行）：</b>
+        <pre><code>python -m http.server 8000</code></pre>
+        然后打开 <code>http://localhost:8000/</code>。
+        改完刷新即可，不用等部署。
+      </div>
+    </section>
+
+    <section id="v2">
+      <h2>五、v2 打磨清单</h2>
+
+      <p>六个具体改动，从影响大到小：</p>
+
+      <ol>
+        <li>
+          <b>页面标题改成有意义的</b><br>
+          现在是 <code>&lt;title&gt;我的网页&lt;/title&gt;</code>。
+          浏览器标签页、搜索结果、别人转发链接时的预览，用的都是它。
+          <pre><code>&lt;title&gt;熙熙 · 前端开发&lt;/title&gt;</code></pre>
+        </li>
+        <li>
+          <b>加一句 description</b><br>
+          别人在微信/GitHub 分享你的链接时，下面那行小字就是它。
+          <pre><code>&lt;meta name="description" content="熙熙的个人主页 · 软件工程 · 前端开发方向"&gt;</code></pre>
+        </li>
+        <li>
+          <b>hero 的「查看项目」改成按钮</b><br>
+          现在它是纯文字链接，而下面卡片里的是按钮——同一个动作两套样式。
+          <pre><code>&lt;a href="..." class="btn btn--primary"&gt;查看项目&lt;/a&gt;</code></pre>
+          <p class="hint">hero 是页面的第一视觉焦点，它的按钮应该是整页最显眼的。</p>
+        </li>
+        <li>
+          <b>hero 两栏之间留白太大</b><br>
+          文字区到头像之间空了近 400px。给 <code>hero__grid</code> 的第二列改小一点，
+          或者给文字区加个 <code>max-width</code>，让整体更紧凑。
+        </li>
+        <li>
+          <b>统一的间距节奏</b><br>
+          检查所有 <code>gap</code> 和 <code>margin</code>，是不是 4 / 8 / 12 / 16 / 24 这几个值。
+          出现 7px、18px、30px 这种就改掉。
+        </li>
+        <li>
+          <b>移动端复查</b><br>
+          DevTools 切 375px，看有没有挤、有没有文字换行难看、按钮够不够大。
+        </li>
+      </ol>
+    </section>
+
+    <section id="exercise">
+      <h2>六、作业</h2>
+
+      <ol>
+        <li>按上面的清单改 <code>YuiLcake.github.io/index.html</code>，六条全做</li>
+        <li>本地起服务预览，改完刷新确认</li>
+        <li>提交并推送，等 1–2 分钟</li>
+        <li>线上验证：标题、按钮、间距、图片、手机尺寸</li>
+        <li>删掉学习仓库里的 <code>personal/</code>，README 里加一行指向新地址</li>
+        <li>
+          回答（写在文件末尾注释里）：如果我把两份文件都留着，一个月后可能出现什么问题？
+        </li>
+      </ol>
+
+      <div class="note">
+        <b>验收：</b>线上页面标题变成「熙熙 · 前端开发」，hero 有蓝色按钮，
+        手机尺寸下无溢出，两个仓库各司其职不再重复。
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="border-top:1px solid var(--c-border);padding-top:16px;margin-top:40px">
+    <p class="hint">第 20 天 · 2026-11-12</p>
+  </footer>
+
+</body>
+</html>
