@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第 22 天 · 条件与循环</title>
+  <style>
+    :root {
+      --c-text: #1f2328; --c-muted: #59636e; --c-border: #d1d9e0;
+      --c-surface: #f6f8fa; --c-accent: #0969da;
+      --radius: 8px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px;
+    }
+    body { max-width: 920px; margin: 40px auto; padding: 0 20px;
+           font-family: system-ui, sans-serif; line-height: 1.85; color: var(--c-text); }
+    header { border-bottom: 2px solid var(--c-border); padding-bottom: var(--sp-4); }
+    section { margin: 40px 0; }
+    pre { background: var(--c-surface); padding: 14px 16px; border-radius: var(--radius);
+          overflow-x: auto; border: 1px solid var(--c-border); margin: 8px 0 16px; }
+    code { font-family: Consolas, monospace; font-size: 14px; }
+    table { border-collapse: collapse; margin: 12px 0; width: 100%; }
+    td, th { border: 1px solid var(--c-border); padding: 8px 12px; text-align: left; vertical-align: top; }
+    thead th { background: var(--c-surface); }
+    .hint { color: var(--c-muted); font-size: 14px; }
+    .note { background: #fffbe6; border-left: 3px solid #e0b400; padding: 10px 14px; margin: 14px 0; }
+    .bad  { background: #ffebe9; border-left: 3px solid #d1242f; padding: 10px 14px; margin: 14px 0; }
+    .good { background: #dafbe1; border-left: 3px solid #1a7f37; padding: 10px 14px; margin: 14px 0; }
+    .err  { background: #0d1117; color: #ff7b72; padding: 8px 12px; border-radius: 6px;
+            font-family: Consolas, monospace; font-size: 13px; margin: 6px 0 16px; }
+    .err::before { content: "报错  "; color: #8b949e; }
+    ol li, ul li { margin: 6px 0; }
+    .step { font-weight: 700; color: var(--c-accent); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>第 22 天：条件与循环</h1>
+    <p>昨天你只会"算"，今天开始代码会"判断"和"重复"。</p>
+  </header>
+
+  <main>
+
+    <section id="warmup">
+      <h2>一、先补昨天的四个点</h2>
+
+      <p>三分钟过一遍，确认没有半懂的。</p>
+
+      <h3>1. `console.log` 的三种形态</h3>
+
+<pre><code>console.log           // 回显函数本身，不打印
+console.log("你好")    // 调用（括号），打印
+console.log = "你好"   // 赋值（等号），函数被替换，从此失效</code></pre>
+
+      <h3>2. 浮点数比较</h3>
+
+<pre><code>0.1 + 0.2 === 0.3                        // false
+Math.abs(0.1 + 0.2 - 0.3) &lt; 1e-10        // true
+// Math.abs 取绝对值，1e-10 = 0.0000000001（容忍度）</code></pre>
+
+      <h3>3. 变量必须声明</h3>
+
+<pre><code>const name = "熙熙";   ✓
+name = "熙熙";         ✗ 不报错，但创建了隐式全局变量（还会覆盖 window.name）</code></pre>
+
+      <h3>4. 反引号可以跨行</h3>
+
+<pre><code>const t = `第一行
+第二行`;                ✓ 反引号里换行原样保留
+const b = "第一行
+第二行";                ✗ SyntaxError</code></pre>
+    </section>
+
+    <section id="truthy">
+      <h2>二、先弄清"真假"：真值与假值</h2>
+
+      <p>
+        <code>if</code> 的括号里放任何东西都行，JS 会先把它"转成真假"再决定走不走。
+        <b>哪些算假，必须背下来</b>——一共只有 6 个（加上 0 的两种变体算 8 个写法）：
+      </p>
+
+      <table>
+        <thead><tr><th scope="col">假值（falsy）</th><th scope="col">说明</th></tr></thead>
+        <tbody>
+          <tr><td><code>false</code></td><td>假本身</td></tr>
+          <tr><td><code>0</code></td><td>数字零</td></tr>
+          <tr><td><code>0n</code></td><td>大整数零（少用）</td></tr>
+          <tr><td><code>""</code></td><td>空字符串（注意：里面有空格就不是空）</td></tr>
+          <tr><td><code>null</code></td><td>空</td></tr>
+          <tr><td><code>undefined</code></td><td>未定义</td></tr>
+          <tr><td><code>NaN</code></td><td>不是数字的数字</td></tr>
+        </tbody>
+      </table>
+
+      <p><b>除了这 6 个，其他全是真值。</b>包括这几个反直觉的：</p>
+
+<pre><code>"0"        // 真值！非空字符串
+" "        // 真值！空格也是字符
+"false"    // 真值！非空字符串
+[]         // 真值！空数组
+{}         // 真值！空对象</code></pre>
+
+      <div class="bad">
+        <b>最容易错的两个：<code>[]</code> 和 <code>{}</code> 是真值。</b><br>
+        直觉上"空的"应该是假，但 JS 只看类型：数组和对象是"存在的实体"，所以为真。<br>
+        判断数组是否为空要用 <code>arr.length === 0</code>，判断对象要用
+        <code>Object.keys(obj).length === 0</code>。
+      </div>
+    </section>
+
+    <section id="if">
+      <h2>三、if / else if / else</h2>
+
+      <p class="step">① 正确写法</p>
+
+<pre><code>const age = 20;
+
+if (age &gt;= 18) {
+  console.log("成年");
+} else {
+  console.log("未成年");
+}
+
+// 多分支
+const score = 85;
+if (score &gt;= 90) {
+  console.log("优秀");
+} else if (score &gt;= 75) {
+  console.log("良好");
+} else if (score &gt;= 60) {
+  console.log("及格");
+} else {
+  console.log("不及格");
+}</code></pre>
+
+      <p class="hint">
+        <code>else if</code> 是<b>从上往下依次判断</b>，命中一个就跳出，后面的不再看。
+        所以顺序很重要：把范围大的放上面会吃掉小的。
+      </p>
+
+      <p class="step">② 常见错误</p>
+
+      <p><b>错误 A：漏括号</b></p>
+
+<pre><code>if age &gt;= 18 {
+  console.log("成年");
+}</code></pre>
+      <div class="err">SyntaxError: Unexpected identifier 'age'</div>
+
+      <p><b>错误 B：把 <code>===</code> 写成 <code>=</code>（最危险）</b></p>
+
+<pre><code>if (age = 18) {
+  console.log("永远会执行");
+}</code></pre>
+
+      <div class="bad">
+        <b>这行不报错，但逻辑全错。</b><br>
+        <code>age = 18</code> 是<b>赋值</b>：先把 18 赋给 age，然后判断"18 是不是真值"——18 是真值，
+        所以这个 if <b>永远成立</b>。<br>
+        <b>怎么发现</b>：这种 bug 不会报错，只能靠读代码。写条件时养成习惯——<b>只写三个等号</b>。
+      </div>
+
+      <p><b>错误 C：条件后面多写了分号</b></p>
+
+<pre><code>if (age &gt;= 18); {
+  console.log("不管条件真假都执行");
+}</code></pre>
+
+      <div class="bad">
+        分号让 <code>if</code> 变成了"如果成立，就执行一个空语句"。后面的 <code>{}</code>
+        变成了独立的代码块，<b>无条件执行</b>。不报错，行为完全错。
+      </div>
+
+      <p><b>错误 D：用字符串做大小比较</b></p>
+
+<pre><code>if (age &gt;= "18") { }     // 能跑，但把 age 先转成字符串再比
+if ("9" &gt; "18") { }      // true ← 字符串逐位比，"9" 比 "1" 大</code></pre>
+
+      <div class="err">不报错，结果是错的</div>
+    </section>
+
+    <section id="ternary">
+      <h2>四、三元运算符：二选一的简写</h2>
+
+      <p class="step">① 正确写法</p>
+
+<pre><code>const age = 20;
+const label = age &gt;= 18 ? "成年" : "未成年";
+//                        ↑条件   ↑真        ↑假
+
+console.log(label);   // "成年"</code></pre>
+
+      <table>
+        <thead><tr><th scope="col">场景</th><th scope="col">用哪个</th></tr></thead>
+        <tbody>
+          <tr><td>二选一，结果是<b>一个值</b></td><td>三元 <code>a ? b : c</code></td></tr>
+          <tr><td>要执行<b>多条语句</b></td><td><code>if / else</code></td></tr>
+          <tr><td>超过两层嵌套</td><td><b>别用三元</b>，可读性会崩</td></tr>
+        </tbody>
+      </table>
+
+      <p class="step">② 常见错误</p>
+
+<pre><code>// 错误 A：漏冒号
+const x = age &gt;= 18 ? "成年";        // SyntaxError: Unexpected token ';'
+
+// 错误 B：嵌套三层，谁都读不懂
+const y = a &gt; 1 ? "大" : a &gt; 0 ? "中" : "小";   // 语法对，但别这样写
+
+// 错误 C：把三元的返回值丢掉，拿来做分支语句
+age &gt;= 18 ? console.log("成年") : console.log("未成年");   // 能跑，但不如 if 清楚</code></pre>
+    </section>
+
+    <section id="switch">
+      <h2>五、switch：多个固定值分支</h2>
+
+      <p class="step">① 正确写法</p>
+
+<pre><code>const role = "admin";
+
+switch (role) {
+  case "admin":
+    console.log("管理员");
+    break;                  // ← 必须写
+  case "student":
+    console.log("学生");
+    break;
+  default:
+    console.log("未知角色");
+}</code></pre>
+
+      <p class="step">② 常见错误：漏了 break</p>
+
+<pre><code>switch (role) {
+  case "admin":
+    console.log("管理员");
+    // ← 没有 break
+  case "student":
+    console.log("学生");
+    break;
+}
+// 输出：管理员
+//       学生      ← 不应该出现的第二行</code></pre>
+
+      <div class="bad">
+        <b>这叫 fallthrough（穿透）</b>：没有 <code>break</code> 就会继续执行下一个 case 的代码。<br>
+        不报错，只是多打印了一行。每个 case 结尾都要有 <code>break</code>（最后一个和 default 除外）。
+      </div>
+
+      <p class="hint">
+        <b>什么时候用 switch，什么时候用 if</b>：判断"是不是这几个固定值之一"用 switch；
+        判断"是不是在某个范围"用 if。<code>switch</code> 用的是全等比较 <code>===</code>，
+        所以 <code>case "1"</code> 不会匹配数字 1。
+      </p>
+    </section>
+
+    <section id="for">
+      <h2>六、for 循环</h2>
+
+      <p class="step">① 正确写法</p>
+
+<pre><code>// 经典 for：三段式
+for (let i = 0; i &lt; 5; i++) {
+  console.log(i);        // 0 1 2 3 4
+}
+
+// 遍历数组
+const skills = ["HTML", "CSS", "JS"];
+for (let i = 0; i &lt; skills.length; i++) {
+  console.log(skills[i]);
+}
+
+// 更简单的写法：for...of（只取值，不需要下标时用）
+for (const skill of skills) {
+  console.log(skill);
+}</code></pre>
+
+      <p class="hint">
+        三段式的三个部分：<b>初始化</b>（<code>let i = 0</code>）→ <b>条件</b>（<code>i &lt; 5</code>）
+        → <b>每轮结束后的动作</b>（<code>i++</code>）。
+      </p>
+
+      <p class="step">② 常见错误</p>
+
+      <p><b>错误 A：忘了 <code>i++</code>（死循环）</b></p>
+
+<pre><code>for (let i = 0; i &lt; 5;) {
+  console.log(i);        // 0 0 0 0 0 ... 永远不停
+}</code></pre>
+      <div class="err">不报错，浏览器卡死（页面无响应，只能关标签页）</div>
+
+      <p><b>错误 B：边界写错（off-by-one）</b></p>
+
+<pre><code>const arr = [1, 2, 3];
+for (let i = 0; i &lt;= arr.length; i++) {
+  console.log(arr[i]);   // 1 2 3 undefined
+}                        //                    ↑ 多跑了一次，下标 3 不存在</code></pre>
+
+      <div class="bad">
+        数组下标从 <b>0</b> 开始，长度是 3 的数组，合法下标是 0、1、2。
+        <code>&lt;=</code> 会跑到 3，拿到 <code>undefined</code>。<b>一律用 <code>&lt;</code></b>。
+      </div>
+
+      <p><b>错误 C：在循环里改数组长度</b></p>
+
+<pre><code>const list = [1, 2, 3, 4];
+for (let i = 0; i &lt; list.length; i++) {
+  list.pop();            // 边遍历边删，结果不可预测
+}</code></pre>
+      <div class="err">不报错，结果和你想的不一样</div>
+    </section>
+
+    <section id="while">
+      <h2>七、while 与 break / continue</h2>
+
+      <p class="step">① 正确写法</p>
+
+<pre><code>// while：条件成立就一直做，适合"不知道要循环几次"的场景
+let count = 0;
+while (count &lt; 3) {
+  console.log(count);
+  count++;               // ← 一定要有让条件终将变假的动作
+}
+
+// break：立刻跳出整个循环
+for (let i = 1; i &lt;= 10; i++) {
+  if (i === 3) break;
+  console.log(i);        // 1 2
+}
+
+// continue：跳过这一轮，继续下一轮
+for (let i = 1; i &lt;= 5; i++) {
+  if (i === 3) continue;
+  console.log(i);        // 1 2 4 5
+}</code></pre>
+
+      <p class="step">② 常见错误</p>
+
+<pre><code>// 错误：忘了 count++，死循环
+let n = 0;
+while (n &lt; 3) {
+  console.log(n);        // 0 0 0 ... 卡死
+}
+
+// 错误：break 与 continue 用反
+for (let i = 1; i &lt;= 5; i++) {
+  if (i === 3) continue; // 想"到此为止"，结果只是跳过 3
+}</code></pre>
+    </section>
+
+    <section id="exercise">
+      <h2>八、练习（10 题）</h2>
+
+      <p>全部在 Console 里做。<b>先写思路，再写代码。</b></p>
+
+      <p><b>真值假值</b></p>
+      <ol>
+        <li><b>先猜后验</b>：下面哪些会打印"真"？
+          <code>""</code>、<code>"0"</code>、<code>0</code>、<code>[]</code>、<code>{}</code>、<code>null</code>
+          <pre><code>if (值) console.log("真");
+else console.log("假");</code></pre>
+        </li>
+      </ol>
+
+      <p><b>条件</b></p>
+      <ol start="2">
+        <li>定义 <code>score = 78</code>，用 if/else if 输出"优秀 / 良好 / 及格 / 不及格"（90 / 75 / 60 为分界）</li>
+        <li>用三元运算符：把 <code>score</code> 变成"及格"或"不及格"两个字的变量，打印出来</li>
+        <li>用 switch：定义 <code>day = 3</code>，输出"星期三"（1–7，其余输出"日期无效"）</li>
+        <li><b>找 bug</b>：下面这段为什么永远输出"成年"？
+          <pre><code>const age = 15;
+if (age = 18) console.log("成年");
+else console.log("未成年");</code></pre>
+        </li>
+      </ol>
+
+      <p><b>循环</b></p>
+      <ol start="6">
+        <li>用 for 循环打印 1 到 10</li>
+        <li>用 for 循环求 1 到 100 的和，打印结果（答案是 5050，验证一下）</li>
+        <li>有一个数组 <code>["HTML", "CSS", "JS", "Vue"]</code>，用 for...of 逐个打印，并在每个前面加序号（1. HTML、2. CSS...）</li>
+        <li>用 for 循环打印 1–20 之间的<b>偶数</b>（用 <code>%</code> 判断）</li>
+        <li><b>挑战</b>：用循环找出 1–100 里第一个能被 7 整除的数，找到后<code>break</code>，并打印它</li>
+      </ol>
+
+      <div class="note">
+        <b>第 5 题是重点。</b>它就是你今天学的"错误 B"——<code>=</code> 是赋值不是比较。
+        能用一句话解释清楚为什么它永远成立，今天就过关了。
+      </div>
+    </section>
+
+    <section id="next">
+      <h2>九、明天</h2>
+
+      <p>
+        函数：<code>function</code> 声明、箭头函数、参数与返回值、作用域。
+        <b>函数是 JS 的地基</b>，后面所有东西（事件处理、数组方法、Vue 组件）都建在它上面。
+      </p>
+    </section>
+
+  </main>
+
+  <footer style="border-top:1px solid var(--c-border);padding-top:16px;margin-top:40px">
+    <p class="hint">第 22 天 · 2026-11-17</p>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第 21 天 · JavaScript 入门：变量、类型、运算符</title>
+  <style>
+    :root {
+      --c-text: #1f2328; --c-muted: #59636e; --c-border: #d1d9e0;
+      --c-surface: #f6f8fa; --c-accent: #0969da; --c-warn: #9a6700;
+      --radius: 8px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px;
+    }
+    body { max-width: 900px; margin: 40px auto; padding: 0 20px;
+           font-family: system-ui, sans-serif; line-height: 1.85; color: var(--c-text); }
+    header { border-bottom: 2px solid var(--c-border); padding-bottom: var(--sp-4); }
+    section { margin: 40px 0; }
+    pre { background: var(--c-surface); padding: 14px 16px; border-radius: var(--radius);
+          overflow-x: auto; border: 1px solid var(--c-border); }
+    code { font-family: Consolas, monospace; font-size: 14px; }
+    table { border-collapse: collapse; margin: 12px 0; width: 100%; }
+    td, th { border: 1px solid var(--c-border); padding: 8px 12px; text-align: left; vertical-align: top; }
+    thead th { background: var(--c-surface); }
+    .hint { color: var(--c-muted); font-size: 14px; }
+    .note { background: #fffbe6; border-left: 3px solid #e0b400; padding: 10px 14px; margin: 14px 0; }
+    .bad  { background: #ffebe9; border-left: 3px solid #d1242f; padding: 10px 14px; margin: 14px 0; }
+    .good { background: #dafbe1; border-left: 3px solid #1a7f37; padding: 10px 14px; margin: 14px 0; }
+    ol li, ul li { margin: 6px 0; }
+    .out { background: #0d1117; color: #7ee787; padding: 10px 14px; border-radius: 6px;
+           font-family: Consolas, monospace; font-size: 14px; margin: 6px 0 16px; }
+    .out::before { content: "输出  "; color: #8b949e; }
+    kbd { background: #f0f0f0; border: 1px solid #ccc; border-radius: 3px;
+          padding: 1px 5px; font-size: 13px; font-family: Consolas, monospace; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>第 21 天：JavaScript 入门</h1>
+    <p>变量、类型、运算符。今天的内容不难，但要建立一种新的思维方式。</p>
+  </header>
+
+  <main>
+
+    <section id="mindset">
+      <h2>一、先换一种脑子</h2>
+
+      <p>前四周你写的 CSS 是这样的：</p>
+
+<pre><code>.card { background: white; border-radius: 8px; }</code></pre>
+
+      <p>
+        这是<b>描述</b>——"卡片长这样"。你告诉浏览器<b>结果</b>，它自己想办法做到。
+        这叫声明式（declarative）。
+      </p>
+
+      <p>JS 是这样的：</p>
+
+<pre><code>let total = 0;
+for (let i = 1; i &lt;= 10; i++) {
+  total = total + i;
+}
+console.log(total);   // 55</code></pre>
+
+      <p>
+        这是<b>指令</b>——"先设成 0，然后从 1 数到 10，每次加起来"。
+        你告诉浏览器<b>步骤</b>，它照着执行。这叫命令式（imperative）。
+      </p>
+
+      <div class="note">
+        <b>这是接下来两周最大的思维转变。</b><br>
+        CSS 写错了是"没效果"，JS 写错了是"算出错的结果"或者"直接报错"。
+        <b>JS 会给你明确的错误信息</b>——这是好事，比 CSS 的静默失败好排查得多。
+      </div>
+    </section>
+
+    <section id="where">
+      <h2>二、JS 在哪运行</h2>
+
+      <p>三种地方，今天主要用第三种：</p>
+
+      <table>
+        <thead><tr><th scope="col">方式</th><th scope="col">写法</th><th scope="col">适合</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>内联脚本</td>
+            <td><code>&lt;script&gt;...代码...&lt;/script&gt;</code></td>
+            <td>写进页面的功能</td>
+          </tr>
+          <tr>
+            <td>外部文件</td>
+            <td><code>&lt;script src="app.js"&gt;&lt;/script&gt;</code></td>
+            <td>正式项目（分离、可复用、可缓存）</td>
+          </tr>
+          <tr>
+            <td><b>控制台</b></td>
+            <td>F12 → Console → 直接敲</td>
+            <td><b>今天和以后每天练习用</b></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>控制台是第一教室</h3>
+
+      <p>
+        <kbd>F12</kbd> → <b>Console</b> 面板 → 光标在闪烁 → 输入 → <kbd>Enter</kbd>。
+      </p>
+
+<pre><code>1 + 1
+// 输出：2
+
+"你好" + "世界"
+// 输出：'你好世界'
+
+console.log("这行会打印出来")
+// 输出：这行会打印出来</code></pre>
+
+      <p class="hint">
+        <b>控制台的好处是"即时"</b>：改一个字符，回车，立刻看到结果。
+        不用保存、不用刷新、不用建文件。学语法阶段全在控制台里做，效率最高。
+      </p>
+
+      <div class="note">
+        <b>一个必须知道的区别：</b><br>
+        在控制台输入 <code>"你好"</code> 会直接回显 <code>'你好'</code>；<br>
+        在 <code>.js</code> 文件里写 <code>"你好"</code> 什么都不会发生——<b>文件里必须用 <code>console.log</code> 主动打印</b>。<br>
+        控制台是"回声"，文件是"哑巴"。
+      </div>
+    </section>
+
+    <section id="var">
+      <h2>三、变量：给值起个名字</h2>
+
+<pre><code>let age = 22;
+const name = "熙熙";
+
+age = 23;        // ✓ 可以改
+name = "小明";    // ✗ 报错：Assignment to constant variable</code></pre>
+
+      <h3>let 还是 const</h3>
+
+      <table>
+        <thead><tr><th scope="col">关键字</th><th scope="col">能不能重新赋值</th><th scope="col">什么时候用</th></tr></thead>
+        <tbody>
+          <tr><td><code>const</code></td><td>不能</td><td><b>默认用它</b>，大部分变量定下来就不该变</td></tr>
+          <tr><td><code>let</code></td><td>能</td><td>确实需要改的时候（计数器、累加）</td></tr>
+          <tr><td><code>var</code></td><td>能</td><td><b>不要用</b>，见下面</td></tr>
+        </tbody>
+      </table>
+
+      <div class="bad">
+        <b>为什么不用 var：</b><br>
+        <code>var</code> 是 2015 年之前的唯一选择，有两个历史遗留问题：<br>
+        ① 它会"提升"到函数顶部，在声明之前就能访问，值是 <code>undefined</code>；<br>
+        ② 它不受代码块 <code>{}</code> 限制，<code>if</code> 里声明的变量会漏到外面。<br>
+        现在所有教程都推荐 <code>let</code> / <code>const</code>。看到老代码里的 <code>var</code>，知道是什么就行。
+      </div>
+
+      <h3>命名规则</h3>
+
+<pre><code>✅ userName      小驼峰，两个单词首字母大写
+✅ maxCount
+✅ isLogin       布尔值习惯加 is / has 前缀
+
+❌ user-name     连字符（会当成减法）
+❌ 2name         数字开头
+❌ user name     空格
+❌ 用户名         中文能跑，但别用</code></pre>
+
+      <p class="hint">
+        命名是给人看的。三个月后你会感谢自己写的是 <code>totalPrice</code> 而不是 <code>a</code>。
+      </p>
+    </section>
+
+    <section id="type">
+      <h2>四、六种基础类型</h2>
+
+      <table>
+        <thead><tr><th scope="col">类型</th><th scope="col">例子</th><th scope="col">说明</th></tr></thead>
+        <tbody>
+          <tr><td><b>string</b> 字符串</td><td><code>"你好"</code>、<code>'abc'</code>、<code>`模板`</code></td><td>文本，单双引号都行</td></tr>
+          <tr><td><b>number</b> 数字</td><td><code>42</code>、<code>3.14</code>、<code>-7</code></td><td>整数小数都是它，不区分</td></tr>
+          <tr><td><b>boolean</b> 布尔</td><td><code>true</code>、<code>false</code></td><td>只有两个值</td></tr>
+          <tr><td><b>undefined</b></td><td><code>let x;</code></td><td>声明了但没赋值</td></tr>
+          <tr><td><b>null</b></td><td><code>let x = null;</code></td><td>主动表示"空的"</td></tr>
+          <tr><td><b>object</b> 对象</td><td><code>{}</code>、<code>[]</code>、函数</td><td>后面专门讲</td></tr>
+        </tbody>
+      </table>
+
+      <h3>用 typeof 检查</h3>
+
+<pre><code>typeof "你好"      // "string"
+typeof 42          // "number"
+typeof true        // "boolean"
+typeof undefined   // "undefined"
+typeof null        // "object"    ← 这是个 bug，别纠结
+typeof {}          // "object"</code></pre>
+
+      <div class="bad">
+        <b><code>typeof null === "object"</code> 是 JS 最著名的历史遗留 bug。</b><br>
+        1995 年实现时类型标记的二进制位写错了，改的话会破坏全世界的网页，所以将错就错到今天。
+        <b>判断 null 要用 <code>x === null</code></b>，不要用 typeof。
+      </div>
+
+      <h3>JS 是动态类型</h3>
+
+<pre><code>let x = 42;        // 现在是数字
+x = "你好";         // 变成字符串，不报错
+x = true;          // 又变成布尔</code></pre>
+
+      <p class="hint">
+        变量本身没有类型，值才有。<b>同一个变量可以装不同东西</b>——这叫动态类型。
+        灵活，但也容易写出意料之外的 bug（后面 TypeScript 就是来治这个的）。
+      </p>
+    </section>
+
+    <section id="operator">
+      <h2>五、运算符</h2>
+
+      <h3>算术</h3>
+
+<pre><code>7 + 3      // 10
+7 - 3      // 4
+7 * 3      // 21
+7 / 3      // 2.3333333333333335
+7 % 3      // 1     ← 取余数
+2 ** 10    // 1024  ← 幂</code></pre>
+
+      <div class="bad">
+        <b>小心浮点数：<code>0.1 + 0.2</code> 不等于 <code>0.3</code></b><br>
+<pre style="margin:6px 0"><code>0.1 + 0.2          // 0.30000000000000004
+0.1 + 0.2 === 0.3  // false</code></pre>
+        所有编程语言都这样（二进制存不下 0.1）。比较小数要用
+        <code>Math.abs(a - b) &lt; 1e-10</code>。
+      </div>
+
+      <h3>比较：== 和 === 的区别（重点）</h3>
+
+<pre><code>1 == "1"      // true    ← 只比值，会自动转类型
+1 === "1"     // false   ← 比值也比类型</code></pre>
+
+      <table>
+        <thead><tr><th scope="col">写法</th><th scope="col">叫什么</th><th scope="col">做什么</th><th scope="col">用不用</th></tr></thead>
+        <tbody>
+          <tr><td><code>==</code></td><td>相等（宽松）</td><td>先把两边转成同一类型再比</td><td><b>不用</b></td></tr>
+          <tr><td><code>===</code></td><td>全等（严格）</td><td>类型不同直接 false</td><td><b>只用这个</b></td></tr>
+        </tbody>
+      </table>
+
+      <div class="bad">
+        <b><code>==</code> 的转换规则几乎没法记：</b>
+<pre style="margin:6px 0"><code>0 == ""          // true
+0 == "0"         // true
+"" == "0"        // false     ← 上面两个都 true，这个却 false
+null == undefined  // true
+null === undefined // false</code></pre>
+        <b>结论：永远用 <code>===</code> 和 <code>!==</code>。</b>少一个等号，多一个无法预测的 bug。
+      </div>
+
+      <h3>逻辑与字符串</h3>
+
+<pre><code>true &amp;&amp; false     // false   两个都真才真
+true || false     // true    有一个真就真
+!true             // false   取反
+
+"你好" + "世界"     // "你好世界"   加号在字符串上是拼接
+"总数：" + 42      // "总数：42"   数字自动转字符串</code></pre>
+
+      <div class="note">
+        <b><code>+</code> 是双重身份</b>：两边都是数字就相加，只要有一边是字符串就拼接。<br>
+        <code>1 + 2 + "3"</code> → <code>"33"</code>（先算 1+2=3，再和 "3" 拼成 "33"）<br>
+        <code>"1" + 2 + 3</code> → <code>"123"</code>（先拼 "12"，再拼 "123"）
+      </div>
+    </section>
+
+    <section id="template">
+      <h2>六、模板字符串</h2>
+
+      <p>要拼接变量时，别用加号：</p>
+
+<pre><code>const name = "熙熙";
+const age = 22;
+
+// 旧写法：加号 + 手动空格
+"我是" + name + "，今年" + age + "岁"
+
+// 新写法：反引号 + ${}
+`我是${name}，今年${age}岁`</code></pre>
+
+      <p><b>三个好处：</b></p>
+
+      <ol>
+        <li>不用管空格和引号嵌套</li>
+        <li>可以换行（普通引号不行）</li>
+        <li><code>${}</code> 里可以放表达式：<code>`明年${age + 1}岁`</code></li>
+      </ol>
+
+      <p class="hint">
+        <b>反引号在哪：</b>键盘左上角 <kbd>Esc</kbd> 下面那个键，和 <code>~</code> 同一个。
+        英文输入法下按它。中文输入法下容易打成全角字符，会导致语法错误。
+      </p>
+    </section>
+
+    <section id="exercise">
+      <h2>七、练习：12 道控制台小题</h2>
+
+      <p>
+        全部在 <b>Console</b> 里做。<b>先自己在脑子里猜答案，再回车验证</b>——
+        猜错的那道就是你需要弄懂的地方。
+      </p>
+
+      <p><b>变量与类型</b></p>
+      <ol>
+        <li>声明一个 <code>const</code> 常量存你的名字，然后用 <code>console.log</code> 打印它</li>
+        <li>声明一个 <code>let</code> 存年龄，改大 1 岁，再打印</li>
+        <li>试试给上面的 <code>const</code> 重新赋值，看报什么错，把错误信息读一遍</li>
+        <li>分别用 <code>typeof</code> 检查：<code>42</code>、<code>"42"</code>、<code>true</code>、<code>null</code>、<code>undefined</code></li>
+      </ol>
+
+      <p><b>运算符</b></p>
+      <ol start="5">
+        <li>计算 <code>17 % 5</code> 和 <code>2 ** 8</code>，说出结果</li>
+        <li><b>先猜再验证</b>：<code>1 == "1"</code>、<code>1 === "1"</code>、<code>0 == ""</code>、<code>null == undefined</code></li>
+        <li><b>先猜再验证</b>：<code>1 + 2 + "3"</code> 和 <code>"1" + 2 + 3</code> 分别是什么</li>
+        <li><code>0.1 + 0.2</code> 是多少？和 <code>0.3</code> 相等吗？</li>
+      </ol>
+
+      <p><b>模板字符串</b></p>
+      <ol start="9">
+        <li>声明 <code>name</code> 和 <code>city</code>（佛山），用模板字符串输出「我是熙熙，来自佛山」</li>
+        <li>用模板字符串算出「明年我 23 岁」（年龄用变量，<code>${age + 1}</code>）</li>
+        <li>用模板字符串写一个三行的内容（含换行），打印出来</li>
+        <li><b>挑战</b>：不用 <code>if</code>，只用一个模板字符串和运算符，输出「10 除以 3 等于 3，余 1」</li>
+      </ol>
+
+      <div class="note">
+        <b>做完之前别翻资料。</b>答不出来就写"这道不会"——<b>不会的题比猜对的题有用</b>，
+        它告诉我们要补哪里。
+      </div>
+    </section>
+
+    <section id="next">
+      <h2>八、明天</h2>
+
+      <p>
+        条件与循环：<code>if / else</code>、<code>switch</code>、<code>for</code>、<code>while</code>、
+        <code>forEach</code>。有了它们，代码才真正"会思考"。
+      </p>
+    </section>
+
+  </main>
+
+  <footer style="border-top:1px solid var(--c-border);padding-top:16px;margin-top:40px">
+    <p class="hint">第 21 天 · 2026-11-16</p>
+  </footer>
+
+</body>
+</html>
