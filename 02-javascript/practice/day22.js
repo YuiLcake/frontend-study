@@ -75,7 +75,7 @@ for (let i = 1; i <= 100; i++) {
 console.log(x);
 
 /*
-8.加序号不会
+8.
 */
 const skills = ["HTML", "CSS", "JS", "Vue"];
 for (const [index, skill] of skills.entries()) {

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第 23 天 · 函数</title>
+  <style>
+    :root {
+      --c-text: #1f2328; --c-muted: #59636e; --c-border: #d1d9e0;
+      --c-surface: #f6f8fa; --c-accent: #0969da;
+      --radius: 8px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px;
+    }
+    body { max-width: 920px; margin: 40px auto; padding: 0 20px;
+           font-family: system-ui, sans-serif; line-height: 1.85; color: var(--c-text); }
+    header { border-bottom: 2px solid var(--c-border); padding-bottom: var(--sp-4); }
+    section { margin: 40px 0; }
+    pre { background: var(--c-surface); padding: 14px 16px; border-radius: var(--radius);
+          overflow-x: auto; border: 1px solid var(--c-border); margin: 8px 0 16px; }
+    code { font-family: Consolas, monospace; font-size: 14px; }
+    table { border-collapse: collapse; margin: 12px 0; width: 100%; }
+    td, th { border: 1px solid var(--c-border); padding: 8px 12px; text-align: left; vertical-align: top; }
+    thead th { background: var(--c-surface); }
+    .hint { color: var(--c-muted); font-size: 14px; }
+    .note { background: #fffbe6; border-left: 3px solid #e0b400; padding: 10px 14px; margin: 14px 0; }
+    .bad  { background: #ffebe9; border-left: 3px solid #d1242f; padding: 10px 14px; margin: 14px 0; }
+    .good { background: #dafbe1; border-left: 3px solid #1a7f37; padding: 10px 14px; margin: 14px 0; }
+    .err  { background: #0d1117; color: #ff7b72; padding: 8px 12px; border-radius: 6px;
+            font-family: Consolas, monospace; font-size: 13px; margin: 6px 0 16px; }
+    .err::before { content: "报错  "; color: #8b949e; }
+    ol li, ul li { margin: 6px 0; }
+    .step { font-weight: 700; color: var(--c-accent); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>第 23 天：函数</h1>
+    <p>把一段逻辑打包，起个名字，需要用的时候叫它。</p>
+  </header>
+
+  <main>
+
+    <section id="why">
+      <h2>一、为什么需要函数</h2>
+
+      <p>假设你要算三次不同商品的总价，昨天你只能这样写：</p>
+
+<pre><code>// 第一件：单价 30，数量 2，税率 0.1
+const total1 = 30 * 2 * (1 + 0.1);
+console.log(`总价：${total1}`);
+
+// 第二件：单价 15，数量 4
+const total2 = 15 * 4 * (1 + 0.1);
+console.log(`总价：${total2}`);
+
+// 第三件：单价 99，数量 1
+const total3 = 99 * 1 * (1 + 0.1);
+console.log(`总价：${total3}`);</code></pre>
+
+      <p>
+        问题很明显：<b>同样的算式抄了三遍</b>。哪天税率从 0.1 改成 0.13，
+        你得改三处，漏一处就错。
+      </p>
+
+      <p>用函数写：</p>
+
+<pre><code>function calcTotal(price, count) {
+  const TAX = 0.1;
+  return price * count * (1 + TAX);
+}
+
+console.log(calcTotal(30, 2));    // 66
+console.log(calcTotal(15, 4));    // 66
+console.log(calcTotal(99, 1));    // 108.9</code></pre>
+
+      <p><b>三个好处：</b></p>
+
+      <ul>
+        <li><b>改一处全变</b>——税率只写在一个地方</li>
+        <li><b>能复用</b>——以后别的地方也要算总价，一行调用就行</li>
+        <li><b>名字即文档</b>——<code>calcTotal(30, 2)</code> 一眼看懂在干什么，比 <code>30 * 2 * (1 + 0.1)</code> 清楚</li>
+      </ul>
+    </section>
+
+    <section id="syntax">
+      <h2>二、三种写法</h2>
+
+      <p class="step">① 函数声明（最常用）</p>
+
+<pre><code>function greet(name) {
+  return `你好，${name}`;
+}
+
+greet("熙熙");     // "你好，熙熙"</code></pre>
+
+      <p class="step">② 函数表达式（把函数赋给变量）</p>
+
+<pre><code>const greet = function (name) {
+  return `你好，${name}`;
+};</code></pre>
+
+      <p class="step">③ 箭头函数（2015 年新增，写起来最短）</p>
+
+<pre><code>const greet = (name) => {
+  return `你好，${name}`;
+};
+
+// 只有一个参数时括号可以省
+// 函数体只有一句 return 时，花括号和 return 都可以省（隐式返回）
+const greet2 = name => `你好，${name}`;</code></pre>
+
+      <table>
+        <thead><tr><th scope="col">写法</th><th scope="col">特点</th><th scope="col">什么时候用</th></tr></thead>
+        <tbody>
+          <tr><td><code>function name() {}</code></td><td>会"提升"，可以先调用后声明</td><td>通用场景，最清楚</td></tr>
+          <tr><td><code>const name = function () {}</code></td><td>不会提升，必须先定义后调用</td><td>想强调"这是一个值"</td></tr>
+          <tr><td><code>const name = () =&gt; {}</code></td><td>最短，但 <code>this</code> 行为和上面不同</td><td>回调、数组方法里大量使用</td></tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        <b>今天先用函数声明。</b>箭头函数先认识语法，等你写 <code>map</code>、<code>filter</code>、
+        事件回调时会天天用它——那时候再深入 <code>this</code> 的差别。
+      </div>
+    </section>
+
+    <section id="param">
+      <h2>三、参数与返回值（重点）</h2>
+
+      <p class="step">① 正确写法</p>
+
+<pre><code>function add(a, b) {        // a、b 是形参（占位）
+  return a + b;             // return 把结果交给调用者
+}
+
+const result = add(1, 2);   // 1、2 是实参（真值）
+console.log(result);        // 3</code></pre>
+
+      <p>
+        <b>没有 <code>return</code> 会怎样</b>——这是今天最重要的坑：
+      </p>
+
+<pre><code>function add(a, b) {
+  console.log(a + b);       // 打印了，但没有 return
+}
+
+const r = add(1, 2);
+console.log(r);             // undefined ← 拿不到结果</code></pre>
+
+      <div class="bad">
+        <b><code>console.log</code> 和 <code>return</code> 是两件完全不同的事。</b><br>
+        <code>console.log</code> 是"打印给人看"，<code>return</code> 是"把结果交给调用它的代码"。<br>
+        函数没写 <code>return</code>，默认返回 <code>undefined</code>。
+      </div>
+
+      <p class="step">② <code>return</code> 的第二个作用：立刻结束函数</p>
+
+<pre><code>function check(age) {
+  if (age &lt; 18) {
+    return "未成年";      // 执行到这里，函数立刻结束
+  }
+  return "成年";          // 上一行返回了就不会走到这里
+}
+
+console.log(check(15));   // "未成年"
+console.log(check(20));   // "成年"</code></pre>
+
+      <div class="bad">
+        <b><code>return</code> 后面的代码不会执行。</b>
+<pre style="margin:6px 0"><code>function f() {
+  return 1;
+  console.log("这行永远不会打印");
+}</code></pre>
+        不报错，只是静默不执行。编辑器的灰色提示会告诉你"这行不可达"。
+      </div>
+
+      <p class="step">③ 默认参数</p>
+
+<pre><code>function greet(name = "同学") {
+  return `你好，${name}`;
+}
+
+greet();           // "你好，同学"   ← 没传参就用默认值
+greet("熙熙");      // "你好，熙熙"</code></pre>
+
+      <p class="hint">
+        没传参数时，形参的值是 <code>undefined</code>，不是 0 也不是空字符串。
+        所以 <code>function add(a, b) { return a + b }</code> 调用 <code>add(1)</code> 会得到
+        <code>NaN</code>（1 + undefined）。
+      </p>
+    </section>
+
+    <section id="scope">
+      <h2>四、作用域：函数内部是"另一个房间"</h2>
+
+<pre><code>const globalVar = "外面";
+
+function test() {
+  const localVar = "里面";
+  console.log(globalVar);   // ✓ 能读到外面的
+  console.log(localVar);    // ✓ 自己的
+}
+
+test();
+console.log(localVar);      // ✗ 读不到</code></pre>
+
+      <div class="err">ReferenceError: localVar is not defined</div>
+
+      <p><b>规则：里面的能看到外面的，外面的看不到里面的。</b></p>
+
+      <table>
+        <thead><tr><th scope="col">位置</th><th scope="col">能访问</th></tr></thead>
+        <tbody>
+          <tr><td>函数内部</td><td>自己的局部变量 + 外层变量</td></tr>
+          <tr><td>函数外部</td><td>只有外层的，看不到函数内部的</td></tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        <b>为什么这样设计：</b>每个函数是一个独立的房间，里面的东西不会漏到外面去污染别人。
+        这和昨天 <code>for</code> 循环漏写 <code>let</code> 是同一个道理——<b>不声明就会漏，声明了才关在房间里。</b>
+      </div>
+    </section>
+
+    <section id="firstclass">
+      <h2>五、函数是"值"，可以传来传去</h2>
+
+      <p>这一点先认识一下，明天之后会天天用：</p>
+
+<pre><code>// 函数可以赋给另一个变量
+function sayHi() {
+  console.log("你好");
+}
+const fn = sayHi;      // 注意：没有括号，传的是函数本身
+fn();                  // "你好"
+
+// 函数可以作为参数传给另一个函数
+function runTwice(callback) {
+  callback();
+  callback();
+}
+runTwice(sayHi);       // 打印两次"你好"</code></pre>
+
+      <div class="bad">
+        <b><code>sayHi</code> 和 <code>sayHi()</code> 是两回事。</b><br>
+        <code>sayHi</code> 是函数本身（一个值）；<code>sayHi()</code> 是"现在执行它，把结果交给我"。<br>
+        传给别人的时候通常要传函数本身（不加括号），否则传的是执行后的返回值。
+      </div>
+
+      <p class="hint">
+        这就是"回调函数"（callback）——你把一个函数交给别人，别人在合适的时机替你调用。
+        <code>setTimeout</code>、按钮点击、<code>map</code>、<code>filter</code> 全是这个模式。
+      </p>
+    </section>
+
+    <section id="errors">
+      <h2>六、五个常见错误</h2>
+
+      <p><b>① 忘写 return</b></p>
+
+<pre><code>function double(n) {
+  n * 2;                  // 算出来了，但没交出去
+}
+console.log(double(5));   // undefined</code></pre>
+      <div class="err">不报错，返回 undefined</div>
+
+      <p><b>② 用 console.log 代替 return</b></p>
+
+<pre><code>function double(n) {
+  console.log(n * 2);     // 屏幕上看到 10，但函数返回 undefined
+}
+const x = double(5);      // x 是 undefined
+console.log(x + 1);       // NaN</code></pre>
+      <div class="err">不报错，后续计算出 NaN</div>
+
+      <p><b>③ 定义完忘了调用</b></p>
+
+<pre><code>function greet() {
+  console.log("你好");
+}
+// 只定义不调用，屏幕上什么都没有</code></pre>
+      <div class="err">不报错，什么都不发生</div>
+
+      <p><b>④ 箭头函数的隐式返回写错</b></p>
+
+<pre><code>// 正确：没有花括号 = 隐式返回
+const double = n =&gt; n * 2;
+double(5);        // 10
+
+// 错误：加了花括号却没有 return
+const bad = n =&gt; { n * 2 };
+bad(5);           // undefined</code></pre>
+      <div class="err">不报错，返回 undefined</div>
+
+      <p><b>⑤ 参数顺序搞混</b></p>
+
+<pre><code>function divide(a, b) { return a / b; }
+divide(10, 2);    // 5
+divide(2, 10);    // 0.2   ← 顺序反了，结果不同但不报错</code></pre>
+      <div class="err">不报错，结果不对</div>
+    </section>
+
+    <section id="exercise">
+      <h2>七、练习（10 题）</h2>
+
+      <p>
+        写在 <code>02-javascript/practice/day23.js</code>，用
+        <code>node 02-javascript/practice/day23.js</code> 运行。
+      </p>
+
+      <ol>
+        <li>写 <code>calcTotal(price, count)</code>，返回 <code>price * count * 1.1</code>（含 10% 税）</li>
+        <li>写 <code>isAdult(age)</code>，返回布尔值（≥18 为 true）</li>
+        <li>写 <code>greet(name = "同学")</code>，返回 <code>"你好，xxx"</code>，然后分别用传参和不传参调用一次</li>
+        <li>写 <code>max(a, b)</code>，返回较大的那个（不用 Math.max）</li>
+        <li>写 <code>sumTo(n)</code>，返回 1 到 n 的和（用循环）</li>
+        <li>写 <code>repeat(str, times)</code>，返回重复 times 次的字符串（不用 String.repeat）</li>
+        <li>写 <code>countEven(arr)</code>，返回数组里偶数的个数</li>
+        <li>用箭头函数写 <code>square(n)</code>，返回平方（用隐式返回，不写花括号）</li>
+        <li><b>找 bug</b>：下面这段为什么打印 undefined？
+          <pre><code>function area(w, h) {
+  const result = w * h;
+}
+console.log(area(3, 4));</code></pre>
+        </li>
+        <li><b>挑战</b>：写 <code>formatPrice(amount)</code>，返回带两位小数的字符串，如
+          <code>formatPrice(12.5)</code> → <code>"¥12.50"</code>
+        </li>
+      </ol>
+
+      <div class="note">
+        <b>每题都要真的调用一次并打印结果</b>，不要只写函数定义。
+        函数写对了但没调用，屏幕上什么都没有——你也不知道对不对。
+      </div>
+    </section>
+
+    <section id="next">
+      <h2>八、明天</h2>
+
+      <p>
+        数组与对象：<code>map / filter / reduce / find</code>、对象取值与解构、展开运算符。
+        <b>这些方法的参数全都是函数</b>——今天学的回调，明天就会天天用。
+      </p>
+    </section>
+
+  </main>
+
+  <footer style="border-top:1px solid var(--c-border);padding-top:16px;margin-top:40px">
+    <p class="hint">第 23 天 · 2026-11-18</p>
+  </footer>
+
+</body>
+</html>
