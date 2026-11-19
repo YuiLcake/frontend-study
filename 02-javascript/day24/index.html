@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第 24 天 · 数组与对象</title>
+  <style>
+    :root {
+      --c-text: #1f2328; --c-muted: #59636e; --c-border: #d1d9e0;
+      --c-surface: #f6f8fa; --c-accent: #0969da;
+      --radius: 8px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px;
+    }
+    body { max-width: 920px; margin: 40px auto; padding: 0 20px;
+           font-family: system-ui, sans-serif; line-height: 1.85; color: var(--c-text); }
+    header { border-bottom: 2px solid var(--c-border); padding-bottom: var(--sp-4); }
+    section { margin: 40px 0; }
+    pre { background: var(--c-surface); padding: 14px 16px; border-radius: var(--radius);
+          overflow-x: auto; border: 1px solid var(--c-border); margin: 8px 0 12px; }
+    code { font-family: Consolas, monospace; font-size: 14px; }
+    table { border-collapse: collapse; margin: 12px 0; width: 100%; }
+    td, th { border: 1px solid var(--c-border); padding: 8px 12px; text-align: left; vertical-align: top; }
+    thead th { background: var(--c-surface); }
+    .hint { color: var(--c-muted); font-size: 14px; }
+    .note { background: #fffbe6; border-left: 3px solid #e0b400; padding: 10px 14px; margin: 14px 0; }
+    .bad  { background: #ffebe9; border-left: 3px solid #d1242f; padding: 10px 14px; margin: 14px 0; }
+    .good { background: #dafbe1; border-left: 3px solid #1a7f37; padding: 10px 14px; margin: 14px 0; }
+    .err  { background: #0d1117; color: #ff7b72; padding: 8px 12px; border-radius: 6px;
+            font-family: Consolas, monospace; font-size: 13px; margin: 6px 0 16px; }
+    .err::before { content: "报错  "; color: #8b949e; }
+    .out  { background: #0d1117; color: #7ee787; padding: 8px 12px; border-radius: 6px;
+            font-family: Consolas, monospace; font-size: 13px; margin: 6px 0 16px; white-space: pre; }
+    .out::before { content: "输出  "; color: #8b949e; }
+    ol li, ul li { margin: 6px 0; }
+    .step { font-weight: 700; color: var(--c-accent); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>第 24 天：数组与对象</h1>
+    <p>前端 90% 的数据只有两种形状：一串东西（数组）和一个带字段的东西（对象）。</p>
+  </header>
+
+  <main>
+
+    <section id="array">
+      <h2>一、数组基础</h2>
+
+<pre><code>const nums = [1, 2, 3, 4, 5];
+
+nums[0]        // 1       下标从 0 开始
+nums[4]        // 5
+nums[5]        // undefined   越界不报错
+nums.length    // 5</code></pre>
+
+      <h3>增删的四个方法</h3>
+
+<pre><code>const arr = [1, 2, 3];
+
+arr.push(4);        // 末尾加     → [1,2,3,4]      返回新长度
+arr.pop();          // 末尾删     → [1,2,3]        返回被删的元素
+arr.unshift(0);     // 开头加     → [0,1,2,3]      返回新长度
+arr.shift();        // 开头删     → [1,2,3]        返回被删的元素</code></pre>
+
+      <div class="note">
+        <b>这四个都会改原数组</b>（专业性说法叫"有副作用"）。
+      </div>
+
+      <h3>slice 和 splice：一个不改，一个改（重点）</h3>
+
+      <table>
+        <thead><tr><th scope="col">方法</th><th scope="col">改原数组吗</th><th scope="col">返回什么</th><th scope="col">记法</th></tr></thead>
+        <tbody>
+          <tr><td><code>slice(开始, 结束)</code></td><td><b>不改</b></td><td>截出来的新数组</td><td>slice = 切片，切一份新的</td></tr>
+          <tr><td><code>splice(开始, 个数)</code></td><td><b>改</b></td><td>被删掉的元素</td><td>splice = 剪接，从原串里剪掉</td></tr>
+        </tbody>
+      </table>
+
+<pre><code>const a = [1,2,3,4,5];
+a.slice(1, 3);      // [2, 3]        a 还是 [1,2,3,4,5]
+</code></pre>
+      <div class="out">[2, 3]        原数组 [1, 2, 3, 4, 5]</div>
+
+<pre><code>const b = [1,2,3,4,5];
+b.splice(1, 2);     // 返回 [2, 3]
+</code></pre>
+      <div class="out">[2, 3]        原数组 [1, 4, 5]   ← b 被改了</div>
+
+      <p class="hint">
+        注意 <code>slice(1, 3)</code> 的两个数字含义不同：<b>开始下标</b>和<b>结束下标</b>（不含 3）。
+        <code>splice(1, 2)</code> 是<b>开始下标</b>和<b>删几个</b>。名字只差一个字母，参数含义不同。
+      </p>
+    </section>
+
+    <section id="methods">
+      <h2>二、五个必会的高阶方法</h2>
+
+      <p>
+        这些方法的参数都是<b>函数</b>——就是昨天学的回调。它们是前端日常使用频率最高的 API。
+      </p>
+
+      <h3>1. forEach —— 遍历，只为副作用</h3>
+
+<pre><code>const nums = [1, 2, 3, 4, 5];
+nums.forEach(n => console.log(n));</code></pre>
+      <div class="out">1
+2
+3
+4
+5</div>
+
+      <div class="bad">
+        <b><code>forEach</code> 的返回值永远是 <code>undefined</code>。</b>实测确认。<br>
+        所以 <code>const r = arr.forEach(...)</code> 拿到的永远是 undefined。
+        它只用于"对每个元素做点事"（打印、改 DOM），不用来产出新数据。
+      </div>
+
+      <h3>2. map —— 每个元素转换一次，得到新数组</h3>
+
+<pre><code>const doubled = nums.map(n => n * 2);</code></pre>
+      <div class="out">doubled = [2, 4, 6, 8, 10]
+nums 还是 [1, 2, 3, 4, 5]     ← 原数组没变</div>
+
+      <p class="hint">
+        <b>map 一定返回一个长度相同的新数组。</b>数量不变，只变每个元素。<br>
+        这个"不改原数组"的性质很重要——React/Vue 里都靠它做"不可变更新"。
+      </p>
+
+      <h3>3. filter —— 留下符合条件的，得到新数组</h3>
+
+<pre><code>nums.filter(n => n > 3);</code></pre>
+      <div class="out">[4, 5]        ← 长度可能变短</div>
+
+      <p class="hint">
+        回调函数返回 <code>true</code> 的元素保留，返回 <code>false</code> 的丢掉。<b>不修改原数组。</b>
+      </p>
+
+      <h3>4. find —— 找到第一个符合条件的元素</h3>
+
+<pre><code>nums.find(n => n > 3);      // 4      ← 返回元素本身，不是数组
+nums.find(n => n > 99);     // undefined   ← 找不到返回 undefined</code></pre>
+
+      <table>
+        <thead><tr><th scope="col">方法</th><th scope="col">返回</th><th scope="col">找不到时</th></tr></thead>
+        <tbody>
+          <tr><td><code>filter</code></td><td><b>数组</b>（可能空）</td><td><code>[]</code></td></tr>
+          <tr><td><code>find</code></td><td><b>一个元素</b></td><td><code>undefined</code></td></tr>
+        </tbody>
+      </table>
+
+      <h3>5. reduce —— 把一堆值压缩成一个</h3>
+
+<pre><code>// 求和
+nums.reduce((sum, n) => sum + n, 0);        // 15
+
+// 找最大值
+nums.reduce((max, n) => (n > max ? n : max));   // 5</code></pre>
+
+      <p><b>两个参数要分清：</b></p>
+
+<pre><code>nums.reduce((累加器, 当前元素) => 新的累加器, 初始值)</code></pre>
+
+      <table>
+        <thead><tr><th scope="col">轮次</th><th scope="col">累加器</th><th scope="col">当前元素</th><th scope="col">返回值</th></tr></thead>
+        <tbody>
+          <tr><td>第 1 轮</td><td>0（初始值）</td><td>1</td><td>1</td></tr>
+          <tr><td>第 2 轮</td><td>1</td><td>2</td><td>3</td></tr>
+          <tr><td>第 3 轮</td><td>3</td><td>3</td><td>6</td></tr>
+          <tr><td>…</td><td>…</td><td>…</td><td>…</td></tr>
+          <tr><td>最后</td><td>10</td><td>5</td><td><b>15</b></td></tr>
+        </tbody>
+      </table>
+
+      <div class="bad">
+        <b>忘了给初始值会怎样：</b>
+<pre style="margin:6px 0"><code>[].reduce((a, b) => a + b)     // TypeError: Reduce of empty array with no initial value
+[].reduce((a, b) => a + b, 0)  // 0   ← 有初始值就安全</code></pre>
+        <b>习惯上永远给初始值</b>，尤其是处理可能为空的数组时。
+      </div>
+
+      <h3>补充：some 和 every</h3>
+
+<pre><code>nums.some(n => n > 4);      // true    有一个满足就行
+nums.every(n => n > 4);     // false   全都要满足</code></pre>
+    </section>
+
+    <section id="object">
+      <h2>三、对象</h2>
+
+<pre><code>const user = {
+  name: "熙熙",
+  age: 22,
+  skills: ["HTML", "CSS"],
+};
+
+user.name           // "熙熙"     点号
+user["name"]        // "熙熙"     方括号，字符串
+user.skills[0]      // "HTML"     对象里套数组
+user.city           // undefined  ← 不存在的属性不报错</code></pre>
+
+      <h3>点号 vs 方括号：什么时候必须用方括号</h3>
+
+<pre><code>const key = "name";
+
+user.name       // "熙熙"
+user[key]       // "熙熙"     ← 方括号里可以放变量
+user.key        // undefined  ← 点号后面是"字面量名字"，不是变量</code></pre>
+
+      <div class="bad">
+        <b>点号后面永远是一个固定的属性名，不会被当成变量。</b><br>
+        <code>user.key</code> 找的是"名为 key 的属性"（不存在），而不是"key 变量里存的那个名字"。
+        <b>要动态取属性，必须用方括号。</b>
+      </div>
+
+      <p class="hint">
+        实际用途：遍历对象时、或者属性名来自用户输入/接口返回时，都只能用方括号：
+        <code>obj[someVariable]</code>。
+      </p>
+
+      <h3>取所有键、值、键值对</h3>
+
+<pre><code>Object.keys(user)      // ["name", "age", "skills"]
+Object.values(user)    // ["熙熙", 22, ["HTML","CSS"]]
+Object.entries(user)   // [["name","熙熙"], ["age",22], ...]</code></pre>
+
+      <p class="hint">
+        判断对象是否为空：<code>Object.keys(obj).length === 0</code>。
+        不能写 <code>if (obj)</code>——空对象是真值。
+      </p>
+    </section>
+
+    <section id="destructure">
+      <h2>四、解构：一次取出好几个</h2>
+
+      <h3>对象解构</h3>
+
+<pre><code>const user = { name: "熙熙", age: 22 };
+
+const { name, age } = user;
+console.log(name, age);</code></pre>
+      <div class="out">熙熙 22</div>
+
+      <p><b>重命名</b>（属性名和新变量名不同时）：</p>
+
+<pre><code>const { name: userName } = user;
+console.log(userName);      // "熙熙"
+// 冒号后面是新变量名，user.name 本身没变</code></pre>
+
+      <p><b>默认值</b>（属性可能不存在时）：</p>
+
+<pre><code>const { city = "佛山" } = user;
+console.log(city);          // "佛山"</code></pre>
+
+      <h3>数组解构</h3>
+
+<pre><code>const nums = [1, 2, 3, 4, 5];
+
+const [first, second] = nums;        // 1 2
+const [a, , c] = nums;               // 1 3   ← 逗号跳过第二个
+const [x, ...rest] = nums;           // x=1, rest=[2,3,4,5]</code></pre>
+
+      <div class="note">
+        数组解构<b>按位置</b>对应，对象解构<b>按名字</b>对应。这是两者最大的区别。<br>
+        所以数组解构里的顺序很重要，对象解构里的顺序无所谓。
+      </div>
+    </section>
+
+    <section id="spread">
+      <h2>五、展开运算符 <code>...</code></h2>
+
+      <p>把数组或对象"摊开"。</p>
+
+      <h3>数组</h3>
+
+<pre><code>const a = [1, 2];
+const b = [3, 4];
+
+[...a, ...b]        // [1, 2, 3, 4]      合并
+[...a, 0]           // [1, 2, 0]         加元素
+const copy = [...a];  // 浅拷贝，改 copy 不影响 a</code></pre>
+
+      <h3>对象</h3>
+
+<pre><code>const user = { name: "熙熙", age: 22 };
+const updated = { ...user, city: "佛山" };
+// { name: "熙熙", age: 22, city: "佛山" }
+
+const overridden = { ...user, age: 23 };   // 后面的覆盖前面的
+// { name: "熙熙", age: 23 }</code></pre>
+
+      <p class="hint">
+        <b>顺序决定谁覆盖谁</b>：展开在前，后面的字段覆盖它；展开在后，前面的字段被它覆盖。
+      </p>
+
+      <div class="bad">
+        <b>展开是"浅拷贝"</b>——只复制第一层。<br>
+        如果对象里有嵌套对象或数组，复制后两边还是指向同一个内层对象，改一个另一个也变。
+        <b>深拷贝要用 <code>structuredClone(obj)</code></b>（现代浏览器和 node 都支持）。
+      </div>
+    </section>
+
+    <section id="errors">
+      <h2>六、三个常见错误</h2>
+
+      <p><b>① 以为 forEach 能产出新数组</b></p>
+
+<pre><code>const result = nums.forEach(n => n * 2);
+console.log(result);      // undefined</code></pre>
+      <div class="err">不报错，拿到 undefined，后面 .map() 会报 not a function</div>
+
+      <p><b>② sort 会改原数组（而且默认按字符串排）</b></p>
+
+<pre><code>const c = [3, 1, 2];
+const sorted = c.sort();
+console.log(sorted);    // [1, 2, 3]
+console.log(c);         // [1, 2, 3]   ← c 也被改了</code></pre>
+      <div class="out">[1, 2, 3]      原数组 c = [1, 2, 3]   ← 被改了</div>
+
+      <div class="bad">
+        想排序又不想改原数组：<code>[...arr].sort()</code>。<br>
+        另外默认的 <code>sort()</code> 把元素当字符串比，<code>[10, 9, 1].sort()</code> 会得到
+        <code>[1, 10, 9]</code>。数字排序要写 <code>sort((a, b) => a - b)</code>。
+      </div>
+
+      <p><b>③ 对象解构时用了不存在的属性名</b></p>
+
+<pre><code>const user = { name: "熙熙" };
+const { userName } = user;
+console.log(userName);    // undefined</code></pre>
+      <div class="err">不报错，拿到 undefined</div>
+    </section>
+
+    <section id="exercise">
+      <h2>七、练习（10 题）</h2>
+
+      <p>写在 <code>02-javascript/practice/day24.js</code>，用 node 运行。</p>
+
+      <pre><code>const products = [
+  { name: "键盘", price: 299, category: "电子" },
+  { name: "鼠标", price: 89, category: "电子" },
+  { name: "笔记本", price: 15, category: "文具" },
+  { name: "显示器", price: 899, category: "电子" },
+  { name: "钢笔", price: 45, category: "文具" },
+];</code></pre>
+
+      <ol>
+        <li>用 map 取出所有商品的名字，得到 <code>["键盘","鼠标","笔记本","显示器","钢笔"]</code></li>
+        <li>用 filter 取出所有「电子」类商品</li>
+        <li>用 filter 取出价格大于 100 的商品，再用 map 只取名字</li>
+        <li>用 find 找出第一个价格超过 500 的商品</li>
+        <li>用 reduce 算出所有商品的总价</li>
+        <li>用 reduce 算出最贵的商品（返回整个对象）</li>
+        <li>用 some 判断有没有超过 800 的商品；用 every 判断是不是都小于 1000</li>
+        <li>对每个商品用 forEach 打印 <code>"键盘 - ¥299"</code> 这种格式</li>
+        <li><b>解构</b>：从第一个商品里一次取出 <code>name</code> 和 <code>price</code>，然后打印</li>
+        <li><b>挑战</b>：用 filter + map + reduce 一行算出「电子类商品的总价」</li>
+      </ol>
+
+      <div class="note">
+        <b>每题都要 console.log 出结果。</b>第 3、10 题是链式调用——
+        前一方法的返回值直接接下一个方法，这是前端最常用的写法。
+      </div>
+    </section>
+
+    <section id="next">
+      <h2>八、明天</h2>
+
+      <p>
+        作用域、闭包、<code>this</code>。今天用了一整天的回调，明天要讲清"回调里的变量从哪来"——
+        <b>闭包是面试必问，也是理解 Vue 响应式的前置知识。</b>
+      </p>
+    </section>
+
+  </main>
+
+  <footer style="border-top:1px solid var(--c-border);padding-top:16px;margin-top:40px">
+    <p class="hint">第 24 天 · 2026-11-19</p>
+  </footer>
+
+</body>
+</html>
