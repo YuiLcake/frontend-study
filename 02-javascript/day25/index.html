@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第 25 天 · 作用域、闭包、this</title>
+  <style>
+    :root {
+      --c-text: #1f2328; --c-muted: #59636e; --c-border: #d1d9e0;
+      --c-surface: #f6f8fa; --c-accent: #0969da;
+      --radius: 8px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px;
+    }
+    body { max-width: 920px; margin: 40px auto; padding: 0 20px;
+           font-family: system-ui, sans-serif; line-height: 1.85; color: var(--c-text); }
+    header { border-bottom: 2px solid var(--c-border); padding-bottom: var(--sp-4); }
+    section { margin: 40px 0; }
+    pre { background: var(--c-surface); padding: 14px 16px; border-radius: var(--radius);
+          overflow-x: auto; border: 1px solid var(--c-border); margin: 8px 0 12px; }
+    code { font-family: Consolas, monospace; font-size: 14px; }
+    table { border-collapse: collapse; margin: 12px 0; width: 100%; }
+    td, th { border: 1px solid var(--c-border); padding: 8px 12px; text-align: left; vertical-align: top; }
+    thead th { background: var(--c-surface); }
+    .hint { color: var(--c-muted); font-size: 14px; }
+    .note { background: #fffbe6; border-left: 3px solid #e0b400; padding: 10px 14px; margin: 14px 0; }
+    .bad  { background: #ffebe9; border-left: 3px solid #d1242f; padding: 10px 14px; margin: 14px 0; }
+    .good { background: #dafbe1; border-left: 3px solid #1a7f37; padding: 10px 14px; margin: 14px 0; }
+    .err  { background: #0d1117; color: #ff7b72; padding: 8px 12px; border-radius: 6px;
+            font-family: Consolas, monospace; font-size: 13px; margin: 6px 0 16px; }
+    .err::before { content: "报错  "; color: #8b949e; }
+    .out  { background: #0d1117; color: #7ee787; padding: 8px 12px; border-radius: 6px;
+            font-family: Consolas, monospace; font-size: 13px; margin: 6px 0 16px; white-space: pre; }
+    .out::before { content: "输出  "; color: #8b949e; }
+    ol li, ul li { margin: 6px 0; }
+    .step { font-weight: 700; color: var(--c-accent); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>第 25 天：作用域、闭包、this</h1>
+    <p>今天没有一个新方法，全部是在讲"变量从哪来"。这一课慢一点看。</p>
+  </header>
+
+  <main>
+
+    <section id="scope">
+      <h2>一、作用域链：变量是"往上找"的</h2>
+
+<pre><code>const g = "全局";
+
+function outer() {
+  const o = "外层";
+  function inner() {
+    const i = "内层";
+    console.log(g, o, i);
+  }
+  inner();
+}</code></pre>
+
+      <div class="out">全局 外层 内层</div>
+
+      <p><b>规则：在当前作用域找不到，就往上一层找，一直到全局。</b></p>
+
+<pre><code>function outer() {
+  const o = "外层";
+  function inner() {
+    const i = "内层";
+  }
+  console.log(i);     // ✗ 找不到
+}</code></pre>
+      <div class="err">ReferenceError: i is not defined</div>
+
+      <p class="hint">
+        <b>只能往上找，不能往下找。</b>外层拿不到内层的变量——这就是"函数是一个封闭的房间"。
+      </p>
+
+      <h3>关键：作用域在"定义时"就定了</h3>
+
+      <p>
+        这叫词法作用域（lexical scope）：<b>函数在哪里定义，它的作用域就是哪里</b>，跟在哪里调用没关系。
+      </p>
+
+      <p>
+        这条听起来抽象，但它是闭包的全部前提。
+      </p>
+    </section>
+
+    <section id="closure">
+      <h2>二、闭包：函数会"记住"它出生时的环境</h2>
+
+      <p>看这段代码，先猜结果：</p>
+
+<pre><code>function makeCounter() {
+  let count = 0;
+  return function () {
+    count = count + 1;
+    return count;
+  };
+}
+
+const c1 = makeCounter();
+console.log(c1(), c1(), c1());   // ?</code></pre>
+
+      <div class="out">1 2 3</div>
+
+      <div class="note">
+        <b>为什么 count 没被清掉？</b><br>
+        一般函数执行结束后，里面的局部变量会被销毁。<br>
+        但这里 <code>makeCounter</code> 返回的那个函数<b>还在用 count</b>，
+        所以 JS 不会销毁它——<b>这个内部函数"记住"了它出生时的环境</b>。
+        这就是闭包（closure）。
+      </div>
+
+      <p><b>换成一个比喻：</b>函数出生时，把当时周围的变量装进背包带走了。之后不管走到哪被调用，背包里的东西都还在。</p>
+
+      <h3>每次调用都是新的背包</h3>
+
+<pre><code>const c1 = makeCounter();
+const c2 = makeCounter();
+
+c1(); c1();          // c1 的 count 变成 2
+console.log(c2());   // 1   ← c2 是独立的另一个背包</code></pre>
+
+      <div class="out">1</div>
+
+      <p class="hint">
+        <b>这一点很重要</b>：闭包不是共享的，每调用一次外层函数，就产生一个新的独立环境。
+      </p>
+    </section>
+
+    <section id="usecase">
+      <h2>三、闭包到底有什么用</h2>
+
+      <h3>用途 1：计数器 / 状态保存</h3>
+
+      <p>上面的 <code>makeCounter</code>。每次调用都能延续上一次的状态，但外面改不了 <code>count</code>。</p>
+
+      <h3>用途 2：私有变量</h3>
+
+<pre><code>function createAccount(initial) {
+  let balance = initial;
+  return {
+    deposit(n) { balance += n; return balance; },
+    getBalance() { return balance; },
+  };
+}
+
+const acc = createAccount(100);
+acc.deposit(50);
+console.log(acc.getBalance());    // 150
+console.log(acc.balance);         // undefined ← 外面直接拿不到</code></pre>
+
+      <div class="out">150
+undefined</div>
+
+      <p class="hint">
+        <b>这是 JS 里做"私有属性"的传统办法</b>——变量藏在函数里，只通过返回的方法访问。
+        外面没法直接改 <code>balance</code>，只能走 <code>deposit</code>。
+      </p>
+
+      <h3>用途 3：函数工厂（用一个函数造一批类似的函数）</h3>
+
+<pre><code>function makeGreeter(prefix) {
+  return function (name) {
+    return `${prefix}，${name}`;
+  };
+}
+
+const sayHi = makeGreeter("你好");
+const sayBye = makeGreeter("再见");
+
+sayHi("熙熙");      // "你好，熙熙"
+sayBye("熙熙");     // "再见，熙熙"</code></pre>
+
+      <h3>用途 4：事件回调里保存状态（后面会天天遇到）</h3>
+
+<pre><code>function bindCounter(button) {
+  let clicks = 0;                    // 每个按钮自己的计数
+  button.addEventListener("click", () => {
+    clicks++;
+    console.log(`点了 ${clicks} 次`);
+  });
+}</code></pre>
+
+      <p class="hint">
+        这个模式你会写几十遍：<b>外面定义一个变量，回调里读写它</b>——那就是闭包在工作。
+      </p>
+    </section>
+
+    <section id="looptrap">
+      <h2>四、经典面试题：var 在循环里</h2>
+
+      <p>先猜结果：</p>
+
+<pre><code>for (var i = 0; i < 3; i++) {
+  setTimeout(function () {
+    console.log(i);
+  }, 100);
+}</code></pre>
+
+      <div class="out">3
+3
+3</div>
+
+      <p>再猜这个：</p>
+
+<pre><code>for (let j = 0; j < 3; j++) {
+  setTimeout(function () {
+    console.log(j);
+  }, 100);
+}</code></pre>
+
+      <div class="out">0
+1
+2</div>
+
+      <div class="bad">
+        <b>为什么 var 全是 3：</b><br>
+        <code>var</code> 只有一个变量 <code>i</code>，整个循环共用。<br>
+        三个回调都是闭包，都记着<b>同一个 i</b>。<br>
+        100ms 后回调执行时，循环早跑完了，<code>i</code> 已经是 3。<br><br>
+        <b>为什么 let 是 0 1 2：</b><br>
+        <code>let</code> 在每次循环里都创建一个<b>新的</b> <code>j</code>。<br>
+        三个回调各自记住了自己那一轮的 <code>j</code>，互不干扰。
+      </div>
+
+      <p class="hint">
+        <b>这就是为什么复习时我一直强调"for 循环的计数器要写 let"</b>——不只是"要声明变量"，
+        而是 <code>let</code> 和 <code>var</code> 在循环里的行为完全不同。
+      </p>
+    </section>
+
+    <section id="this">
+      <h2>五、this：谁调用我，我就是谁</h2>
+
+      <p>先记住一句话：<b><code>this</code> 在运行时才确定，看的是"怎么调用的"。</b></p>
+
+      <h3>规则 1：通过对象调用 → this 是这个对象</h3>
+
+<pre><code>const user = {
+  name: "熙熙",
+  sayHi() {
+    console.log(this.name);
+  },
+};
+
+user.sayHi();      // "熙熙"     ← 点是 user. 调的</code></pre>
+      <div class="out">熙熙</div>
+
+      <h3>规则 2：单独拿出来调用 → this 丢了</h3>
+
+<pre><code>const fn = user.sayHi;     // 只是把函数摘出来
+fn();                      // this 不再指向 user</code></pre>
+      <div class="out">undefined</div>
+
+      <div class="bad">
+        <b>这是前端最常见的 bug 之一。</b><br>
+        <code>const fn = user.sayHi</code> 只是把函数本身拿走，<b>没有带走 user</b>。<br>
+        再单独调用时，就没有"点号前面的对象"了，<code>this</code> 变成 undefined（严格模式）。
+        <br><br>
+        <b>修法</b>：<code>user.sayHi.bind(user)</code>，或者用箭头函数包一层。
+      </div>
+
+      <h3>规则 3：箭头函数没有自己的 this</h3>
+
+<pre><code>const user = {
+  name: "熙熙",
+  sayHi() { console.log(this.name); },          // 普通方法：this = user
+  sayHiArrow: () => { console.log(this.name); } // 箭头：this 来自外层
+};
+
+user.sayHi();        // "熙熙"
+user.sayHiArrow();   // undefined  ← 不是 user</code></pre>
+
+      <div class="note">
+        <b>箭头函数不绑定 this，它用的是"定义它时外层的 this"。</b><br>
+        所以：<b>对象的方法用普通函数写，回调用箭头函数写。</b><br>
+        这是最实用的判断标准。
+      </div>
+
+      <h3>规则速查</h3>
+
+      <table>
+        <thead><tr><th scope="col">调用方式</th><th scope="col">this 指向</th></tr></thead>
+        <tbody>
+          <tr><td><code>user.sayHi()</code></td><td><code>user</code></td></tr>
+          <tr><td><code>fn()</code>（单独调用）</td><td><code>undefined</code>（严格模式）/ 全局对象</td></tr>
+          <tr><td><code>fn.call(obj)</code> / <code>fn.apply(obj)</code></td><td><code>obj</code>（手动指定）</td></tr>
+          <tr><td><code>fn.bind(obj)()</code></td><td><code>obj</code>（永久绑定）</td></tr>
+          <tr><td>箭头函数</td><td><b>不看调用方式</b>，看定义时的外层</td></tr>
+          <tr><td><code>new Foo()</code></td><td>新创建的那个对象（后面讲 class 再说）</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="errors">
+      <h2>六、四个常见错误</h2>
+
+      <p><b>① 以为函数执行完变量就没了</b></p>
+
+<pre><code>function make() { let x = 1; return () => x; }
+const f = make();
+console.log(f());      // 1  ← x 还在，因为 f 闭包着它</code></pre>
+      <div class="err">不报错，但预期会错（有人以为会报 not defined）</div>
+
+      <p><b>② 循环里用 var，回调拿到同一个变量</b></p>
+
+<pre><code>for (var i = 0; i < 3; i++) {
+  setTimeout(() => console.log(i), 0);   // 3 3 3
+}</code></pre>
+      <div class="err">不报错，结果和预期不同</div>
+
+      <p><b>③ 把对象方法单独赋值后调用</b></p>
+
+<pre><code>const fn = user.sayHi;
+fn();          // this 丢失</code></pre>
+      <div class="err">不报错，this 是 undefined，读属性时报 Cannot read properties of undefined</div>
+
+      <p><b>④ 在对象里用箭头函数当方法</b></p>
+
+<pre><code>const user = {
+  name: "熙熙",
+  sayHi: () => console.log(this.name),   // undefined
+};</code></pre>
+      <div class="err">不报错，this 不是 user</div>
+    </section>
+
+    <section id="exercise">
+      <h2>七、练习（6 题）</h2>
+
+      <p>写在 <code>02-javascript/practice/day25.js</code>。</p>
+
+      <ol>
+        <li>写 <code>makeCounter()</code>，返回一个函数，每次调用返回递增的数字（1、2、3…）</li>
+        <li>写 <code>makeGreeter(prefix)</code>，返回一个函数，接收名字返回 <code>"前缀，名字"</code>。用同一个 makeGreeter 造两个不同的问候函数</li>
+        <li>写 <code>createAccount(初始余额)</code>，返回 <code>deposit</code> 和 <code>getBalance</code> 两个方法，验证外面拿不到余额变量</li>
+        <li><b>找 bug</b>：下面这段为什么三个都打印 3？
+          <pre><code>for (var i = 1; i &lt;= 3; i++) {
+  setTimeout(function () { console.log(i); }, 100);
+}</code></pre>
+        </li>
+        <li><b>判断 this</b>：下面三次调用分别打印什么？
+          <pre><code>const obj = {
+  name: "obj",
+  show() { console.log(this.name); },
+};
+obj.show();
+const f = obj.show;
+f();
+setTimeout(obj.show, 100);</code></pre>
+        </li>
+        <li><b>挑战</b>：写 <code>once(fn)</code>，返回一个新函数，保证 fn 无论被调用多少次只执行一次。
+          <pre><code>const init = once(() => console.log("只执行一次"));
+init(); init(); init();   // 只打印一次</code></pre>
+        </li>
+      </ol>
+
+      <div class="note">
+        <b>第 4、5 题必须能讲清楚原因</b>，不只是答对结果。这两题是面试原题，
+        能讲清"为什么"就说明今天的内容真的进来了。
+      </div>
+    </section>
+
+    <section id="next">
+      <h2>八、明天</h2>
+
+      <p>
+        W5 收尾：异步入门——回调地狱、Promise、async/await、fetch 调真实接口。
+        <b>这是本周最后一课，也是所有真实项目绕不开的一关。</b>
+      </p>
+    </section>
+
+  </main>
+
+  <footer style="border-top:1px solid var(--c-border);padding-top:16px;margin-top:40px">
+    <p class="hint">第 25 天 · 2026-11-20</p>
+  </footer>
+
+</body>
+</html>

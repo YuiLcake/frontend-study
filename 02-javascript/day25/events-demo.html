@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>addEventListener 演示</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 20px; }
+    button { font-size: 16px; padding: 10px 20px; cursor: pointer; }
+    #log { margin-top: 16px; font-family: Consolas, monospace; background: #f6f8fa;
+           padding: 12px; border-radius: 6px; min-height: 60px; white-space: pre-line; }
+    code { background: #f6f8fa; padding: 2px 6px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>addEventListener 演示</h1>
+  <p>点下面的按钮，看计数怎么变。</p>
+
+  <button id="btn">点我</button>
+  <div id="log">（还没有点）</div>
+
+  <hr>
+  <p>这段代码就是课件里的 <code>bindCounter</code>：</p>
+  <pre><code>let clicks = 0;
+button.addEventListener("click", () => {
+  clicks++;
+  console.log(`点了 ${clicks} 次`);
+});</code></pre>
+
+  <script>
+    const button = document.getElementById("btn");
+    const logEl = document.getElementById("log");
+
+    let clicks = 0;                                  // 闭包变量
+    button.addEventListener("click", () => {          // 登记，不执行
+      clicks++;
+      logEl.textContent += `点了 ${clicks} 次\n`;     // 让页面看得见
+      console.log(`点了 ${clicks} 次`);               // 控制台也打印
+    });
+
+    console.log("脚本执行完了。注意：上面的回调一个字都没执行，只是登记好了。");
+  </script>
+</body>
+</html>

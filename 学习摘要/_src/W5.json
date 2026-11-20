@@ -685,6 +685,177 @@
     {
       "type": "paragraph",
       "text": "作用域、闭包、this。今天用了一整天的回调，明天要讲清回调里的变量从哪里来——闭包是面试必问，也是理解 Vue 响应式的前置知识。"
+    },
+    {
+      "type": "page_break"
+    },
+    {
+      "type": "heading",
+      "text": "第 25 天 · 2026-11-20",
+      "level": 2
+    },
+    {
+      "type": "heading",
+      "text": "一、今天的错误与疑问",
+      "level": 3
+    },
+    {
+      "type": "table",
+      "header": [
+        "错误 / 疑问",
+        "发生了什么",
+        "以后怎么办"
+      ],
+      "rows": [
+        [
+          "（讲师失误）贴代码时漏了 outer();",
+          "课件里的片段只有函数定义、没有调用，学员反问「outer 根本没人调用，怎么会运行」。按贴出的代码确实什么都不该打印。",
+          "贴示例代码必须包含触发调用的那一行，或者明确标注「这段只是定义，不会执行」。"
+        ],
+        [
+          "deposit() 不传参导致余额变 NaN",
+          "deposit(n) 的 n 没传时是 undefined，balance += undefined 得到 NaN；再调 getBalance() 也是 NaN，余额永久损坏。学员自己发现了这个现象并提问。",
+          "参数可能缺失时给默认值：deposit(n = 0)。undefined 参与算术运算会得到 NaN，且 NaN 会传染（NaN + 10 还是 NaN，NaN === NaN 是 false）。"
+        ],
+        [
+          "setTimeout(obj.show, 100) 预期是 obj",
+          "学员写注释「实测是 undefined，为什么呢」。根因和 const f = obj.show 一样：setTimeout 收到的只是函数本身，内部是裸调用，没有点号，this 丢了。另外他测到 undefined 是因为在 node 里跑；浏览器里 this 是 window，window.name 是空字符串 \"\"，实际打印的是一个空行。",
+          "要保住 this 就包一层箭头函数 setTimeout(() => obj.show(), 100)，或用 obj.show.bind(obj)。同一段代码在 node 和浏览器里 this 的默认值不同，要给结论前先确认运行环境。"
+        ],
+        [
+          "第 4 题把「三次循环」说成「四次」",
+          "for (var i = 1; i <= 3; i++) 实际执行 i = 1、2、3 共三次，第三次结束 i++ 变成 4，4 <= 3 为假才退出，所以退出时 i 是 4。",
+          "循环执行次数和「退出时计数器的值」是两件事，讲 var 循环那个坑时要把这两个数分别说清。"
+        ],
+        [
+          "第 6 题 once 一开始完全没有头绪",
+          "面对「写一个只执行一次的函数」不知道从哪下手，直接写「没有头绪」。提示「需要一个标记变量记住执行过没有，而这个变量必须活到第二次、第三次调用」之后，自己写出了完整实现。",
+          "闭包这类题的突破口是「哪个变量需要活过这次调用」，先找到那个变量，再想它放在哪一层作用域。"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "二、新词与生词",
+      "level": 3
+    },
+    {
+      "type": "table",
+      "header": [
+        "英文",
+        "中文",
+        "用大白话说"
+      ],
+      "rows": [
+        [
+          "scope",
+          "作用域",
+          "变量能被访问到的范围"
+        ],
+        [
+          "scope chain",
+          "作用域链",
+          "找不到就一层层往上找的路径"
+        ],
+        [
+          "lexical scope",
+          "词法作用域",
+          "作用域由代码写在哪里决定，不是由哪里调用决定"
+        ],
+        [
+          "closure",
+          "闭包",
+          "函数 + 它出生时的环境，bundled + enclosed"
+        ],
+        [
+          "lexical environment",
+          "词法环境",
+          "函数定义时周围有哪些变量"
+        ],
+        [
+          "private variable",
+          "私有变量",
+          "藏在闭包里，外面无法直接访问"
+        ],
+        [
+          "function factory",
+          "函数工厂",
+          "用外层函数批量生产带不同配置的函数"
+        ],
+        [
+          "this",
+          "（不翻译）",
+          "运行时确定的「当前对象」，看怎么调用"
+        ],
+        [
+          "bind",
+          "绑定",
+          "永久把函数的 this 固定成某个对象"
+        ],
+        [
+          "NaN",
+          "不是数字",
+          "Not a Number，算术运算出错的结果，会传染"
+        ],
+        [
+          "default parameter",
+          "默认参数",
+          "没传参时用的兜底值，写 n = 0"
+        ],
+        [
+          "event listener",
+          "事件监听",
+          "登记一个回调，事件发生时由浏览器调用"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "三、今天学到的新知识",
+      "level": 3
+    },
+    {
+      "type": "bullet_list",
+      "items": [
+        "作用域链只能往上找：内部函数能看到外层和全局的变量，外层看不到内部的。",
+        "作用域在定义时就确定（词法作用域），跟在哪里调用无关。这是闭包的前提。",
+        "定义函数不会执行，只是把代码存起来。函数体里的代码（包括写在里面的 inner()）要等外层函数被调用、执行到那一行才运行。",
+        "闭包 = 函数 + 它记得的变量。英文 closure 来自 close（关闭），中文「闭包」就是 bundled + enclosed 的直译，不是缩写。",
+        "MDN 定义：闭包是函数和它周围状态（词法环境）的引用的组合。JS 里每次创建函数都会形成闭包，只是外层函数结束后变量还被用着时才显形。",
+        "变量会不会保留的判断：看 return 交出去的是什么。交出去的是值 → 变量销毁；交出去的是函数且函数身体里用了这个变量 → 变量保留。",
+        "每次调用外层函数都创建全新的一套闭包变量，互不共享（acc 和 acc2 的 balance 是两份）。",
+        "闭包四个用途：计数器、私有变量（方法在明面上、数据在暗处）、函数工厂、事件回调保存状态。",
+        "var 在循环里的坑：var 整个循环共用一个变量，回调记着同一个，循环结束后才执行，拿到的都是终值；let 每轮创建一个新的，各记各的。",
+        "this 在运行时确定，看「怎么调用的」：obj.method() 的 this 是 obj；单独调用 fn() 的 this 是 undefined（严格模式）或全局对象。",
+        "把方法赋值给变量（const f = obj.method）会丢 this，因为只是拿走了函数，没带走对象。修法：bind 或箭头函数包一层。",
+        "箭头函数没有自己的 this，用的是定义时外层的 this。实用标准：对象的方法用普通函数写，回调和定时器用箭头函数写。",
+        "setTimeout 是 window（node 里是 globalThis）上的方法，第一个参数必须是函数本身，不能加括号；加了括号会立刻执行并把返回值（undefined）传进去，报 callback must be of type function。",
+        "三种调用时机：acc.deposit(50) 立刻执行（你自己触发）；setTimeout(fn, 100) 时钟触发；addEventListener(\"click\", fn) 用户触发。后两者都是把函数交出去，由别人决定何时调用。",
+        "对象里写的函数叫方法，typeof 还是 function。{ deposit(n) {} } 是 { deposit: function (n) {} } 的简写。"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "四、今天的产出",
+      "level": 3
+    },
+    {
+      "type": "bullet_list",
+      "items": [
+        "02-javascript/day25/index.html 课件：作用域链、闭包定义与四个用途、var 循环经典题、this 五条规则、四个常见错误",
+        "02-javascript/day25/events-demo.html：addEventListener 计数演示页，可真实点击观察闭包保存状态",
+        "02-javascript/practice/day25.js：6 道题全部完成（makeCounter、makeGreeter、createAccount、var 循环找 bug、this 判断、once）",
+        "once(fn) 用「闭包里的标记变量」实现，是今天学到的东西的直接应用"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "五、明天要做的",
+      "level": 3
+    },
+    {
+      "type": "paragraph",
+      "text": "W5 收尾：异步入门——回调地狱、Promise、async/await、fetch 调真实接口。今天已经见过 setTimeout 的「先登记、稍后执行」，明天讲为什么需要 Promise 来管这些「稍后才有结果」的事情。"
     }
   ]
 }
